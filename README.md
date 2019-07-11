@@ -55,4 +55,19 @@ If you want to create the configuration page with react:
 copy files in `build` directory to `www` or to `admin`. In admin you must rename `index.html` to `index_m.html`.
 8. You can do that with `gulp` tasks: `gulp build`, `gulp copy`, `gulp renameIndex` or  `gulp renameTab`     
 
+
 ## Development
+1. Copy `vendor` folder: from `node_modules/@iobroker/adapter-react/` into `src/public` 
+2. Add socket.io to public/index.html
+After
+
+```
+<link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+```
+
+insert
+
+```
+    <script type="text/javascript" src="%PUBLIC_URL%/vendor/socket.io.js"></script>
+```
+
