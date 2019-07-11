@@ -70,4 +70,4 @@ insert
 ```
     <script type="text/javascript" src="%PUBLIC_URL%/vendor/socket.io.js"></script>
 ```
-
+3. Copy `node_modules/@iobroker/adapter-react/i18n.js` into `src/src`.
