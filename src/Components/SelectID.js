@@ -1,3 +1,9 @@
+/**
+ * Copyright 2018-2019 bluefox <dogafox@gmail.com>
+ *
+ * MIT License
+ *
+ **/
 import React from 'react';
 import PropTypes from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';

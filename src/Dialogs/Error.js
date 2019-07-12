@@ -1,3 +1,9 @@
+/**
+ * Copyright 2018-2019 bluefox <dogafox@gmail.com>
+ *
+ * MIT License
+ *
+ **/
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
@@ -14,13 +20,12 @@ const styles = theme => ({
 });
 
 class DialogError extends React.Component {
-    handleOk = () => {
+    handleOk() {
         this.props.onClose && this.props.onClose();
     };
 
     render() {
-        return (
-            <Dialog
+        return (<Dialog
                 open={true}
                 maxWidth="sm"
                 fullWidth={true}
@@ -39,8 +44,7 @@ class DialogError extends React.Component {
                 <DialogActions>
                     <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('Ok')}</Button>
                 </DialogActions>
-            </Dialog>
-        );
+            </Dialog>);
     }
 }
 

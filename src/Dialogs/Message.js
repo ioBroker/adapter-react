@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018-2019 bluefox <dogafox@gmail.com>
+ *
+ * MIT License
+ *
+ **/
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
@@ -11,7 +18,7 @@ import I18n from '../i18n';
 
 class DialogMessage extends React.Component {
 
-    handleOk = () => {
+    handleOk() {
         this.props.onClose && this.props.onClose();
     };
 
