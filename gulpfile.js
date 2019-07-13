@@ -23,6 +23,7 @@ gulp.task('copy', () => Promise.all([
         const package_ = require('./package');
         const packageSrc = require('./src/package');
         packageSrc.version = package_.version;
+        !fs.existsSync(__dirname + '/dist') && fs.mkdirSync(__dirname + '/dist');
         fs.writeFileSync(__dirname + '/dist/package.json', JSON.stringify(packageSrc, null, 2));
         resolve();
     })
