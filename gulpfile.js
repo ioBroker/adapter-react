@@ -18,6 +18,7 @@ gulp.task('copy', () => Promise.all([
     gulp.src(['README.md']).pipe(gulp.dest('dist')),
     gulp.src(['src/*.css']).pipe(gulp.dest('dist')),
     gulp.src(['src/Components/*.css']).pipe(gulp.dest('dist/Components')),
+    gulp.src(['src/Components/*.css']).pipe(gulp.dest('dist/Components')),
     gulp.src(['src/Components/assets/*.*']).pipe(gulp.dest('dist/Components/assets')),
     new Promise(resolve => {
         const package_ = require('./package');
@@ -29,27 +30,24 @@ gulp.task('copy', () => Promise.all([
     })
 ]));
 
+const babelOptions = {
+    presets: ['@babel/preset-env', '@babel/preset-react'],
+    plugins: [
+        '@babel/plugin-proposal-class-properties'
+    ]
+};
+
 gulp.task('compile', gulp.series('copy',
     () => Promise.all([
         gulp.src(['src/Dialogs/*.js'])
             .pipe(sourcemaps.init())
-            .pipe(babel({
-                presets: ['@babel/preset-env', '@babel/preset-react'],
-                plugins: [
-                    '@babel/plugin-proposal-class-properties'
-                ]
-            }))
+            .pipe(babel(babelOptions))
             .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest('dist/Dialogs')),
 
         gulp.src(['src/*.js', '!src/gulpfile.js'])
             .pipe(sourcemaps.init())
-            .pipe(babel({
-                presets: ['@babel/preset-env', '@babel/preset-react'],
-                plugins: [
-                    '@babel/plugin-proposal-class-properties'
-                ]
-            }))
+            .pipe(babel(babelOptions))
             .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest('dist')),
 

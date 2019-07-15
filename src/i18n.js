@@ -6,8 +6,7 @@
  **/
 
 class I18n {
-    static translations = {
-    };
+    static translations = {};
 
     static lang = window.sysLang || 'en';
 
