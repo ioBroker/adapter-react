@@ -15,9 +15,9 @@ gulp.task('copy', () => Promise.all([
     gulp.src(['src/gulpfile.js']).pipe(gulp.dest('dist')),
     gulp.src(['src/vendor/*.*']).pipe(gulp.dest('dist/vendor')),
     gulp.src(['src/assets/*.*']).pipe(gulp.dest('dist/assets')),
-    gulp.src(['src/i18n.js']).pipe(gulp.dest('dist')),
     gulp.src(['README.md']).pipe(gulp.dest('dist')),
-    gulp.src(['src/index.css']).pipe(gulp.dest('dist')),
+    gulp.src(['src/*.css']).pipe(gulp.dest('dist')),
+    gulp.src(['src/Components/*.css']).pipe(gulp.dest('dist/Components')),
     gulp.src(['src/Components/assets/*.*']).pipe(gulp.dest('dist/Components/assets')),
     new Promise(resolve => {
         const package_ = require('./package');
@@ -42,7 +42,7 @@ gulp.task('compile', gulp.series('copy',
             .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest('dist/Dialogs')),
 
-        gulp.src(['src/Connection.js', 'src/createTheme.js', 'src/GenericApp.js'])
+        gulp.src(['src/*.js', '!src/gulpfile.js'])
             .pipe(sourcemaps.init())
             .pipe(babel({
                 presets: ['@babel/preset-env', '@babel/preset-react'],

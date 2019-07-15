@@ -7,16 +7,6 @@
 
 class I18n {
     static translations = {
-        'en': require('./i18n/en'),
-        'de': require('./i18n/de'),
-        'ru': require('./i18n/ru'),
-        'pt': require('./i18n/pt'),
-        'nl': require('./i18n/nl'),
-        'fr': require('./i18n/fr'),
-        'it': require('./i18n/it'),
-        'es': require('./i18n/es'),
-        'pl': require('./i18n/pl'),
-        'zh-cn': require('./i18n/zh-cn'),
     };
 
     static lang = window.sysLang || 'en';

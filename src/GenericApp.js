@@ -12,6 +12,7 @@ import {MdSave as IconSave} from 'react-icons/md'
 import {MdClose as IconClose} from 'react-icons/md'
 
 import Theme from './Theme';
+import Loader from "../../ioBroker.devices/src/adapter-react/Components/Loader";
 
 class GenericApp extends Component {
     constructor(props) {
@@ -200,7 +201,16 @@ class GenericApp extends Component {
     }
 
     render() {
-        return null;
+        if (!this.state.loaded) {
+            return (<Loader theme={this.state.themeType}/>);
+        }
+
+        return (
+            <div className="App">
+                {this.renderError()}
+                {this.renderSaveCloseButtons()}
+            </div>
+        );
     }
 }
 
