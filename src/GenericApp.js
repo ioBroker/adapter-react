@@ -12,17 +12,17 @@ import {MdSave as IconSave} from 'react-icons/md'
 import {MdClose as IconClose} from 'react-icons/md'
 
 import Theme from './Theme';
-import Loader from "../../ioBroker.devices/src/adapter-react/Components/Loader";
+import Loader from './Components/Loader';
 
 class GenericApp extends Component {
-    constructor(props) {
+    constructor(props, settings) {
         super(props);
 
         // extract instance from URL
         this.instance = parseInt(window.location.search.slice(1), 10) || 0;
         // extract adapter name from URL
         const tmp = window.location.pathname.split('/');
-        this.adapterName = tmp[tmp.length - 2] || 'iot';
+        this.adapterName = settings.adapterName || tmp[tmp.length - 2] || 'iot';
         this.instanceId  = 'system.adapter.' + this.adapterName + '.' + this.instance;
 
         this.state = {
@@ -34,7 +34,8 @@ class GenericApp extends Component {
             connected: false,
             loaded: false,
             themeType: 'light',
-            toast: ''
+            toast: '',
+            bottomButtons: settings && settings.bottomButtons === false ? false : true,
         };
 
         try {
@@ -59,8 +60,13 @@ class GenericApp extends Component {
                 I18n.setLanguage(this.socket.systemLang);
                 this.socket.getObject(this.instanceId)
                     .then(obj => {
-                        this.common = obj.common;
-                        this.setState({native: obj.native, loaded: true});
+                        if (obj) {
+                            this.common = obj && obj.common;
+                            this.setState({native: obj.native, loaded: true});
+                        } else {
+                            console.warn('Cannot load instance settings');
+                            this.setState({native: {}, loaded: true});
+                        }
                     });
             },
             onError: err => {
@@ -163,6 +169,9 @@ class GenericApp extends Component {
     }
 
     renderSaveCloseButtons() {
+        if (!this.state.bottomButtons) {
+            return;
+        }
         const buttonStyle = {
             borderRadius: Theme.saveToolbar.button.borderRadius || 3,
             height: Theme.saveToolbar.button.height || 32,

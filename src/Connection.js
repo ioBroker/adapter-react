@@ -266,6 +266,10 @@ class Connection {
             refresh = false;
         }
 
+        if (typeof cb !== 'function') {
+            return new Promise(resolve => this.getObjects(refresh, objects => resolve(objects)));
+        }
+
         if (!refresh && this.objects) {
             return setTimeout(() => cb && cb(this.objects), 0);
         }
