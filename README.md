@@ -70,4 +70,25 @@ insert
 ```
     <script type="text/javascript" src="%PUBLIC_URL%/vendor/socket.io.js"></script>
 ```
-3. Copy `node_modules/@iobroker/adapter-react/i18n.js` into `src/src`.
+3. Add to App.js constructor initialization for I18n:
+```
+class App extends GenericApp {
+    constructor(props) {
+        const extendedProps = {...props};
+        extendedProps.translations = {
+            'en': require('./i18n/en'),
+            'de': require('./i18n/de'),
+            'ru': require('./i18n/ru'),
+            'pt': require('./i18n/pt'),
+            'nl': require('./i18n/nl'),
+            'fr': require('./i18n/fr'),
+            'it': require('./i18n/it'),
+            'es': require('./i18n/es'),
+            'pl': require('./i18n/pl'),
+            'zh-cn': require('./i18n/zh-cn'),
+        };
+        super(extendedProps);
+    }
+    ...
+}
+```

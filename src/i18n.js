@@ -15,6 +15,11 @@ class I18n {
             I18n.lang = lang;
         }
     }
+    static setTranslations(translations) {
+        if (translations) {
+            I18n.translations = translations;
+        }
+    }
     static getLanguage() {
         return I18n.lang;
     }

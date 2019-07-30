@@ -22,7 +22,7 @@ class GenericApp extends Component {
         this.instance = parseInt(window.location.search.slice(1), 10) || 0;
         // extract adapter name from URL
         const tmp = window.location.pathname.split('/');
-        this.adapterName = settings.adapterName || tmp[tmp.length - 2] || 'iot';
+        this.adapterName = (settings && settings.adapterName) || props.adapterName || tmp[tmp.length - 2] || 'iot';
         this.instanceId  = 'system.adapter.' + this.adapterName + '.' + this.instance;
 
         this.state = {
@@ -37,6 +37,13 @@ class GenericApp extends Component {
             toast: '',
             bottomButtons: settings && settings.bottomButtons === false ? false : true,
         };
+
+        // init translations
+        if (settings && settings.translations) {
+            I18n.setTranslations(settings.translations);
+        } else if (props.translations) {
+            I18n.setTranslations(props.translations);
+        }
 
         try {
             this.isIFrame = window.self !== window.top;
