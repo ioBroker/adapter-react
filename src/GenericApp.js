@@ -242,12 +242,12 @@ class GenericApp extends Component {
             </Toolbar>)
     }
 
-    updateNativeValue(attr, value) {
+    updateNativeValue(attr, value, cb) {
         const native = JSON.parse(JSON.stringify(this.state.native));
         if (native[attr] !== value) {
             native[attr] = value;
             const changed = this.getIsChanged(native);
-            this.setState({native, changed});
+            this.setState({native, changed}, cb);
         }
     }
 
