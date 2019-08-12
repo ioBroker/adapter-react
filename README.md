@@ -75,6 +75,7 @@ insert
 class App extends GenericApp {
     constructor(props) {
         const extendedProps = {...props};
+        extendedProps.encryptedFields = ['pass']; // this parameter will be encrypted and decrypted automatically
         extendedProps.translations = {
             'en': require('./i18n/en'),
             'de': require('./i18n/de'),
@@ -90,5 +91,18 @@ class App extends GenericApp {
         super(extendedProps);
     }
     ...
+}
+```
+
+4. Add to App.js encoding and decoding of values:
+```
+class App extend GenericApp {
+    ... 
+    onPrepareLoad(settings) {
+        settings.pass = this.decode(settings.pass);
+    }
+    onPrepareSave(settings) {
+        settings.pass = this.encode(settings.pass);
+    }
 }
 ```

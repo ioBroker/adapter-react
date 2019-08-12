@@ -53,6 +53,8 @@ class GenericApp extends Component {
 
         this.savedNative = {}; // to detect if the config changed
 
+        this.encryptedFields = props.encryptedFields || (settings && settings.encryptedFields) || [];
+
         this.socket = new Connection({
             onProgress: progress => {
                 if (progress === PROGRESS.CONNECTING) {
@@ -65,10 +67,15 @@ class GenericApp extends Component {
             },
             onReady: (objects, scripts) => {
                 I18n.setLanguage(this.socket.systemLang);
-                this.socket.getObject(this.instanceId)
+                this.socket.getObject('system.config')
+                    .then(obj => {
+                        this._secret = (typeof obj !== 'undefined' && obj.native && obj.native.secret) || 'Zgfr56gFe87jJOM';
+                        return this.socket.getObject(this.instanceId);
+                    })
                     .then(obj => {
                         if (obj) {
                             this.common = obj && obj.common;
+                            this.onPrepareLoad(obj.native);
                             this.setState({native: obj.native, loaded: true});
                         } else {
                             console.warn('Cannot load instance settings');
@@ -82,9 +89,43 @@ class GenericApp extends Component {
         });
     }
 
+    encrypt(value) {
+        let result = '';
+        for(let i = 0; i < value.length; i++) {
+            result += String.fromCharCode(this._secret[i % this._secret.length].charCodeAt(0) ^ value.charCodeAt(i));
+        }
+        return result;
+    }
+
+    decrypt(value) {
+        let result = '';
+        for (let i = 0; i < value.length; i++) {
+            result += String.fromCharCode(this._secret[i % this._secret.length].charCodeAt(0) ^ value.charCodeAt(i));
+        }
+        return result;
+    }
+
     selectTab(tab, index) {
         window.localStorage[this.adapterName + '-adapter'] = tab;
         this.setState({selectedTab: tab, selectedTabNum: index})
+    }
+
+    onPrepareSave(settings) {
+        // here you can encode values
+        this.encryptedFields && this.encryptedFields.forEach(attr => {
+            if (settings[attr]) {
+                settings[attr] = this.encrypt(settings[attr]);
+            }
+        });
+    }
+
+    onPrepareLoad(settings) {
+        // here you can encode values
+        this.encryptedFields && this.encryptedFields.forEach(attr => {
+            if (settings[attr]) {
+                settings[attr] = this.decrypt(settings[attr]);
+            }
+        });
     }
 
     onSave(isClose) {
@@ -106,6 +147,8 @@ class GenericApp extends Component {
                         }
                     }
                 }
+
+                this.onPrepareSave(oldObj.native);
 
                 return this.socket.setObject(this.instanceId, oldObj);
             })
@@ -199,12 +242,12 @@ class GenericApp extends Component {
             </Toolbar>)
     }
 
-    updateNativeValue(attr, value) {
+    updateNativeValue(attr, value, cb) {
         const native = JSON.parse(JSON.stringify(this.state.native));
         if (native[attr] !== value) {
             native[attr] = value;
             const changed = this.getIsChanged(native);
-            this.setState({native, changed});
+            this.setState({native, changed}, cb);
         }
     }
 
