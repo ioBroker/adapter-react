@@ -18,6 +18,15 @@ export default type => {
                     dark: '#068ACC',
                     contrastText: '#ee0000',
                 },
+                colors: {
+                    updateAvailable:    '#3fff3f',
+                    editActive:         '#FF0000',
+                    lampOn:             '#ffcc02',
+                    lampOff:            'inherit',
+                    instanceRunning:    '#52af19',
+                    instanceStopped:    '#7b3d29',
+                    browserBar:         '#3f51b5'
+                },
             }
         });
     } else {
@@ -35,6 +44,15 @@ export default type => {
                     main: '#3399CC',
                     dark: '#068ACC',
                     contrastText: '#ee0000',
+                },
+                colors: {
+                    updateAvailable:    '#3fff3f',
+                    editActive:         '#FF0000',
+                    lampOn:             '#ffcc02',
+                    lampOff:            'inherit',
+                    instanceRunning:    '#52af19',
+                    instanceStopped:    '#7b3d29',
+                    browserBar:         '#3f51b5'
                 },
             }
         });

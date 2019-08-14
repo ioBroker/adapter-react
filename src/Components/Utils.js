@@ -16,6 +16,7 @@ class Utils {
     static namespace = NAMESPACE;
     static INSTANCES = 'instances';
     static dateFormat = ['DD', 'MM'];
+    static FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\?]/g;
 
     static CapitalWords(name) {
         return (name || '').split(/[\s_]/)

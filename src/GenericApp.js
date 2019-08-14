@@ -14,6 +14,13 @@ import {MdClose as IconClose} from 'react-icons/md'
 import Theme from './Theme';
 import Loader from './Components/Loader';
 
+if (!window.localStorage) {
+    window.localStorage = {
+        getItem: () => null,
+        setItem: () => null,
+    };
+}
+
 class GenericApp extends Component {
     constructor(props, settings) {
         super(props);
@@ -35,7 +42,7 @@ class GenericApp extends Component {
             loaded: false,
             themeType: 'light',
             toast: '',
-            bottomButtons: settings && settings.bottomButtons === false ? false : true,
+            bottomButtons: settings && settings.bottomButtons === false ? false : (props && props.bottomButtons === false ? false : true),
         };
 
         // init translations
