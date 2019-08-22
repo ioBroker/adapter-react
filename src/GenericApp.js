@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Connection from './Connection';
 import {PROGRESS} from './Connection';
 import I18n from './i18n';
@@ -13,6 +13,7 @@ import {MdClose as IconClose} from 'react-icons/md'
 
 import Theme from './Theme';
 import Loader from './Components/Loader';
+import Router from './Components/Router';
 
 if (!window.localStorage) {
     window.localStorage = {
@@ -21,7 +22,7 @@ if (!window.localStorage) {
     };
 }
 
-class GenericApp extends Component {
+class GenericApp extends Router {
     constructor(props, settings) {
         super(props);
 
@@ -31,6 +32,9 @@ class GenericApp extends Component {
         const tmp = window.location.pathname.split('/');
         this.adapterName = (settings && settings.adapterName) || props.adapterName || tmp[tmp.length - 2] || 'iot';
         this.instanceId  = 'system.adapter.' + this.adapterName + '.' + this.instance;
+
+        const location = Router.getLocation();
+        location.tab = location.tab || window.localStorage[this.adapterName + '-adapter'] || '';
 
         this.state = {
             selectedTab: window.localStorage[this.adapterName + '-adapter'] || '',
@@ -110,6 +114,13 @@ class GenericApp extends Component {
             result += String.fromCharCode(this._secret[i % this._secret.length].charCodeAt(0) ^ value.charCodeAt(i));
         }
         return result;
+    }
+
+    onHashChanged() {
+        const location = Router.getLocation();
+        if (location.tab !== this.state.selectedTab) {
+            this.selectTab(location.tab);
+        }
     }
 
     selectTab(tab, index) {
