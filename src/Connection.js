@@ -109,7 +109,8 @@ class Connection {
         } else {
             this.statesSubscribes[id].cbs.indexOf(cb) === -1 && this.statesSubscribes[id].cbs.push(cb);
         }
-        this.getState(id, cb);
+        this.getState(id, (err, state) =>
+            cb && cb(err, state, id));
     }
 
     unsubscribeState(id, cb) {

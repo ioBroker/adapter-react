@@ -47,6 +47,11 @@ const styles = theme => ({
         borderTop: '1px solid #999',
         borderBottom: '1px solid #999'
     },
+    treeTableDark: {
+        background: 'inherit',
+        borderTop: '1px solid #999',
+        borderBottom: '1px solid #999'
+    },
     treeTableRow: {
         boxShadow: 'inset 0 1px 0 #eeeeee',
         display: 'block'
@@ -109,7 +114,7 @@ const styles = theme => ({
     /*.toggle-button-wrapper > span:hover {
         background: #d7d7d7;
     }*/
-    
+
     selectSpan: {
 //        fontFamily: "'SF Mono', 'Segoe UI Mono', 'Roboto Mono', Menlo, Courier, monospace",
         background: '#efefef',
@@ -222,7 +227,7 @@ function applyFilter(item, filters, lang, objects, context) {
         if (!filteredOut && context.name) {
             if (item.data.fName === undefined) {
                 item.data.fName = (item.data.obj && item.data.obj.common && getName(item.data.obj.common.name, lang)) || '';
-                item.data.fName = item.data.name.toLowerCase();
+                item.data.fName = item.data.fName.toLowerCase();
             }
             filteredOut = item.data.fName.indexOf(context.name) === -1;
         }
@@ -583,8 +588,17 @@ function formatValue(id, state, obj, texts) {
     const states = getStates(obj);
     const isCommon = obj.common;
 
-    let valText = state.val;
-    if (isCommon && isCommon.role && isCommon.role.match(/^value\.time|^date/)) {
+    let valText = state.val === null || state.val === undefined ? '' : state.val;
+    const type = typeof valText;
+    if (type === 'number') {
+        valText = Math.round(valText * 1000000) / 1000000; // remove 4.00000000000000001
+    } else if (type === 'object') {
+        valText = JSON.stringify(valText);
+    } else if (type !== 'string') {
+        valText = valText.toString();
+    }
+
+    if (isCommon && isCommon.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
         valText = valText ? (new Date(valText)).toString() : valText;
     }
 
@@ -593,30 +607,35 @@ function formatValue(id, state, obj, texts) {
     }
 
     let valFull;
-    if (valText === undefined) {
-        valText = '&nbsp;';
+    if (valText === undefined || valText === null) {
+        valText = '';
     } else {
         // if less 2000.01.01 00:00:00
-        if (state.ts < 946681200000) state.ts *= 1000;
-        if (state.lc < 946681200000) state.lc *= 1000;
+        if (state.ts && state.ts < 946681200000) state.ts *= 1000;
+        if (state.lc && state.lc < 946681200000) state.lc *= 1000;
 
         if (isCommon && isCommon.unit) {
              valText += ' ' + isCommon.unit;
         }
         valFull =           texts.value   + ': ' + state.val;
-        valFull += '\x0A' + texts.ack     + ': ' + state.ack;
-        valFull += '\x0A' + texts.ts      + ': ' + (state.ts ? formatDate(new Date(state.ts)) : '');
-        valFull += '\x0A' + texts.lc      + ': ' + (state.lc ? formatDate(new Date(state.lc)) : '');
-        valFull += '\x0A' + texts.from    + ': ' + (state.from || '');
+        if (state.ack !== undefined) {
+            valFull += '\x0A' + texts.ack     + ': ' + state.ack;
+        }
+        if (state.ts) {
+            valFull += '\x0A' + texts.ts + ': ' + (state.ts ? formatDate(new Date(state.ts)) : '');
+        }
+        if (state.lc) {
+            valFull += '\x0A' + texts.lc + ': ' + (state.lc ? formatDate(new Date(state.lc)) : '');
+        }
+        if (state.from) {
+            valFull += '\x0A' + texts.from + ': ' + (state.from || '');
+        }
         if (state.user) {
             valFull += '\x0A' + texts.user    + ': ' + (state.user || '');
         }
         valFull += '\x0A' + texts.quality + ': ' + quality2text(state.q || 0);
     }
-    if (valText === null || valText === '') {
-        valText = '&nbsp;';
-    }
-    if (typeof valText === 'string' && valText !== '&nbsp;') {
+    if (typeof valText === 'string' && valText !== '') {
         valText = valText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
@@ -711,18 +730,21 @@ class SelectID extends React.Component {
                 role: '',
                 expert: false
             },
-            depth: 0
+            depth: 0,
+            statesUpdate: 0,
         };
-        this.selectedFound = !this.state.selected;
+        this.selectedFound = false;
         this.copyContentImg = CopyContentImg;
         this.treeTableRef = React.createRef();
         this.mainRef = React.createRef();
         this.root = null;
         this.lang = I18n.getLanguage();
+        this.states = {};
+        this.subscribes = [];
 
         this.props.connection.getObjects(objects => {
-            this.props.connection.getStates(states => {
-                this.states = states;
+            //this.props.connection.getStates(states => {
+            //    this.states = states;
                 this.objects = objects;
                 const {info, root} = buildTree(this.objects, this.props);
                 this.root = root;
@@ -731,7 +753,7 @@ class SelectID extends React.Component {
                 this.setState({loaded: true});
 
                 this.state.selected && this.onSelect(this.state.selected);
-            }, true);
+            //}, true);
         }, true);
 
         this.texts = {
@@ -743,6 +765,8 @@ class SelectID extends React.Component {
             user:    I18n.t('tooltip_user'),
             quality: I18n.t('tooltip_quality')
         };
+
+        this.onStateChangeBound = this.onStateChange.bind(this);
     }
 
     onSelect(selected, isDouble) {
@@ -762,9 +786,17 @@ class SelectID extends React.Component {
     onCopy(e, id) {
         const el = window.document.createElement('textarea');
         el.value = id;
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
         window.document.body.appendChild(el);
         el.select();
-        window.document.execCommand('copy');
+        const selection = window.document.getSelection();
+        const range = window.document.createRange();
+        range.selectNode(el);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        console.log('copy success', window.document.execCommand('copy'));
+        selection.removeAllRanges();
         window.document.body.removeChild(el);
         console.log(id);
         e.stopPropagation();
@@ -787,7 +819,8 @@ class SelectID extends React.Component {
                         img.color = secondary.A200;
                         div.appendChild(img);
                         div.className = this.props.classes.cellCopy;
-                        div.addEventListener('click', e => this.onCopy(e, e.target.parentNode.dataset.index), false);
+                        div.addEventListener('click', e =>
+                            this.onCopy(e, e.target.parentNode.dataset.index || e.target.parentNode.parentNode.dataset.index), false);
                         div.addEventListener('mousedown', e => {
                             if (e.target.parentNode.className.indexOf(this.props.classes.cellCopyPressed) === -1) {
                                 e.target.parentNode.className += ' ' + this.props.classes.cellCopyPressed;
@@ -824,6 +857,52 @@ class SelectID extends React.Component {
                 this.treeTableRef.current.scrollIntoView(node);
                 this.selectedFound = true;
             }
+        }
+    }
+    checkUnsubscribes() {
+        // Remove unused subscribed
+        for (let i = this.subscribes.length - 1; i >= 0; i--) {
+            if (this.recordStates.indexOf(this.subscribes[i]) === -1) {
+                this.unsubscribe(this.subscribes[i]);
+            }
+        }
+        this.recordStates = [];
+    }
+
+    componentWillUnmount() {
+        // remove all subscribes
+        this.subscribes.forEach(pattern => {
+            console.log('- unsubscribe ' + pattern);
+            this.props.connection.unsubscribeState(pattern, this.onStateChangeBound);
+        });
+        this.subscribes = [];
+    }
+
+    onStateChange(err, state, id) {
+        this.states[id] = state;
+        console.log('+ subscribe ' + id);
+        if (!this.statesUpdateTimer) {
+            this.statesUpdateTimer = setTimeout(() => {
+                this.statesUpdateTimer = null;
+                this.setState({statesUpdate: this.state.statesUpdate + 1});
+            }, 300);
+        }
+    }
+
+    subscribe(id) {
+        if (this.subscribes.indexOf(id) === -1) {
+            this.subscribes.push(id);
+            this.props.connection.subscribeState(id, this.onStateChangeBound);
+        }
+    }
+
+    unsubscribe(id) {
+        const pos = this.subscribes.indexOf(id);
+        if (pos !== -1) {
+            this.subscribes.splice(pos, 1);
+            if (this.states[id]) delete this.states[id];
+            console.log('- unsubscribe ' + id);
+            this.props.connection.unsubscribeState(id, this.onStateChangeBound);
         }
     }
 
@@ -874,7 +953,19 @@ class SelectID extends React.Component {
         return (<span className={this.props.classes.cellWrapper}>{list.join(', ')}</span>);
     }
     renderColumnValue(data, metadata, toggleChildren) {
-        if (!data.obj || !data.obj._id || this.states || !this.states[data.obj._id]) return null;
+        if (!data.obj || !data.obj._id || !this.states) return null;
+
+        if (!this.states[data.obj._id]) {
+            if (data.obj.type === 'state') {
+                this.recordStates.push(data.obj._id);
+                this.states[data.obj._id] = {val: null};
+                this.subscribe(data.obj._id);
+            }
+            return null;
+        } else {
+            this.recordStates.push(data.obj._id);
+        }
+
         const id = data.obj._id;
         const state = this.states[id];
         const info = formatValue(id, state, data.obj, this.texts);
@@ -990,6 +1081,12 @@ class SelectID extends React.Component {
     }
 
     render() {
+        this.recordStates = [];
+        this.unsubscribeTimer && clearTimeout(this.unsubscribeTimer);
+        this.unsubscribeTimer = setTimeout(() => {
+            this.unsubscribeTimer = null;
+            this.checkUnsubscribes();
+        }, 200);
         if (!this.state.loaded) {
             return (<CircularProgress/>);
         } else {
@@ -1016,7 +1113,7 @@ class SelectID extends React.Component {
                     selected={this.state.selected}
                     classNameSelected={classes.selected}
                     classNamePartlyVisible={classes.partlyVisible}
-                    className={classes.treeTable}
+                    className={this.props.theme === 'dark' ? classes.treeTableDark : classes.treeTable}
                     classNameRow={classes.treeTableRow}
                     onRowClick={(data, metadata, toggleChildren, isDoubleClick) => isDoubleClick ?
                         this.onDoubleClick(data, metadata, toggleChildren) :
@@ -1040,7 +1137,8 @@ SelectID.propTypes = {
     selected: PropTypes.string,
     onSelect: PropTypes.func,
     connection: PropTypes.object,
-    prefix: PropTypes.string
+    prefix: PropTypes.string,
+    theme: PropTypes.string,
 };
 
 export default withStyles(styles)(SelectID);

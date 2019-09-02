@@ -78,6 +78,7 @@ class DialogSelectID extends React.Component {
                         connection={this.props.connection}
                         selected={this.state.selected}
                         name={this.state.name}
+                        theme={this.props.theme}
                         onSelect={(selected, name, isDouble) => {
                             selected !== this.state.selected && this.setState({selected, name});
                             isDouble && this.handleOk();
@@ -103,7 +104,8 @@ DialogSelectID.propTypes = {
     connection: PropTypes.object.isRequired,
     cancel: PropTypes.string,
     prefix: PropTypes.string,
-    ok: PropTypes.string
+    ok: PropTypes.string,
+    theme: PropTypes.string,
 
 };
 
