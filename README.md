@@ -130,7 +130,23 @@ class App extend GenericApp {
 ### Components
 
 #### Utils.js
+##### getObjectNameFromObj
+`getObjectNameFromObj(obj, settings, options, isDesc)`
 
+Get object name from single object.
+
+Usage: `Utils.getObjectNameFromObj(this.objects[id], null, {language: I18n.getLanguage()})`
+
+##### getObjectIcon
+`getObjectIcon(id, obj)`
+
+Get icon from object.
+
+Usage: 
+```
+const icon = Utils.getObjectIcon(id, this.objects[id]);
+return (<img src={icon}/>);
+```
 #### Loader.js
 
 #### Logo.js
