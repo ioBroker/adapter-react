@@ -106,3 +106,35 @@ class App extend GenericApp {
     }
 }
 ```
+
+## Components
+
+### Connection.js
+
+### GenericApp.js
+
+### i18n.js
+
+### Theme.js
+
+### Dialogs
+
+#### Confirm.js
+
+#### Error.js
+
+#### Message.js
+
+#### SelectID.js
+
+### Components
+
+#### Utils.js
+
+#### Loader.js
+
+#### Logo.js
+
+#### Router.js
+
+#### SelectID.js
