@@ -46,7 +46,7 @@ class Utils {
                 text = item.common.desc;
             }
             if (typeof text === 'object') {
-                text = text[options.language] || text.en;
+                text = text[options.language] || text.en || text.de || text.ru  || '';
             }
             text = text.replace(/[_.]/g, ' ');
 

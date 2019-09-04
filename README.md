@@ -147,6 +147,12 @@ Usage:
 const icon = Utils.getObjectIcon(id, this.objects[id]);
 return (<img src={icon}/>);
 ```
+
+##### isUseBright
+`isUseBright(color, defaultValue)`
+
+Usage: `
+
 #### Loader.js
 
 #### Logo.js
