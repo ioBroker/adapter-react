@@ -255,7 +255,9 @@ class Utils {
                     icon = 'adapter/' + parts[0] + icon;
                 }
 
-                if (window.location.pathname.match(/material\/[.\d]+/)) {
+                if (window.location.pathname.match(/adapter\/[^\/]+\/[^\/]+\.html/)) {
+                    icon = '../../' + icon;
+                } else if (window.location.pathname.match(/material\/[.\d]+/)) {
                     icon = '../../' + icon;
                 } else
                 if (window.location.pathname.match(/material\//)) {
@@ -266,7 +268,6 @@ class Utils {
         } else {
             return null;
         }
-
     }
 
     static splitCamelCase(text) {
