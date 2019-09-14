@@ -7,7 +7,7 @@ export * from './search';
 
 export const processData = (data: Array<TreeDataRow>, rowHeightDefault: ?number = null): Array<Row> => {
   return processLevel(data, rowHeightDefault, 0, true);
-}
+};
 
 const processLevel = (data: Array<TreeDataRow>, rowHeightDefault: ?number, depth: number = 0, isVisible: boolean = false): Array<Row> => {
   let result: Array<Row> = [];
@@ -23,7 +23,7 @@ const processLevel = (data: Array<TreeDataRow>, rowHeightDefault: ?number, depth
     }
   }
   return result;
-}
+};
 
 export const indexOf = (needle: any, haystack: Array<any>): number => {
   for (var i = 0; i < haystack.length; i++) {
@@ -32,6 +32,6 @@ export const indexOf = (needle: any, haystack: Array<any>): number => {
     }
   }
   return -1;
-}
+};
 
 export const noop = () => undefined;

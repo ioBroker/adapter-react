@@ -48,7 +48,7 @@ class Utils {
             if (typeof text === 'object') {
                 text = text[options.language] || text.en || text.de || text.ru  || '';
             }
-            text = text.replace(/[_.]/g, ' ');
+            text = (text || '').replace(/[_.]/g, ' ');
 
             if (text === text.toUpperCase()) {
                 text = text[0] + text.substring(1).toLowerCase();
@@ -82,7 +82,7 @@ class Utils {
             if (typeof text === 'object') {
                 text = text[options.language] || text.en;
             }
-            text = text.replace(/[_.]/g, ' ');
+            text = (text || '').replace(/[_.]/g, ' ');
 
             if (text === text.toUpperCase()) {
                 text = text[0] + text.substring(1).toLowerCase();

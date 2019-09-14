@@ -86,6 +86,11 @@ export default class TreeDataTable extends Component<Props, State> {
     const row = node && findNodeData(root, node);
     if (row) {
       const rowIndex = root.getRowIndex(row);
+      if (row._hasChildren) {
+        // open them
+        this._toggleRow(root, row);
+      }
+
       if (expandAncestors && !row.isVisible()) {
         let ancestors: Array<Row> = [];
         for (let currentRowIndex = Math.max(rowIndex - 1, 0), previousDepth = row.depth; currentRowIndex >= 0; currentRowIndex--) {
@@ -268,7 +273,7 @@ export default class TreeDataTable extends Component<Props, State> {
     if (delta.hasChange) {
       this.setState({ root: delta.root });
     }
-  }
+  };
 
   _toggleRow = (root: BTRoot, row: Row): TreeChange => {
     const currentDepth = row.depth;
@@ -300,5 +305,5 @@ export default class TreeDataTable extends Component<Props, State> {
       root: root,
       hasChange: hasChange,
     };
-  }
+  };
 }
