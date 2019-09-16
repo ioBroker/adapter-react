@@ -184,14 +184,21 @@ function binarySearch(d, t, s, e) {
     if (t > d[m]) return binarySearch(d, t, m, e);
     if (t < d[m]) return binarySearch(d, t, s, m);
 }
-
-/* function walkTree(tree, func) {
-    func(tree);
-    if (tree.children) {
-        tree.children.forEach(item => walkTree(item, func));
+/*
+function walkTree(tree, func) {
+    if (func(tree)) {
+        return tree;
     }
-}
-*/
+    if (tree.children) {
+        for (let i = 0; i < tree.children.length; i++) {
+            const result = walkTree(tree.children[i], func);
+            if (result) {
+                return result;
+            }
+        }
+    }
+    return null;
+}*/
 
 function applyFilter(item, filters, lang, objects, context) {
     let filteredOut = false;
@@ -537,8 +544,8 @@ function formatDate(dateObj) {
     // Following implementation is 5 times faster
     if (!dateObj) return '';
 
-    var text = dateObj.getFullYear();
-    var v = dateObj.getMonth() + 1;
+    let text = dateObj.getFullYear();
+    let v = dateObj.getMonth() + 1;
     if (v < 10) {
         text += '-0' + v;
     } else {
@@ -669,7 +676,7 @@ function getSelectIdIcon(objects, id, prefix) {
             if (obj.common.icon) {
                 if (!obj.common.icon.match(/^data:image\//)) {
                     if (obj.common.icon.indexOf('.') !== -1) {
-                        var instance;
+                        let instance;
                         if (obj.type === 'instance') {
                             icon = prefix + '/adapter/' + obj.common.name + '/' + obj.common.icon;
                         } else if (id && id.match(/^system\.adapter\./)) {
@@ -716,20 +723,22 @@ function getSelectIdIcon(objects, id, prefix) {
     }
 }
 
+const DEFAULT_FILTER = {
+    id: '',
+    name: '',
+    room: '',
+    func:  '',
+    role: '',
+    expert: false
+};
+
 class SelectID extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             loaded: false,
             selected: (this.props.selected || '').replace(/["']/g, ''),
-            filter: {
-                id: '',
-                name: '',
-                room: '',
-                func:  '',
-                role: '',
-                expert: false
-            },
+            filter: this.props.defaultFilters || Object.assign({}, DEFAULT_FILTER),
             depth: 0,
             statesUpdate: 0,
         };
@@ -743,17 +752,25 @@ class SelectID extends React.Component {
         this.subscribes = [];
 
         this.props.connection.getObjects(objects => {
-            //this.props.connection.getStates(states => {
-            //    this.states = states;
-                this.objects = objects;
-                const {info, root} = buildTree(this.objects, this.props);
-                this.root = root;
-                this.info = info;
+            this.objects = objects;
+            const {info, root} = buildTree(this.objects, this.props);
+            this.root = root;
+            this.info = info;
+            let node = this.state.selected && findNode(this.root, this.state.selected);
+            // If selected ID is not visible, reset filter
+            if (node && !applyFilter(node, this.state.filter, this.lang, this.objects)) {
+                // reset filter
+                this.setState({filter: Object.assign({}, DEFAULT_FILTER)}, () => {
+                    applyFilter(this.root, this.state.filter, this.lang, this.objects);
+                    this.setState({loaded: true});
+                    this.state.selected && this.onSelect(this.state.selected);
+                });
+            } else {
                 applyFilter(this.root, this.state.filter, this.lang, this.objects);
                 this.setState({loaded: true});
 
                 this.state.selected && this.onSelect(this.state.selected);
-            //}, true);
+            }
         }, true);
 
         this.texts = {
@@ -979,6 +996,7 @@ class SelectID extends React.Component {
             this.filterTimer && clearTimeout(this.filterTimer);
             this.filterTimer = setTimeout(() => {
                 applyFilter(this.root, filter, this.lang, this.objects);
+                this.props.onFilterChanged && this.props.onFilterChanged(filter);
                 this.forceUpdate();
             }, 400);
             this.setState({filter});
@@ -1133,9 +1151,11 @@ class SelectID extends React.Component {
 
 SelectID.propTypes = {
     classes: PropTypes.object,
+    defaultFilters: PropTypes.object,
     statesOnly: PropTypes.bool,
     selected: PropTypes.string,
     onSelect: PropTypes.func,
+    onFilterChanged: PropTypes.func,
     connection: PropTypes.object,
     prefix: PropTypes.string,
     theme: PropTypes.string,

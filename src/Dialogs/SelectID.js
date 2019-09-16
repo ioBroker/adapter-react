@@ -34,6 +34,16 @@ const styles = theme => ({
 class DialogSelectID extends React.Component {
     constructor(props) {
         super(props);
+        this.dialogName = this.props.dialogName || 'default';
+        this.dialogName = 'SelectID.' + this.dialogName;
+
+        this.filters = window.localStorage.getItem(this.dialogName) || '{}';
+        try {
+            this.filters = JSON.parse(this.filters);
+        } catch (e) {
+            this.filters = {};
+        }
+
         this.state =  {
             selected: this.props.selected || '',
             name:     ''
@@ -73,12 +83,17 @@ class DialogSelectID extends React.Component {
                 <DialogContent className={this.props.classes.content}>
                     <SelectID
                         prefix={this.props.prefix}
+                        defaultFilters={this.filters}
                         statesOnly={this.props.statesOnly}
                         style={{width: '100%', height: '100%'}}
                         connection={this.props.connection}
                         selected={this.state.selected}
                         name={this.state.name}
                         theme={this.props.theme}
+                        onFilterChanged={filterConfig => {
+                            this.filters = filterConfig;
+                            window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
+                        }}
                         onSelect={(selected, name, isDouble) => {
                             selected !== this.state.selected && this.setState({selected, name});
                             isDouble && this.handleOk();
@@ -97,6 +112,7 @@ class DialogSelectID extends React.Component {
 DialogSelectID.propTypes = {
     classes: PropTypes.object,
     onClose: PropTypes.func,
+    dialogName: PropTypes.string,
     onOk: PropTypes.func.isRequired,
     title: PropTypes.string,
     selected: PropTypes.string,
@@ -106,7 +122,6 @@ DialogSelectID.propTypes = {
     prefix: PropTypes.string,
     ok: PropTypes.string,
     theme: PropTypes.string,
-
 };
 
 export default withStyles(styles)(DialogSelectID);
