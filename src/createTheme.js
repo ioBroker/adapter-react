@@ -1,5 +1,4 @@
 import {createMuiTheme} from '@material-ui/core/styles';
-import Theme from './Theme';
 
 export default type => {
     if (type === 'dark') {
@@ -10,7 +9,7 @@ export default type => {
                     light: '#5F6975',
                     main: '#2978d0',
                     dark: '#053C72',
-                    contrastText: '#CСС',
+                    contrastText: '#CCC',
                 },
                 secondary: {
                     light: '#7EB2CC',
@@ -56,6 +55,5 @@ export default type => {
                 },
             }
         });
-
     }
 }

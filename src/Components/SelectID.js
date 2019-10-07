@@ -1018,8 +1018,9 @@ class SelectID extends React.Component {
     getFilterSelect(name, values) {
         //<!--InputLabel htmlFor="demo-controlled-open-select">Age</InputLabel-->
         return (
-            <Select className={this.props.classes.headerCellInput + ' no-underline'}
-                value={this.state.filter[name]}
+            <Select
+                className={this.props.classes.headerCellInput + ' no-underline'}
+                value={this.state.filter[name] || ''}
                 onChange={e => this.onFilter(name, e.target.value)}
                 inputProps={{name, id: name,}}
                 displayEmpty={true}

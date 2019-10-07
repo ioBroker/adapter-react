@@ -24,6 +24,7 @@ class Connection {
             groups: [],
             instances: []
         };
+        this.acl = null;
         this.firstConnect = true;
         this.waitForRestart = false;
         this.systemLang = 'en';
@@ -92,12 +93,19 @@ class Connection {
             this.onError({message: 'no permission', operation: err.operation, type: err.type, id: (err.id || '')}));
 
         this.socket.on('objectChange', (id, obj) => setTimeout(() => this.objectChange(id, obj), 0));
-        this.socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0))
+        this.socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0));
     }
 
     subscribeState(id, cb) {
         if (!this.statesSubscribes[id]) {
-            let reg = id.replace(/\./g, '\\.').replace(/\*/g, '.*');
+            let reg = id
+                .replace(/\./g, '\\.')
+                .replace(/\*/g, '.*')
+                .replace(/\(/g, '\\(')
+                .replace(/\)/g, '\\)')
+                .replace(/\+/g, '\\+')
+                .replace(/\[/g, '\\[');
+
             if (reg.indexOf('*') === -1) {
                 reg += '$';
             }
@@ -122,9 +130,9 @@ class Connection {
                 this.statesSubscribes[id].cbs = null;
             }
 
-            if (this.connected && (!this.statesSubscribes[id].cbs || !this.statesSubscribes[id].cbs.length)) {
+            if (!this.statesSubscribes[id].cbs || !this.statesSubscribes[id].cbs.length) {
                 delete this.statesSubscribes[id];
-                this.socket.emit('unsubscribe', id);
+                this.connected && this.socket.emit('unsubscribe', id);
             }
         }
     }
@@ -350,6 +358,8 @@ class Connection {
                     if (newCommon.source  !== undefined) obj.common.source  = newCommon.source;
                     if (newCommon.debug   !== undefined) obj.common.debug   = newCommon.debug;
                     if (newCommon.verbose !== undefined) obj.common.verbose = newCommon.verbose;
+
+                    obj.from = 'system.adapter.admin.0'; // we must distinguish between GUI(admin.0) and disk(javascript.0)
 
                     if (oldId === newId && _obj && _obj.common && newCommon.name === _obj.common.name) {
                         if (!newCommon.engineType || newCommon.engineType !== _obj.common.engineType) {

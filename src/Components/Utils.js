@@ -5,7 +5,6 @@
  *
  **/
 
-
 import React from 'react';
 import I18n from '../i18n';
 
@@ -16,7 +15,7 @@ class Utils {
     static namespace = NAMESPACE;
     static INSTANCES = 'instances';
     static dateFormat = ['DD', 'MM'];
-    static FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\?]/g;
+    static FORBIDDEN_CHARS = /[\][*,;'"`<>\\?]/g;
 
     static CapitalWords(name) {
         return (name || '').split(/[\s_]/)
@@ -48,7 +47,7 @@ class Utils {
             if (typeof text === 'object') {
                 text = text[options.language] || text.en || text.de || text.ru  || '';
             }
-            text = (text || '').replace(/[_.]/g, ' ');
+            text = (text || '').toString().replace(/[_.]/g, ' ');
 
             if (text === text.toUpperCase()) {
                 text = text[0] + text.substring(1).toLowerCase();
@@ -255,7 +254,7 @@ class Utils {
                     icon = 'adapter/' + parts[0] + icon;
                 }
 
-                if (window.location.pathname.match(/adapter\/[^\/]+\/[^\/]+\.html/)) {
+                if (window.location.pathname.match(/adapter\/[^/]+\/[^/]+\.html/)) {
                     icon = '../../' + icon;
                 } else if (window.location.pathname.match(/material\/[.\d]+/)) {
                     icon = '../../' + icon;

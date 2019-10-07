@@ -16,8 +16,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import I18n from '../i18n';
 
-class Confirm extends React.Component {
-
+class DialogConfirm extends React.Component {
     handleOk() {
         this.props.onClose && this.props.onClose(true);
     };
@@ -25,19 +24,22 @@ class Confirm extends React.Component {
     handleCancel() {
         this.props.onClose && this.props.onClose(false);
     };
+
     render() {
         return (
             <Dialog
+                disableBackdropClick
+                disableEscapeKeyDown
                 open={true}
-                maxWidth="sm"
+                maxWidth="md"
                 fullWidth={true}
                 onClose={() => this.handleCancel()}
-                aria-labelledby="message-dialog-title"
-                aria-describedby="message-dialog-description"
+                aria-labelledby="confirmation-dialog-title"
+                aria-describedby="confirmation-dialog-description"
             >
-                <DialogTitle id="message-dialog-title">{this.props.title || I18n.t('Are you sure?')}</DialogTitle>
+                <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Are you sure?')}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="message-dialog-description">
+                    <DialogContentText id="confirmation-dialog-description">
                         {this.props.text}
                     </DialogContentText>
                 </DialogContent>
@@ -50,7 +52,7 @@ class Confirm extends React.Component {
     }
 }
 
-Confirm.propTypes = {
+DialogConfirm.propTypes = {
     onClose: PropTypes.func,
     title: PropTypes.string,
     text: PropTypes.string,
@@ -59,4 +61,4 @@ Confirm.propTypes = {
     icon: PropTypes.object
 };
 
-export default Confirm;
+export default DialogConfirm;
