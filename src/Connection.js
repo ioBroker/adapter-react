@@ -117,8 +117,10 @@ class Connection {
         } else {
             this.statesSubscribes[id].cbs.indexOf(cb) === -1 && this.statesSubscribes[id].cbs.push(cb);
         }
-        this.getState(id, (err, state) =>
-            cb && cb(id, state));
+        if (typeof cb === 'function') {
+            this.socket.emit('getForeignStates', id, (err, states) =>
+                states && Object.keys(states).forEach(id => cb(id, states[id])));
+        }
     }
 
     unsubscribeState(id, cb) {
