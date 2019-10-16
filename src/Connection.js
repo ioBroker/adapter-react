@@ -83,10 +83,21 @@ class Connection {
                 window.location.reload();
             }
         });
-        this.socket.on('reauthenticate', () => window.location.reload());
+        this.socket.on('reauthenticate', () => this.authenticate());
         this.socket.on('log', message => {
             this.props.onLog && this.props.onLog(message);
             this.onLogHandler && this.onLogHandler(message);
+        });
+
+        this.socket.on('error', err => {
+            if (err.indexOf('User not authorized') !== -1) {
+                this.authenticate();
+            } else {
+                window.alert(err);
+            }
+        });
+        this.socket.on('connect_error', err => {
+            console.error('Connect error: ' + err);
         });
 
         this.socket.on('permissionError', err =>
@@ -94,6 +105,15 @@ class Connection {
 
         this.socket.on('objectChange', (id, obj) => setTimeout(() => this.objectChange(id, obj), 0));
         this.socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0));
+    }
+
+    authenticate() {
+        if (window.location.port === '3000' || (window.location.search && window.location.search.startsWith('?href='))) {
+            window.alert('Please login in not debug window and then refresh');
+        } else {
+            // relocate to login.html
+            window.location = '/login?href=' + window.location.pathname + (window.location.search || '');
+        }
     }
 
     subscribeState(id, cb) {
