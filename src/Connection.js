@@ -11,10 +11,12 @@ class Connection {
     constructor(props) {
         props = props || {};
         this.props = props;
+        this.props.port = this.props.port || 8081;
         this.autoSubscribes = this.props.autoSubscribes || [];
         this.autoSubscribeLog = this.props.autoSubscribeLog;
+        
         this.socket = window.io.connect(
-            window.location.protocol + '//' + window.location.host.replace('3000', 8081), // todo: do replace only if not in iFrame
+            window.location.protocol + '//' + window.location.host.replace('3000', this.props.port), // todo: do replace only if not in iFrame
             {query: 'ws=true'});
         this.states = {};
         this.objects = null;
