@@ -442,7 +442,7 @@ class Connection {
 
     getAdapterInstances(adapter) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.' + adapter, endkey: 'system.adapter.' + (adapter ? adapter + '.' : '') + '\u9999'}, (err, doc) => {
+            this.socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.' + (adapter || ''), endkey: 'system.adapter.' + (adapter ? adapter + '.' : '') + '\u9999'}, (err, doc) => {
                 if (err) {
                     reject(err);
                 } else {
