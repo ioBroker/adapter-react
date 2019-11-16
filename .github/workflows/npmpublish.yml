@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: 10
       - run: npm i
-      - run: npm test
+      - run: gulp
 
   publish-npm:
     needs: build
@@ -24,7 +24,15 @@ jobs:
         with:
           node-version: 10
           registry-url: https://registry.npmjs.org/
-      - run: npm i
-      - run: npm publish
+          
+      - name: Install dependencies
+        run: npm i
+
+      - name: Build
+        run: gulp
+
+      - name: Publish
+        working-directory: dist
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
