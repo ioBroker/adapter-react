@@ -895,7 +895,7 @@ class SelectID extends React.Component {
         this.subscribes = [];
     }
 
-    onStateChange(err, state, id) {
+    onStateChange(id, state) {
         this.states[id] = state;
         console.log('+ subscribe ' + id);
         if (!this.statesUpdateTimer) {
@@ -917,7 +917,9 @@ class SelectID extends React.Component {
         const pos = this.subscribes.indexOf(id);
         if (pos !== -1) {
             this.subscribes.splice(pos, 1);
-            if (this.states[id]) delete this.states[id];
+            if (this.states[id]) {
+                delete this.states[id];
+            }
             console.log('- unsubscribe ' + id);
             this.props.connection.unsubscribeState(id, this.onStateChangeBound);
         }
