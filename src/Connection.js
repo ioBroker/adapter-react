@@ -35,35 +35,28 @@ class Connection {
         this.objectsSubscribes = {}; // subscribe for objects
         this.onProgress = this.props.onProgress || function () {};
         this.onError = this.props.onError || function (err) {console.error(err);};
+        this.loaded = false;
+        this.loadTimer = null;
+        this.loadCounter = 0;
 
         this.socket.on('connect', () => {
             this.connected = true;
             if (this.firstConnect) {
                 this.onProgress(PROGRESS.CONNECTED);
                 this.firstConnect = false;
-                this.socket.emit('getUserPermissions', (err, acl) => {
-                    this.acl = acl;
-                    // Read system configuration
-                    this.socket.emit('getObject', 'system.config', (err, data) => {
-                        this.systemConfig = data;
-                        if (!err && this.systemConfig && this.systemConfig.common) {
-                            this.systemLang = this.systemConfig.common.language;
-                        } else {
-                            this.systemLang = window.navigator.userLanguage || window.navigator.language;
+                // retry strategy
+                this.loadTimer = setTimeout(() => {
+                    this.loadTimer = null;
+                    this.loadCounter++;
+                    if (this.loadCounter < 10) {
+                        this.onConnect();
+                    }
+                }, 1000);
 
-                            if (this.systemLang !== 'en' && this.systemLang !== 'de' && this.systemLang !== 'ru') {
-                                this.systemConfig.common.language = 'en';
-                                this.systemLang = 'en';
-                            }
-                        }
-                        this.props.onLanguage && this.props.onLanguage(this.systemLang);
+                if (!this.loaded) {
+                    this.onConnect();
+                }
 
-                        this.getObjects(() => {
-                            this.onProgress(PROGRESS.READY);
-                            this.props.onReady && this.props.onReady(this.objects, this.scripts);
-                        });
-                    });
-                });
             } else {
                 this.onProgress(PROGRESS.READY);
             }
@@ -107,6 +100,38 @@ class Connection {
 
         this.socket.on('objectChange', (id, obj) => setTimeout(() => this.objectChange(id, obj), 0));
         this.socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0));
+    }
+    onConnect() {
+        this.socket.emit('getUserPermissions', (err, acl) => {
+            if (this.loaded) {
+                return;
+            }
+            this.loaded = true;
+            clearTimeout(this.loadTimer);
+            this.loadTimer = null;
+
+            this.acl = acl;
+            // Read system configuration
+            this.socket.emit('getObject', 'system.config', (err, data) => {
+                this.systemConfig = data;
+                if (!err && this.systemConfig && this.systemConfig.common) {
+                    this.systemLang = this.systemConfig.common.language;
+                } else {
+                    this.systemLang = window.navigator.userLanguage || window.navigator.language;
+
+                    if (this.systemLang !== 'en' && this.systemLang !== 'de' && this.systemLang !== 'ru') {
+                        this.systemConfig.common.language = 'en';
+                        this.systemLang = 'en';
+                    }
+                }
+                this.props.onLanguage && this.props.onLanguage(this.systemLang);
+
+                this.getObjects(() => {
+                    this.onProgress(PROGRESS.READY);
+                    this.props.onReady && this.props.onReady(this.objects, this.scripts);
+                });
+            });
+        });
     }
 
     authenticate() {

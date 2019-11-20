@@ -801,7 +801,8 @@ class SelectID extends React.Component {
     }
 
     onCopy(e, id) {
-        const el = window.document.createElement('textarea');
+        const el = window.document.createElement('input');
+        el.type = 'text';
         el.value = id;
         el.style.position = 'absolute';
         el.style.left = '-9999px';
