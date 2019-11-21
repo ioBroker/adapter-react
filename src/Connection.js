@@ -42,8 +42,6 @@ class Connection {
         this.socket.on('connect', () => {
             this.connected = true;
             if (this.firstConnect) {
-                this.onProgress(PROGRESS.CONNECTED);
-                this.firstConnect = false;
                 // retry strategy
                 this.loadTimer = setTimeout(() => {
                     this.loadTimer = null;
@@ -56,7 +54,6 @@ class Connection {
                 if (!this.loaded) {
                     this.onConnect();
                 }
-
             } else {
                 this.onProgress(PROGRESS.READY);
             }
@@ -101,6 +98,7 @@ class Connection {
         this.socket.on('objectChange', (id, obj) => setTimeout(() => this.objectChange(id, obj), 0));
         this.socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0));
     }
+    
     onConnect() {
         this.socket.emit('getUserPermissions', (err, acl) => {
             if (this.loaded) {
@@ -109,6 +107,9 @@ class Connection {
             this.loaded = true;
             clearTimeout(this.loadTimer);
             this.loadTimer = null;
+
+            this.onProgress(PROGRESS.CONNECTED);
+            this.firstConnect = false;
 
             this.acl = acl;
             // Read system configuration
