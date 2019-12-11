@@ -14,7 +14,7 @@ class Connection {
         this.props.port = this.props.port || 8081;
         this.autoSubscribes = this.props.autoSubscribes || [];
         this.autoSubscribeLog = this.props.autoSubscribeLog;
-        
+
         this.socket = window.io.connect(
             window.location.protocol + '//' + window.location.host.replace('3000', this.props.port), // todo: do replace only if not in iFrame
             {query: 'ws=true'});
@@ -38,6 +38,7 @@ class Connection {
         this.loaded = false;
         this.loadTimer = null;
         this.loadCounter = 0;
+        this.certPromise = null;
 
         this.socket.on('connect', () => {
             this.connected = true;
@@ -98,7 +99,7 @@ class Connection {
         this.socket.on('objectChange', (id, obj) => setTimeout(() => this.objectChange(id, obj), 0));
         this.socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0));
     }
-    
+
     onConnect() {
         this.socket.emit('getUserPermissions', (err, acl) => {
             if (this.loaded) {
@@ -678,6 +679,55 @@ class Connection {
         });
     }
 
+    getCertificates() {
+        if (this.certPromise) {
+            return this.certPromise;
+        }
+
+        this.certPromise = this.getObject('system.certificates')
+            .then(res => {
+                const certs = [];
+                if (res && res.native && res.native.certificates) {
+                    Object.keys(res.native.certificates).forEach(c => {
+                            const cert = res.native.certificates[c];
+                            if (!cert) {
+                                return;
+                            }
+                            const _cert = {
+                                name: c,
+                                type: ''
+                            };
+                            // If it is filename, it could be everything
+                            if (cert.length < 700 && (cert.indexOf('/') !== -1 || cert.indexOf('\\') !== -1)) {
+                                if (c.toLowerCase().includes('private')) {
+                                    _cert.type = 'private';
+                                } else if (cert.toLowerCase().includes('private')) {
+                                    _cert.type = 'private';
+                                } else if (c.toLowerCase().includes('public')) {
+                                    _cert.type = 'public';
+                                } else if (cert.toLowerCase().includes('public')) {
+                                    _cert.type = 'public';
+                                }
+                                certs.push(_cert);
+                            } else {
+                                _cert.type = (cert.substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || cert.substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public';
+
+                                if (_cert.type === 'public') {
+                                    const m = cert.split('-----END CERTIFICATE-----');
+                                    if (m.filter(t => t.replace(/\r\n|\r|\n/, '').trim()).length > 1) {
+                                        _cert.type = 'chained';
+                                    }
+                                }
+
+                                certs.push(_cert);
+                            }
+                        });
+                }
+                return certs;
+            });
+
+        return this.certPromise;
+    }
 }
 
 Connection.Connection = {
