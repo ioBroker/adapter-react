@@ -67,6 +67,7 @@ class GenericApp extends Router {
         this.encryptedFields = props.encryptedFields || (settings && settings.encryptedFields) || [];
 
         this.socket = new Connection({
+            ...props && props.socket,
             onProgress: progress => {
                 if (progress === PROGRESS.CONNECTING) {
                     this.setState({connected: false});
