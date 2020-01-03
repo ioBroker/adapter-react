@@ -45,7 +45,7 @@ class Utils {
                 text = item.common.desc;
             }
             if (typeof text === 'object') {
-                text = text[options.language] || text.en || text.de || text.ru  || '';
+                text = text[options.language] || text.en || text.de || text.ru || '';
             }
             text = (text || '').toString().replace(/[_.]/g, ' ');
 
@@ -591,10 +591,19 @@ class Utils {
                 obj.common.custom = obj.common.custom || {};
                 obj.common.custom[instanceId] = obj.common.custom[instanceId] || {};
                 obj.common.custom[instanceId].smartName = obj.common.custom[instanceId].smartName || {};
-                obj.common.custom[instanceId].smartName.smartType = smartType;
+                if (!smartType) {
+                    delete obj.common.custom[instanceId].smartName.smartType;
+                } else {
+                    obj.common.custom[instanceId].smartName.smartType = smartType;
+                }
             } else {
                 obj.common.smartName = obj.common.smartName || {};
-                obj.common.smartName.smartType = smartType;
+                if (!smartType) {
+                    delete obj.common.smartName.smartType;
+                } else {
+                    obj.common.smartName.smartType = smartType;
+                }
+
             }
         }
         if (byON !== undefined) {
@@ -649,6 +658,7 @@ class Utils {
                             delete obj.common.custom[instanceId].fr;
                             delete obj.common.custom[instanceId].pt;
                             delete obj.common.custom[instanceId].es;
+                            delete obj.common.custom[instanceId]['zh-cn'];
                         }
                     } else {
                         if (obj.common.smartName.byON !== undefined) {
@@ -661,6 +671,7 @@ class Utils {
                             delete obj.common.smartName.fr;
                             delete obj.common.smartName.pt;
                             delete obj.common.smartName.es;
+                            delete obj.common.smartName['zh-cn'];
                         } else {
                             obj.common.smartName = null;
                         }
