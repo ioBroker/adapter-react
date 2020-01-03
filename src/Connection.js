@@ -12,12 +12,12 @@ class Connection {
         props = props || {};
         this.props = props;
         
-        this.autoSubscribes = this.props.autoSubscribes || [];
+        this.autoSubscribes   = this.props.autoSubscribes || [];
         this.autoSubscribeLog = this.props.autoSubscribeLog;
 
         this.props.protocol = this.props.protocol || window.location.protocol;
-        this.props.host = this.props.host || window.location.host && window.location.host.substr(0, window.location.host.indexOf(':'));
-        this.props.port = this.props.port || 8081;
+        this.props.host     = this.props.host     || (window.location.host && window.location.host.substr(0, window.location.host.indexOf(':')));
+        this.props.port     = this.props.port     || 8081;
         
         this.socket = window.io.connect(this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
             {query: 'ws=true'});
