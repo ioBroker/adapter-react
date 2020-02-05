@@ -44,6 +44,7 @@ class GenericApp extends Router {
             changed: false,
             connected: false,
             loaded: false,
+            isConfigurationError: '',
             themeType: 'light',
             toast: '',
             bottomButtons: settings && settings.bottomButtons === false ? false : (props && props.bottomButtons === false ? false : true),
@@ -149,6 +150,11 @@ class GenericApp extends Router {
 
     onSave(isClose) {
         let oldObj;
+        if (this.state.isConfigurationError) {
+            this.setState({errorText: this.state.isConfigurationError});
+            return;
+        }
+
         this.socket.getObject(this.instanceId)
             .then(_oldObj => {
                 oldObj = _oldObj || {};
@@ -223,7 +229,7 @@ class GenericApp extends Router {
 
     renderError() {
         if (!this.state.errorText) return null;
-        return (<DialogError text={this.state.text} onClose={() => this.setState({errorText: ''})}/>);
+        return (<DialogError text={this.state.errorText} onClose={() => this.setState({errorText: ''})}/>);
     }
 
     getIsChanged(native) {
@@ -234,6 +240,12 @@ class GenericApp extends Router {
     onLoadConfig(newNative) {
         if (JSON.stringify(newNative) !== JSON.stringify(this.state.native)) {
             this.setState({native: newNative, changed: this.getIsChanged(newNative)})
+        }
+    }
+
+    setConfigurationError(errorText) {
+        if (this.state.isConfigurationError !== errorText) {
+            this.setState({isConfigurationError: errorText});
         }
     }
 
