@@ -90,7 +90,7 @@ class Connection {
             if ((err || '').toString().indexOf('User not authorized') !== -1) {
                 this.authenticate();
             } else {
-                window.alert(err);
+                window.alert('Socket Error: ' + err);
             }
         });
         this.socket.on('connect_error', err => {
