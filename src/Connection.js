@@ -86,16 +86,19 @@ class Connection {
         });
 
         this.socket.on('error', err => {
-            console.error(JSON.stringify(err));
-            if ((err || '').toString().indexOf('User not authorized') !== -1) {
+            let _err = (err || '');
+            if (typeof _err.toString !== 'function') {
+                _err = JSON.stringify(_err);
+                console.error('Received strange error: ' + _err);
+            }
+            if (_err.indexOf('User not authorized') !== -1) {
                 this.authenticate();
             } else {
                 window.alert(err);
             }
         });
-        this.socket.on('connect_error', err => {
-            console.error('Connect error: ' + err);
-        });
+        this.socket.on('connect_error', err =>
+            console.error('Connect error: ' + err));
 
         this.socket.on('permissionError', err =>
             this.onError({message: 'no permission', operation: err.operation, type: err.type, id: (err.id || '')}));
@@ -297,10 +300,10 @@ class Connection {
         }
     }
 
-    getStates(cb, disableProgressUdpate) {
+    getStates(cb, disableProgressUpdate) {
         this.socket.emit('getStates', (err, res) => {
             this.states = res;
-            !disableProgressUdpate && this.onProgress(PROGRESS.STATES_LOADED);
+            !disableProgressUpdate && this.onProgress(PROGRESS.STATES_LOADED);
             cb && setTimeout(() => cb(this.states), 0);
         });
     }
@@ -379,27 +382,21 @@ class Connection {
     }
 
     delObject(id) {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('delObject', id, err => {
-                err ? reject(err) : resolve();
-            });
-        });
+        return new Promise((resolve, reject) =>
+            this.socket.emit('delObject', id, err =>
+                err ? reject(err) : resolve()));
     }
 
     setObject(id, obj) {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('setObject', id, obj, err => {
-                err ? reject(err) : resolve();
-            });
-        });
+        return new Promise((resolve, reject) =>
+            this.socket.emit('setObject', id, obj, err =>
+                err ? reject(err) : resolve()));
     }
 
     getObject(id) {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('getObject', id, (err, obj) => {
-                err ? reject(err) : resolve(obj);
-            });
-        });
+        return new Promise((resolve, reject) =>
+            this.socket.emit('getObject', id, (err, obj) =>
+                err ? reject(err) : resolve(obj)));
     }
 
     updateScript(oldId, newId, newCommon) {
