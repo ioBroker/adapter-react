@@ -135,10 +135,16 @@ class Connection {
                 }
                 this.props.onLanguage && this.props.onLanguage(this.systemLang);
 
-                this.getObjects(() => {
+                if (!this.props.doNotLoadAllObjects) {
+                    this.getObjects(() => {
+                        this.onProgress(PROGRESS.READY);
+                        this.props.onReady && this.props.onReady(this.objects, this.scripts);
+                    });
+                } else {
+                    this.objects = {'system.config': data};
                     this.onProgress(PROGRESS.READY);
                     this.props.onReady && this.props.onReady(this.objects, this.scripts);
-                });
+                }
             });
         });
     }

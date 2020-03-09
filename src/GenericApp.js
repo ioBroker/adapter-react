@@ -68,7 +68,8 @@ class GenericApp extends Router {
         this.encryptedFields = props.encryptedFields || (settings && settings.encryptedFields) || [];
 
         this.socket = new Connection({
-            ...props && props.socket,
+            ...(props && props.socket),
+            doNotLoadAllObjects: (settings && settings.doNotLoadAllObjects),
             onProgress: progress => {
                 if (progress === PROGRESS.CONNECTING) {
                     this.setState({connected: false});
@@ -80,7 +81,8 @@ class GenericApp extends Router {
             },
             onReady: (objects, scripts) => {
                 I18n.setLanguage(this.socket.systemLang);
-                this.socket.getObject('system.config')
+
+                this.getSystemConfig()
                     .then(obj => {
                         this._secret = (typeof obj !== 'undefined' && obj.native && obj.native.secret) || 'Zgfr56gFe87jJOM';
                         return this.socket.getObject(this.instanceId);
@@ -88,11 +90,11 @@ class GenericApp extends Router {
                     .then(obj => {
                         if (obj) {
                             this.common = obj && obj.common;
-                            this.onPrepareLoad(obj.native);
-                            this.setState({native: obj.native, loaded: true});
+                            this.onPrepareLoad(obj.native); // decode all secrets
+                            this.setState({native: obj.native, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
                         } else {
                             console.warn('Cannot load instance settings');
-                            this.setState({native: {}, loaded: true});
+                            this.setState({native: {}, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
                         }
                     });
             },
@@ -100,6 +102,17 @@ class GenericApp extends Router {
                 console.error(err);
             }
         });
+    }
+    getSystemConfig() {
+        if (this.socket.objects && this.socket.objects['system.config']) {
+            return Promise.resolve(this.socket.objects['system.config']);
+        } else {
+            return this.socket.getObject('system.config')
+        }
+    }
+
+    onConnectionReady() {
+        // you can overload this function to execute own commands
     }
 
     encrypt(value) {
