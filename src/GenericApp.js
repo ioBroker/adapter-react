@@ -103,6 +103,7 @@ class GenericApp extends Router {
             }
         });
     }
+
     getSystemConfig() {
         if (this.socket.objects && this.socket.objects['system.config']) {
             return Promise.resolve(this.socket.objects['system.config']);
@@ -158,6 +159,30 @@ class GenericApp extends Router {
             if (settings[attr]) {
                 settings[attr] = this.decrypt(settings[attr]);
             }
+        });
+    }
+
+    getIpAddresses(host) {
+        return new Promise((resolve, reject) => {
+            this.socket.socket.emit('getHostByIp', host || this.common.host, (ip, _host) => {
+                const IPs4 = [{name: '[IPv4] 0.0.0.0 - ' + I18n.t('Listen on all IPs'), address: '0.0.0.0', family: 'ipv4'}];
+                const IPs6 = [{name: '[IPv6] ::',      address: '::',      family: 'ipv6'}];
+                if (_host) {
+                    host = _host;
+                    if (host.native.hardware && host.native.hardware.networkInterfaces) {
+                        Object.keys(host.native.hardware.networkInterfaces).forEach(eth =>
+                            host.native.hardware.networkInterfaces[eth].forEach(inter => {
+                                if (inter.family !== 'IPv6') {
+                                    IPs4.push({name: '[' + inter.family + '] ' + inter.address + ' - ' + eth, address: inter.address, family: 'ipv4'});
+                                } else {
+                                    IPs6.push({name: '[' + inter.family + '] ' + inter.address + ' - ' + eth, address: inter.address, family: 'ipv6'});
+                                }
+                            }));
+                    }
+                    IPs6.forEach(ip => IPs4.push(ip));
+                }
+                resolve(IPs4);
+            });
         });
     }
 
