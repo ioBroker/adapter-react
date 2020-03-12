@@ -162,6 +162,18 @@ class GenericApp extends Router {
         });
     }
 
+    getExtendableInstances() {
+        return new Promise(resolve => {
+            this.socket.socket.emit('getObjectView', 'system', 'instance', null, (err, doc) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    resolve(doc.rows.filter(item => item.value.common.webExtendable).map(item => item.value));
+                }
+            });
+        });
+    }
+
     getIpAddresses(host) {
         return new Promise((resolve, reject) => {
             this.socket.socket.emit('getHostByIp', host || this.common.host, (ip, _host) => {
