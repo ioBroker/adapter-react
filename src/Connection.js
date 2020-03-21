@@ -91,6 +91,7 @@ class Connection {
                 _err = JSON.stringify(_err);
                 console.error('Received strange error: ' + _err);
             }
+            _err = _err.toString();
             if (_err.indexOf('User not authorized') !== -1) {
                 this.authenticate();
             } else {
