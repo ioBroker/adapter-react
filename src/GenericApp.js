@@ -325,7 +325,13 @@ class GenericApp extends Router {
 
     updateNativeValue(attr, value, cb) {
         const native = JSON.parse(JSON.stringify(this.state.native));
-        if (native[attr] !== value) {
+        if (value && typeof value === 'object') {
+            if (JSON.stringify(native[attr]) !== JSON.stringify(value)) {
+                native[attr] = value;
+                const changed = this.getIsChanged(native);
+                this.setState({native, changed}, cb);
+            }
+        } else if (native[attr] !== value) {
             native[attr] = value;
             const changed = this.getIsChanged(native);
             this.setState({native, changed}, cb);
