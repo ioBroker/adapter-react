@@ -234,7 +234,7 @@ function applyFilter(item, filters, lang, objects, context) {
         if (!filteredOut && context.name) {
             if (item.data.fName === undefined) {
                 item.data.fName = (item.data.obj && item.data.obj.common && getName(item.data.obj.common.name, lang)) || '';
-                item.data.fName = item.data.fName.toLowerCase();
+                item.data.fName = (item.data.fName || '').toLowerCase();
             }
             filteredOut = item.data.fName.indexOf(context.name) === -1;
         }
@@ -250,6 +250,7 @@ function applyFilter(item, filters, lang, objects, context) {
     }
     item.data.visible = !filteredOut;
     item.data.hasVisibleChildren = false;
+
     if (item.children) {
         item.children.forEach(_item => {
             const visible = applyFilter(_item, filters, lang, objects, context);
@@ -258,6 +259,7 @@ function applyFilter(item, filters, lang, objects, context) {
             }
         });
     }
+
     return item.data.visible || item.data.hasVisibleChildren;
 }
 
