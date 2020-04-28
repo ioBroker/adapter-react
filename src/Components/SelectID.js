@@ -232,11 +232,11 @@ function applyFilter(item, filters, lang, objects, context) {
             filteredOut = item.data.fID.indexOf(context.id) === -1;
         }
         if (!filteredOut && context.name) {
-            if (item.data.fName === undefined) {
+            if (item.data.fName === undefined || item.data.fName === null) {
                 item.data.fName = (item.data.obj && item.data.obj.common && getName(item.data.obj.common.name, lang)) || '';
-                item.data.fName = item.data.fName.toLowerCase();
+                item.data.fName = (item.data.fName || '').toString().toLowerCase();
             }
-            filteredOut = item.data.fName.indexOf(context.name) === -1;
+            filteredOut = item.data.fName.toString().indexOf(context.name) === -1;
         }
         if (!filteredOut && filters.role) {
             filteredOut = !(item.data && item.data.obj && item.data.obj.common && item.data.obj.common.role && item.data.obj.common.role.startsWith(context.role));
@@ -250,6 +250,7 @@ function applyFilter(item, filters, lang, objects, context) {
     }
     item.data.visible = !filteredOut;
     item.data.hasVisibleChildren = false;
+
     if (item.children) {
         item.children.forEach(_item => {
             const visible = applyFilter(_item, filters, lang, objects, context);
@@ -258,6 +259,7 @@ function applyFilter(item, filters, lang, objects, context) {
             }
         });
     }
+
     return item.data.visible || item.data.hasVisibleChildren;
 }
 
