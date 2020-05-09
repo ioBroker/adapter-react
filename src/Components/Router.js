@@ -23,12 +23,15 @@ class Router extends Component {
         hash = hash.replace(/^#/, '');
         const parts = hash.split('/');
         // #tabName/dialogName/deviceId
-        return {tab: parts[0] || '', dialog: parts[1] || '', id: parts[2] || ''};
+        return {tab: parts[0] || '', dialog: parts[1] || '', id: parts[2] || '', arg: parts[3] || ''};
     }
 
-    static doNavigate(tab, dialog, id) {
+    static doNavigate(tab, dialog, id, arg) {
         let hash = '';
         const location = Router.getLocation();
+        if (arg !== undefined && !id) {
+            id = location.id;
+        }
         if (id && !dialog) {
             dialog = location.dialog;
         }
@@ -43,6 +46,9 @@ class Router extends Component {
 
                 if (id) {
                     hash += '/' + id;
+                    if (arg !== undefined) {
+                        hash += '/' + arg;
+                    }
                 }
             }
         }
