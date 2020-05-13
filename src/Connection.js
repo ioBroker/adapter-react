@@ -54,22 +54,39 @@ class Connection {
         this.loadTimer = null;
         this.loadCounter = 0;
         this.certPromise = null;
-        this.scriptLoadCounter = 0;
         this.startSocket();
     }
 
     startSocket() {
+        // if socket io is not yet loaded
         if (typeof window.io === 'undefined') {
-            if (this.scriptLoadCounter < 30) {
-                // wait till the script loaded
-                return setTimeout(() => this.startSocket(), 100);
+            // if in index.html the onLoad function not defined
+            if (typeof window.registerSocketOnLoad !== 'function') {
+                // poll if loaded
+                this.scriptLoadCounter = this.scriptLoadCounter || 0;
+                this.scriptLoadCounter++;
+
+                if (this.scriptLoadCounter < 30) {
+                    // wait till the script loaded
+                    return setTimeout(() => this.startSocket(), 100);
+                } else {
+                    window.alert('Cannot load socket.io.js!');
+                }
             } else {
-                window.alert('Cannot load socket.io.js!');
+                // register on load
+                window.registerSocketOnLoad(() => this.startSocket());
+            }
+            return;
+        } else {
+            // socket was initialized, do not repeat
+            if (this._socket) {
+                return;
             }
         }
 
         this.socket = window.io.connect(this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
             {query: 'ws=true'});
+        
         this.socket.on('connect', () => {
             this.connected = true;
             if (this.firstConnect) {
