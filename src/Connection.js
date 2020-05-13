@@ -33,8 +33,6 @@ class Connection {
             }
         }
 
-        this.socket = window.io.connect(this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
-            {query: 'ws=true'});
         this.states = {};
         this.objects = null;
         this.scripts = {
@@ -56,7 +54,22 @@ class Connection {
         this.loadTimer = null;
         this.loadCounter = 0;
         this.certPromise = null;
+        this.scriptLoadCounter = 0;
+        this.startSocket();
+    }
 
+    startSocket() {
+        if (typeof window.io === 'undefined') {
+            if (this.scriptLoadCounter < 30) {
+                // wait till the script loaded
+                return setTimeout(() => this.startSocket(), 100);
+            } else {
+                window.alert('Cannot load socket.io.js!');
+            }
+        }
+
+        this.socket = window.io.connect(this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
+            {query: 'ws=true'});
         this.socket.on('connect', () => {
             this.connected = true;
             if (this.firstConnect) {
@@ -188,13 +201,11 @@ class Connection {
             }
             this.statesSubscribes[id] = {reg: new RegExp(reg), cbs: []};
             this.statesSubscribes[id].cbs.push(cb);
-            if (this.connected) {
-                this.socket.emit('subscribe', id);
-            }
+            this.connected && this.socket.emit('subscribe', id);
         } else {
             this.statesSubscribes[id].cbs.indexOf(cb) === -1 && this.statesSubscribes[id].cbs.push(cb);
         }
-        if (typeof cb === 'function') {
+        if (this.connected && typeof cb === 'function') {
             this.socket.emit('getForeignStates', id, (err, states) =>
                 states && Object.keys(states).forEach(id => cb(id, states[id])));
         }
@@ -224,9 +235,7 @@ class Connection {
             }
             this.objectsSubscribes[id] = {reg: new RegExp(reg), cbs: []};
             this.objectsSubscribes[id].cbs.push(cb);
-            if (this.connected) {
-                this.socket.emit('subscribeObjects', id);
-            }
+            this.connected && this.socket.emit('subscribeObjects', id);
         } else {
             this.objectsSubscribes[id].cbs.indexOf(cb) === -1 && this.objectsSubscribes[id].cbs.push(cb);
         }
@@ -244,7 +253,7 @@ class Connection {
 
             if (this.connected && (!this.objectsSubscribes[id].cbs || !this.objectsSubscribes[id].cbs.length)) {
                 delete this.objectsSubscribes[id];
-                this.socket.emit('unsubscribeObjects', id);
+                this.connected && this.socket.emit('unsubscribeObjects', id);
             }
         }
         return Promise.resolve();
