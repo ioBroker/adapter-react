@@ -89,38 +89,44 @@ class Connection {
         
         this.socket.on('connect', () => {
             this.connected = true;
-            if (this.firstConnect) {
-                // retry strategy
-                this.loadTimer = setTimeout(() => {
-                    this.loadTimer = null;
-                    this.loadCounter++;
-                    if (this.loadCounter < 10) {
-                        this.onConnect();
-                    }
-                }, 1000);
-
-                if (!this.loaded) {
-                    this.onConnect();
-                }
-            } else {
-                this.onProgress(PROGRESS.READY);
-            }
-
-            this.subscribe(true);
-
             if (this.waitForRestart) {
                 window.location.reload();
+            } else {
+                if (this.firstConnect) {
+                    // retry strategy
+                    this.loadTimer = setTimeout(() => {
+                        this.loadTimer = null;
+                        this.loadCounter++;
+                        if (this.loadCounter < 10) {
+                            this.onConnect();
+                        }
+                    }, 1000);
+
+                    if (!this.loaded) {
+                        this.onConnect();
+                    }
+                } else {
+                    this.onProgress(PROGRESS.READY);
+                }
+
+                this.subscribe(true);
             }
         });
+
         this.socket.on('disconnect', () => {
             this.connected = false;
             this.subscribed = false;
             this.onProgress(PROGRESS.CONNECTING)
         });
+
         this.socket.on('reconnect', () => {
-            this.onProgress(PROGRESS.READY);
+            this.connected = true;
+
             if (this.waitForRestart) {
                 window.location.reload();
+            } else {
+                this.onProgress(PROGRESS.READY);
+                this.subscribe(true);
             }
         });
         this.socket.on('reauthenticate', () => this.authenticate());
