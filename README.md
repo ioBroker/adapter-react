@@ -57,8 +57,7 @@ copy files in `build` directory to `www` or to `admin`. In admin you must rename
 
 
 ## Development
-1. Copy `vendor` folder: from `node_modules/@iobroker/adapter-react/` into `src/public`
-2. Add socket.io to public/index.html
+1. Add socket.io to public/index.html
 After
 
 ```
@@ -68,8 +67,24 @@ After
 insert
 
 ```
-    <script type="text/javascript" src="%PUBLIC_URL%/vendor/socket.io.js"></script>
+<script>
+    var script = document.createElement('script');
+    window.registerSocketOnLoad = function (cb) {
+        window.socketLoadedHandler = cb;
+    };
+    const parts = (window.location.search || '').replace(/^\?/, '').split('&');
+    const query = {};
+    parts.forEach(item => {
+        const [name, val] = item.split('=');
+        query[decodeURIComponent(name)] = val !== undefined ? decodeURIComponent(val) : true;
+    });
+    script.onload = function () { typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler(); };
+    script.src = window.location.port === '3000' ? window.location.protocol + '//' + (query.host || window.location.hostname) + ':' + (query.port || 8081) + '/lib/js/socket.io.js' : '%PUBLIC_URL%/../../lib/js/socket.io.js';
+
+    document.head.appendChild(script);
+</script>
 ```
+
 3. Add to App.js constructor initialization for I18n:
 ```
 class App extends GenericApp {
@@ -101,7 +116,40 @@ class App extends GenericApp {
 }
 ```
 
-4. Add to App.js encoding and decoding of values:
+4. Replace index.js with following code to support themes:
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { MuiThemeProvider} from '@material-ui/core/styles';
+import * as serviceWorker from './serviceWorker';
+
+import './index.css';
+import App from './App';
+import { version } from '../package.json';
+
+import theme from '@iobroker/adapter-react/Theme';
+
+console.log('iobroker.scenes@' + version);
+let themeName = window.localStorage ? window.localStorage.getItem('App.theme') || 'light' : 'light';
+
+function build() {
+    return ReactDOM.render(<MuiThemeProvider theme={ theme(themeName) }>
+        <App onThemeChange={_theme => {
+            themeName = _theme;
+            build();
+        }}/>
+    </MuiThemeProvider>, document.getElementById('root'));
+}
+
+build();
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: http://bit.ly/CRA-PWA
+serviceWorker.unregister();
+```
+
+5. Add to App.js encoding and decoding of values:
 ```
 class App extend GenericApp {
     ...
@@ -166,4 +214,4 @@ Usage: `
 
 #### Router.js
 
-#### SelectID.js
+#### ObjectBrowser.js

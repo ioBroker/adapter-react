@@ -1,14 +1,14 @@
 /**
- * Copyright 2018-2019 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2020 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
  **/
 
-.logo-background-light {
+.logo-background-light, .logo-background-colored {
     background: white;
 }
-.logo-background-dark {
+.logo-background-dark, .logo-background-blue {
     background: black;
 }
 .logo-div {
@@ -100,6 +100,22 @@
         background: #3399CC;
     }
 }
+@keyframes logo-color-inside-colored {
+    0% {
+        background: #FEFEFE;
+    }
+    100% {
+        background: #3399CC;
+    }
+}
+@keyframes logo-color-inside-blue {
+    0% {
+        background: #030303;
+    }
+    100% {
+        background: #3399CC;
+    }
+}
 
 @keyframes logo-color-outside-light {
     0% {
@@ -123,15 +139,43 @@
         border-right-color: #164477;
     }
 }
+@keyframes logo-color-outside-colored {
+    0% {
+        border-color: #FEFEFE;
+    }
+    100% {
+        border-top-color: #3399CC;
+        border-left-color: #164477;
+        border-bottom-color: #164477;
+        border-right-color: #164477;
+    }
+}
+@keyframes logo-color-outside-blue  {
+    0% {
+        border-color: #040404;
+    }
+    100% {
+        border-top-color: #3399CC;
+        border-left-color: #164477;
+        border-bottom-color: #164477;
+        border-right-color: #164477;
+    }
+}
 
 .logo-animate-wait {
     animation: logo-color-outside 1.5s, logo-spin 1.5s linear infinite;
 }
+
 .logo-animate-grow-light {
     background: #DDD;
 }
-
 .logo-animate-grow-dark {
+    background: #1d1d1d;
+}
+.logo-animate-grow-colored {
+    background: #DDD;
+}
+.logo-animate-grow-blue {
     background: #1d1d1d;
 }
 
@@ -150,15 +194,29 @@
     position: absolute;
     animation: logo-grow 1s 1 ease forwards;
 }
+
 .logo-animate-color-inside-light {
     animation: logo-color-inside-light 2.5s;
-}
-.logo-animate-color-outside-light {
-    animation: logo-color-outside-light 1.5s;
 }
 .logo-animate-color-inside-dark {
     animation: logo-color-inside-dark 2.5s;
 }
+.logo-animate-color-inside-colored {
+    animation: logo-color-inside-colored 2.5s;
+}
+.logo-animate-color-inside-blue {
+    animation: logo-color-inside-blue 2.5s;
+}
+
+.logo-animate-color-outside-light {
+    animation: logo-color-outside-light 1.5s;
+}
 .logo-animate-color-outside-dark {
     animation: logo-color-outside-dark 1.5s;
+}
+.logo-animate-color-outside-colored {
+    animation: logo-color-outside-colored 1.5s;
+}
+.logo-animate-color-outside-blue {
+    animation: logo-color-outside-blue 1.5s;
 }

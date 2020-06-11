@@ -1,280 +1,195 @@
-const primaryColor = '#64b5f6';
-const tileBorderRadius = 16;
-const tileSize = 128;
+import { createMuiTheme } from '@material-ui/core/styles';
 
-export default {
-    primaryColor,
-    saveToolbar: {
-        background: primaryColor,
-        button: {
-            borderRadius: 3,
-            height: 32
+import orange from '@material-ui/core/colors/orange';
+
+const step = (16 - 5) / 23 / 100;
+
+function toInt(hex) {
+
+    const rgb = {
+        r: 0,
+        g: 0,
+        b: 0
+    };
+
+    if(hex.length === 7) {
+        rgb.r = parseInt(hex.substr(1, 2), 16);
+        rgb.g = parseInt(hex.substr(3, 2), 16);
+        rgb.b = parseInt(hex.substr(5, 2), 16);
+    } else if (hex.length === 4) {
+
+        const r = hex.substr(1, 1);
+        const g = hex.substr(2, 1);
+        const b = hex.substr(3, 1);
+
+        rgb.r = parseInt(r + r, 16);
+        rgb.g = parseInt(g + g, 16);
+        rgb.b = parseInt(b + b, 16);
+    }
+
+    return rgb;
+}
+
+function toHex(int) {
+    return '#' + Math.round(int.r).toString(16) + Math.round(int.g).toString(16) + Math.round(int.b).toString(16);
+}
+
+function getElevation(color, overlayColor, elevation) {
+    const rgb = toInt(color);
+    const overlay = toInt(overlayColor);
+
+    rgb.r += overlay.r * (0.05 + step * (elevation - 1));
+    rgb.g += overlay.g * (0.05 + step * (elevation - 1));
+    rgb.b += overlay.b * (0.05 + step * (elevation - 1));
+
+    return toHex(rgb);
+}
+
+function getElevations(color, overlay) {
+    const elevations = {};
+
+    for(let i = 1; i <= 24; i++) {
+        elevations['elevation' + i] = {
+            backgroundColor: getElevation(color, overlay, i)
         }
-    },
-    iconSize: 24,
-    indicatorSize: 20,
-    slider: {
-        background: 'grey'
-    },
-    tile: {
-        tile: {
-            margin: 8,
-            borderRadius: tileBorderRadius,
-            padding: 16,
-            transition: 'all 0.2s',
-            width: tileSize,
-            height: tileSize,
-            position: 'relative',
-            fontSize: 16,
-            fontWeight: 'bold',
-            boxSizing: 'border-box',
-            userSelect: 'none',
-            display: 'inline-block',
-            overflow: 'hidden',
-            verticalAlign: 'top',
-            boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px, rgba(0, 0, 0, 0.12) 0px 1px 18px 0px',
+    }
 
-            color: '#000000',
-            background: '#FFFFFF',
-        },
-        tileCorner: {
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            borderWidth: '0 16px 16px 0',
-            borderStyle: 'solid',
-            boxShadow: '0 1px 1px rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2)',
-            borderRadius: '0 0 0 10px',
-            transition: 'border-width 0.1s ease-in-out',
-            cursor: 'pointer',
-            zIndex: 2,
+    return elevations;
+}
 
-            borderColor: 'rgba(173, 173, 173, 1) rgba(173, 173, 173, 1) rgb(212, 212, 212) rgb(193, 193, 193)',
-            background: 'rgba(173, 173, 173, 1)',
-        },
-        tileCornerTouch: {
-            borderWidth: '0 28px 28px 0',
-        },
-        tileOn: {
-            opacity: 1,
-
-            background: 'white'
-        },
-        tileOff: {
-            opacity: 0.7,
-
-            background: '#b7b6b6'
-        },
-        tileIconSvg: {
-            size: 40, // 2.5rem
-        },
-        tileIcon: {
-            width: 40, // 2.5rem
-            height: 40,
-            position: 'absolute',
-            top: 14,
-            left: 8,
-            pointerEvents: 'none',
-
-            color: '#2f3440'
-        },
-        tileName: {
-            overflow: 'hidden',
-            width: '100%',
-            height: 37,
-        },
-        tileName2: {
-            overflow: 'hidden',
-            float: 'left'
-        },
-        tileNameSmall: {
-            fontSize: 8,
-        },
-        tileText: {
-            pointerEvents: 'none',
-            bottom: 0,
-            left: 0,
-            width: 'calc(100% - 16px)',
-            position: 'absolute',
-            padding: '0 16px',
-            height: 67
-        },
-        tileText2: {
-            height: 32,
-            bottom: 0,
-            left: 0,
-            width: 'calc(100% - 32px)',
-            padding: '16px 16px 0 16px',
-            pointerEvents: 'none',
-            position: 'absolute',
-        },
-        tileNumber: {
-            position: 'absolute',
-            bottom: 30,
-            right: 10,
-            borderRadius: 20,
-            opacity: 0.6,
-            minWidth: 20,
-            height: 19,
-            paddingTop: 1,
-            textAlign: 'center',
-
-            color: 'white',
-            background: 'rgb(45, 116, 249)'
-        },
-        tileState: {
-            position: 'absolute',
-            bottom: 10,
-            left: 16,
-            whiteSpace: 'nowrap',
-            width: 'calc(100% - 32px)',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-        },
-        tileState2: {
-            float: 'right',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-        },
-        tileStateOn: {
-            fontSize: 14,
-
-            color: '#515151'
-        },
-        tileStateOff: {
-            fontSize: 14,
-
-            color: '#515151'
-        },
-        tileIndicators: {
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            whiteSpace: 'nowrap',
-            //width: 'calc(100% - ' + tileIconWidth + 'px)'
-        },
-        tileIndicator: {
-            width: 16,
-            height: 16,
-            float: 'right',
-            display: 'inline-block'
-        },
-        tileIndicatorsIcons: {
-            working:   '#808080',
-            unreach:   'orange',
-            lowbat:    'red',
-            maintain:  'orange',
-            error:     'red',
-            direction: 'green',
-            connected: 'red'
-        },
-        secondary: {
-            icon: {
-                display: 'inline-block',
-                width: 12,
-                height: 12
+export default type => {
+    if (type === 'dark') {
+        return createMuiTheme({
+            name: type,
+            palette: {
+                type: 'dark',
+                background: {
+                    paper: '#121212',
+                    default: '#121212'
+                },
+                primary: {
+                    main: '#4dabf5'
+                },
+                secondary: {
+                    main: '#436a93'
+                },
+                text: {
+                    primary: '#ffffff',
+                    secondary: '#ffffff'
+                }
             },
-            text: {
-                display: 'inline-block',
-                fontSize: 14,
-                paddingLeft: 3
-            },
-            div: {
-                position: 'absolute',
-                top: 32,
-                right: 16
-            },
-            button: {
-                position: 'absolute',
-                top: 16,
-                right: 8
+            overrides: {
+                MuiAppBar: {
+                    colorDefault: {
+                        backgroundColor: '#272727'
+                    }
+                },
+                MuiLink: {
+                    root: {
+                        textTransform: 'uppercase',
+                        transition: 'color .3s ease',
+                        color: orange[200],
+                        '&:hover': {
+                            color: orange[100]
+                        }
+                    }
+                },
+                MuiPaper: getElevations('#121212', '#fff')
             }
-        },
-        editMode: {
-            checkIcon: {
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                width: '50%',
-                height: '100%',
-                borderRadius: '0 ' + tileBorderRadius + ' ' + tileBorderRadius + ' 0',
-                zIndex: 3,
-                cursor: 'pointer',
-
-                color: 'white',
-                background: 'rgba(200,200,200,0.8)'
+        });
+    } else if (type === 'blue') {
+        return createMuiTheme({
+            name: type,
+            palette: {
+                type: 'dark',
+                background: {
+                    paper: '#151d21',
+                    default: '#151d21'
+                },
+                primary: {
+                    main: '#4dabf5'
+                },
+                secondary: {
+                    main: '#436a93'
+                },
+                text: {
+                    primary: '#ffffff',
+                    secondary: '#ffffff'
+                }
             },
-            editIcon: {
-                position: 'absolute',
-                top: 0,
-                right: '50%',
-                width: '50%',
-                height: '100%',
-                borderRadius: tileBorderRadius + ' 0 0 ' + tileBorderRadius,
-                zIndex: 3,
-                cursor: 'pointer',
-
-                color: 'white',
-                background: 'rgba(200,200,200,0.8)'
+            overrides: {
+                MuiAppBar: {
+                    colorDefault: {
+                        backgroundColor: '#2a3135'
+                    }
+                },
+                MuiLink: {
+                    root: {
+                        textTransform: 'uppercase',
+                        transition: 'color .3s ease',
+                        color: orange[200],
+                        '&:hover': {
+                            color: orange[100]
+                        }
+                    }
+                },
+                MuiPaper: getElevations('#151d21', '#fff')
+            }
+        });
+    } else if (type === 'colored') {
+        return createMuiTheme({
+            name: type,
+            palette: {
+                type: 'light',
+                primary: {
+                    main: '#3499CC'
+                },
+                secondary: {
+                    main: '#144578'
+                }
             },
-            removeIcon: {
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                width: '100%',
-                height: '100%',
-                borderRadius: tileBorderRadius,
-                zIndex: 3,
-
-                color: 'gray',
-                background: 'rgba(80,80,80,0.8)'
+            overrides: {
+                MuiAppBar: {
+                    colorDefault: {
+                        backgroundColor: '#3499CC'
+                    }
+                },
+                MuiLink: {
+                    root: {
+                        textTransform: 'uppercase',
+                        transition: 'color .3s ease',
+                        color: orange[400],
+                        '&:hover': {
+                            color: orange[300]
+                        }
+                    }
+                }
+            }
+        });
+    } else {
+        return createMuiTheme({
+            name: type,
+            palette: {
+                type: 'light',
+                primary: {
+                    main: '#3499CC'
+                },
+                secondary: {
+                    main: '#144578'
+                }
             },
-            buttonIcon: {
-                paddingTop: tileSize / 2
-            },
-            buttonIconRemoved: {
-                paddingTop: tileSize / 4
-            },
-            editEnabled: {
-                backgroundColor: 'white',
-                opacity: 1
-            },
-            editDisabled: {
-                backgroundColor: 'white',
-                opacity: 0.5
-            },
-        }
-    },
-    treeView: {
-        depthOffset: 20
-    },
-    colors: {
-        dark: {
-            selected:           {
-                color: '#000080',
-                background: '#AAAAAA',
-            },
-            updateAvailable:    '#3fff3f',
-            editActive:         '#FF0000',
-            lampOn:             '#ffcc02',
-            lampOff:            'inherit',
-            instanceRunning:    '#52af19',
-            instanceStopped:    '#7b3d29',
-            browserBar:         '#3f51b5'
-        },
-        light: {
-            selected:           {
-                color: '#000080',
-                background: '#DDDDDD',
-            },
-            updateAvailable:    '#3fff3f',
-            editActive:         '#FF0000',
-            lampOn:             '#ffcc02',
-            lampOff:            'inherit',
-            instanceRunning:    '#52af19',
-            instanceStopped:    '#7b3d29',
-            browserBar:         '#3f51b5'
-        },
+            overrides: {
+                MuiLink: {
+                    root: {
+                        textTransform: 'uppercase',
+                        transition: 'color .3s ease',
+                        color: orange[400],
+                        '&:hover': {
+                            color: orange[300]
+                        }
+                    }
+                }
+            }
+        });
     }
 }

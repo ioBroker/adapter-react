@@ -1,3 +1,9 @@
+/**
+ * Copyright 2020, bluefox <dogafox@gmail.com>
+ *
+ * MIT License
+ *
+ **/
 import PropTypes from 'prop-types';
 
 export const PROGRESS = {
@@ -6,6 +12,9 @@ export const PROGRESS = {
     OBJECTS_LOADED: 2,
     READY: 3
 };
+
+const PERMISSION_ERROR = 'permissionError';
+const NOT_CONNECTED    = 'notConnectedError';
 
 class Connection {
     constructor(props) {
@@ -17,30 +26,13 @@ class Connection {
 
         this.props.protocol = this.props.protocol || window.location.protocol;
         this.props.host     = this.props.host     || (window.location.host && window.location.host.substr(0, window.location.host.indexOf(':')));
-        this.props.port     = this.props.port     || (window.location.port === '3000' ? 8081 : window.location.port);
+        this.props.port     = this.props.port     || 8081;
 
-        if (!this.props.port) {
-            switch (window.location.protocol) {
-                case 'https:':
-                    this.props.port = 443;
-                    break;
-                case 'http:':
-                    this.props.port = 80;
-                    break;
-                default:
-                    // invalid protocol
-                    break;
-            }
-        }
+        // breaking change. Do not load all objects by default is true
+        this.doNotLoadAllObjects = this.props.doNotLoadAllObjects === undefined ? true : this.props.doNotLoadAllObjects;
 
         this.states = {};
         this.objects = null;
-        this.scripts = {
-            list: [],
-            hosts: [],
-            groups: [],
-            instances: []
-        };
         this.acl = null;
         this.firstConnect = true;
         this.waitForRestart = false;
@@ -54,6 +46,11 @@ class Connection {
         this.loadTimer = null;
         this.loadCounter = 0;
         this.certPromise = null;
+
+        this.onConnectionHandlers = [];
+        this.onLogHandlers = [];
+
+        this._promises = {};
         this.startSocket();
     }
 
@@ -83,59 +80,60 @@ class Connection {
                 return;
             }
         }
+        this._socket = window.io.connect(
+            this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
+            {query: 'ws=true', name: this.props.name}
+        );
 
-        this.socket = window.io.connect(this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
-            {query: 'ws=true'});
-        
-        this.socket.on('connect', () => {
-            this.connected = true;
-            if (this.waitForRestart) {
-                window.location.reload();
-            } else {
-                if (this.firstConnect) {
-                    // retry strategy
-                    this.loadTimer = setTimeout(() => {
-                        this.loadTimer = null;
-                        this.loadCounter++;
-                        if (this.loadCounter < 10) {
-                            this.onConnect();
-                        }
-                    }, 1000);
-
-                    if (!this.loaded) {
-                        this.onConnect();
+        this._socket.on('connect', () => {
+            this.getAdminVersion()
+                .then(version => {
+                    const [major, minor, patch] = version.split('.');
+                    const v = parseInt(major, 10) * 10000 + parseInt(minor, 10) * 100 + parseInt(patch, 10);
+                    if (v < 40102) {
+                        this._authTimer = null;
+                        // possible this is old version of admin
+                        this.onPreConnect(false, false);
+                    } else {
+                        this._socket.emit('authenticate', (isOk, isSecure) => this.onPreConnect(isOk, isSecure));
                     }
-                } else {
-                    this.onProgress(PROGRESS.READY);
-                }
-
-                this.subscribe(true);
-            }
+                });
         });
 
-        this.socket.on('disconnect', () => {
-            this.connected = false;
-            this.subscribed = false;
-            this.onProgress(PROGRESS.CONNECTING)
-        });
-
-        this.socket.on('reconnect', () => {
+        this._socket.on('reconnect', () => {
             this.connected = true;
 
             if (this.waitForRestart) {
                 window.location.reload();
             } else {
-                this.onProgress(PROGRESS.READY);
-                this.subscribe(true);
+                this._subscribe(true);
+                this.onConnectionHandlers.forEach(cb => cb(true));
             }
         });
-        this.socket.on('reauthenticate', () => this.authenticate());
-        this.socket.on('log', message => {
-            this.props.onLog && this.props.onLog(message);
-            this.onLogHandler && this.onLogHandler(message);
+
+        this._socket.on('disconnect', () => {
+            this.connected  = false;
+            this.subscribed = false;
+            this.onProgress(PROGRESS.CONNECTING);
+            this.onConnectionHandlers.forEach(cb => cb(false));
         });
 
-        this.socket.on('error', err => {
+        this._socket.on('reconnect', () => {
+            this.onProgress(PROGRESS.READY);
+            if (this.waitForRestart) {
+                window.location.reload();
+            }
+        });
+
+        this._socket.on('reauthenticate', () =>
+            this.authenticate());
+
+        this._socket.on('log', message => {
+            this.props.onLog && this.props.onLog(message);
+            this.onLogHandlers.forEach(cb => cb(message));
+        });
+
+        this._socket.on('error', err => {
             let _err = (err || '');
             if (typeof _err.toString !== 'function') {
                 _err = JSON.stringify(_err);
@@ -148,18 +146,68 @@ class Connection {
                 window.alert('Socket Error: ' + err);
             }
         });
-        this.socket.on('connect_error', err =>
+
+        this._socket.on('connect_error', err =>
             console.error('Connect error: ' + err));
 
-        this.socket.on('permissionError', err =>
+        this._socket.on('permissionError', err =>
             this.onError({message: 'no permission', operation: err.operation, type: err.type, id: (err.id || '')}));
 
-        this.socket.on('objectChange', (id, obj) => setTimeout(() => this.objectChange(id, obj), 0));
-        this.socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0));
+        this._socket.on('objectChange', (id, obj) =>
+            setTimeout(() => this.objectChange(id, obj), 0));
+        this._socket.on('stateChange', (id, state) =>
+            setTimeout(() => this.stateChange(id, state), 0));
+
+        this._socket.on('cmdStdout', (id, text) =>
+            this.onCmdStdoutHandler && this.onCmdStdoutHandler(id, text));
+
+        this._socket.on('cmdStderr', (id, text) =>
+            this.onCmdStderrHandler && this.onCmdStderrHandler(id, text));
+
+        this._socket.on('cmdExit', (id, exitCode) =>
+            this.onCmdExitHandler && this.onCmdExitHandler(id, exitCode));
+    }
+
+    onPreConnect(isOk, isSecure) {
+        if (this._authTimer) {
+            clearTimeout(this._authTimer);
+            this._authTimer = null;
+        }
+
+        this.connected = true;
+        this.isSecure = isSecure;
+
+        if (this.waitForRestart) {
+            window.location.reload();
+        } else {
+            if (this.firstConnect) {
+                // retry strategy
+                this.loadTimer = setTimeout(() => {
+                    this.loadTimer = null;
+                    this.loadCounter++;
+                    if (this.loadCounter < 10) {
+                        this.onConnect();
+                    }
+                }, 1000);
+
+                if (!this.loaded) {
+                    this.onConnect();
+                }
+            } else {
+                this.onProgress(PROGRESS.READY);
+            }
+
+            this._subscribe(true);
+            this.onConnectionHandlers.forEach(cb => cb(true));
+        }
+    }
+
+    isConnected() {
+        return this.connected;
     }
 
     onConnect() {
-        this.socket.emit('getUserPermissions', (err, acl) => {
+        this._socket.emit('getUserPermissions', (err, acl) => {
             if (this.loaded) {
                 return;
             }
@@ -172,7 +220,7 @@ class Connection {
 
             this.acl = acl;
             // Read system configuration
-            this.socket.emit('getObject', 'system.config', (err, data) => {
+            this._socket.emit('getObject', 'system.config', (err, data) => {
                 this.systemConfig = data;
                 if (!err && this.systemConfig && this.systemConfig.common) {
                     this.systemLang = this.systemConfig.common.language;
@@ -184,32 +232,34 @@ class Connection {
                         this.systemLang = 'en';
                     }
                 }
+
                 this.props.onLanguage && this.props.onLanguage(this.systemLang);
 
-                if (!this.props.doNotLoadAllObjects) {
-                    this.getObjects(() => {
-                        this.onProgress(PROGRESS.READY);
-                        this.props.onReady && this.props.onReady(this.objects, this.scripts);
-                    });
+                if (!this.doNotLoadAllObjects) {
+                    this.getObjects()
+                        .then(() => {
+                            this.onProgress(PROGRESS.READY);
+                            this.props.onReady && this.props.onReady(this.objects);
+                        });
                 } else {
                     this.objects = {'system.config': data};
                     this.onProgress(PROGRESS.READY);
-                    this.props.onReady && this.props.onReady(this.objects, this.scripts);
+                    this.props.onReady && this.props.onReady(this.objects);
                 }
             });
         });
     }
 
     authenticate() {
-        if (window.location.port === '3000' || (window.location.search && window.location.search.startsWith('?href='))) {
-            window.alert('Please login in not debug window and then refresh');
-        } else {
-            // relocate to login.html
-            window.location = '/login?href=' + window.location.pathname + (window.location.search || '');
-        }
+        window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}?login&href=${window.location.search}${window.location.hash}`;
     }
 
-    subscribeState(id, cb) {
+    subscribeState(id, binary, cb) {
+        if (typeof binary === 'function') {
+            cb = binary;
+            binary = false;
+        }
+
         if (!this.statesSubscribes[id]) {
             let reg = id
                 .replace(/\./g, '\\.')
@@ -224,13 +274,20 @@ class Connection {
             }
             this.statesSubscribes[id] = {reg: new RegExp(reg), cbs: []};
             this.statesSubscribes[id].cbs.push(cb);
-            this.connected && this.socket.emit('subscribe', id);
+            if (this.connected) {
+                this._socket.emit('subscribe', id);
+            }
         } else {
             this.statesSubscribes[id].cbs.indexOf(cb) === -1 && this.statesSubscribes[id].cbs.push(cb);
         }
-        if (this.connected && typeof cb === 'function') {
-            this.socket.emit('getForeignStates', id, (err, states) =>
-                states && Object.keys(states).forEach(id => cb(id, states[id])));
+        if (typeof cb === 'function' && this.connected) {
+            if (binary) {
+                this.getBinaryState(id)
+                    .then(base64 => cb(id, base64));
+            } else {
+                this._socket.emit('getForeignStates', id, (err, states) =>
+                    states && Object.keys(states).forEach(id => cb(id, states[id])));
+            }
         }
     }
 
@@ -245,7 +302,7 @@ class Connection {
 
             if (!this.statesSubscribes[id].cbs || !this.statesSubscribes[id].cbs.length) {
                 delete this.statesSubscribes[id];
-                this.connected && this.socket.emit('unsubscribe', id);
+                this.connected && this._socket.emit('unsubscribe', id);
             }
         }
     }
@@ -258,9 +315,9 @@ class Connection {
             }
             this.objectsSubscribes[id] = {reg: new RegExp(reg), cbs: []};
             this.objectsSubscribes[id].cbs.push(cb);
-            this.connected && this.socket.emit('subscribeObjects', id);
+            this.connected && this._socket.emit('subscribeObjects', id);
         } else {
-            this.objectsSubscribes[id].cbs.indexOf(cb) === -1 && this.objectsSubscribes[id].cbs.push(cb);
+            !this.objectsSubscribes[id].cbs.includes(cb) && this.objectsSubscribes[id].cbs.push(cb);
         }
         return Promise.resolve();
     }
@@ -276,7 +333,7 @@ class Connection {
 
             if (this.connected && (!this.objectsSubscribes[id].cbs || !this.objectsSubscribes[id].cbs.length)) {
                 delete this.objectsSubscribes[id];
-                this.connected && this.socket.emit('unsubscribeObjects', id);
+                this.connected && this._socket.emit('unsubscribeObjects', id);
             }
         }
         return Promise.resolve();
@@ -284,7 +341,11 @@ class Connection {
 
     objectChange(id, obj) {
         // update main.objects cache
-        if (!this.objects) return;
+        if (!this.objects) {
+            return;
+        }
+
+        let oldObj;
 
         let changed = false;
         if (obj) {
@@ -292,45 +353,23 @@ class Connection {
                 this.objects[id]._rev = obj._rev;
             }
 
+            if (this.objects[id]) {
+                oldObj = {_id: id, type: this.objects[id].type};
+            }
+
             if (!this.objects[id] || JSON.stringify(this.objects[id]) !== JSON.stringify(obj)) {
                 this.objects[id] = obj;
                 changed = true;
-                let pos;
-                if (obj.type === 'instance') {
-                    pos = this.scripts.instances.indexOf(id);
-                    pos === -1 && this.scripts.instances.push(id);
-                } else
-                if (obj.type === 'script') {
-                    pos = this.scripts.list.indexOf(id);
-                    pos === -1 && this.scripts.list.push(id);
-                } else
-                if (id.match(/^script\.js\./) && obj.type === 'channel') {
-                    pos = this.scripts.groups.indexOf(id);
-                    pos === -1 && this.scripts.groups.push(id);
-                }
             }
         } else if (this.objects[id]) {
-            const oldObj = {_id: id, type: this.objects[id].type};
+            oldObj = {_id: id, type: this.objects[id].type};
             delete this.objects[id];
-            let pos;
-            if (oldObj.type === 'instance') {
-                pos = this.scripts.instances.indexOf(id);
-                if (pos !== -1) this.scripts.instances.splice(pos, 1);
-            } else
-            if (oldObj.type === 'script') {
-                pos = this.scripts.list.indexOf(id);
-                if (pos !== -1) this.scripts.list.splice(pos, 1);
-            } else
-            if (id.match(/^script\.js\./) && oldObj.type === 'channel') {
-                pos = this.scripts.groups.indexOf(id);
-                if (pos !== -1) this.scripts.groups.splice(pos, 1);
-            }
             changed = true;
         }
 
         Object.keys(this.objectsSubscribes).forEach(_id => {
             if (_id === id || this.objectsSubscribes[_id].reg.test(id)) {
-                this.objectsSubscribes[_id].cbs.forEach(cb => cb(id, obj));
+                this.objectsSubscribes[_id].cbs.forEach(cb => cb(id, obj, oldObj));
             }
         });
 
@@ -339,8 +378,9 @@ class Connection {
                 this.props.onBlocklyChanges(id);
             }
         }
+
         if (changed && this.props.onObjectChange) {
-            this.props.onObjectChange(this.objects, this.scripts);
+            this.props.onObjectChange(this.objects);
         }
     }
 
@@ -353,377 +393,333 @@ class Connection {
         }
     }
 
-    getStates(cb, disableProgressUpdate) {
-        this.socket.emit('getStates', (err, res) => {
-            this.states = res;
-            !disableProgressUpdate && this.onProgress(PROGRESS.STATES_LOADED);
-            cb && setTimeout(() => cb(this.states), 0);
-        });
+    getStates(disableProgressUpdate) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getStates', (err, res) => {
+                this.states = res;
+                !disableProgressUpdate && this.onProgress(PROGRESS.STATES_LOADED);
+                return err ? reject(err) : resolve(this.states);
+            }));
     }
 
-    getState(id, cb) {
-        if (!cb) {
-            return new Promise((resolve, reject) =>
-                this.getState(id, (err, state) => err ? reject(err) : resolve(state)));
-        } else {
-            this.socket.emit('getState', id, cb);
+    getState(id) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
         }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getState', id, (err, state) => err ? reject(err) : resolve(state)));
     }
 
-    setState(id, val, cb) {
-        if (!cb) {
-            return new Promise((resolve, reject) =>
-                this.setState(id, val, err => err ? reject(err) : resolve()));
-        } else {
-            this.socket.emit('setState', id, val, cb);
+    getBinaryState(id) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
         }
+
+        // the data will come in base64
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getBinaryState', id, (err, state) => err ? reject(err) : resolve(state)));
     }
 
-    getObjects(refresh, cb, disableProgressUdpate) {
-        if (typeof refresh === 'function') {
-            disableProgressUdpate = cb;
-            cb = refresh;
-            refresh = false;
+    setBinaryState(id, base64) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
         }
 
-        if (typeof cb !== 'function') {
-            return new Promise(resolve => this.getObjects(refresh, objects => resolve(objects)));
+        // the data will come in base64
+        return new Promise((resolve, reject) =>
+            this._socket.emit('setBinaryState', id, base64, err => err ? reject(err) : resolve()));
+    }
+
+    setState(id, val) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
         }
 
-        if (!refresh && this.objects) {
-            return setTimeout(() => cb && cb(this.objects), 0);
-        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('setState', id, val, err =>
+                err ? reject(err) : resolve()));
+    }
 
-        this.socket.emit('getAllObjects', (err, res) => {
-            setTimeout(() => {
-                let obj;
-                this.objects = res;
-                for (const id in this.objects) {
-                    if (!this.objects.hasOwnProperty(id) || id.slice(0, 7) === '_design') continue;
+    getObjects(update, disableProgressUpdate) {
+        if (typeof update === 'function') {
+            const callback = update;
+            // BF(2020_06_01): old code, must be removed when adapter-react will be updated
+            if (!this.connected) {
+                console.error(NOT_CONNECTED);
+                callback();
+            } else {
+                if (this.objects && Object.keys(this.objects).length > 2) {
+                    setTimeout(() => callback(this.objects), 100);
+                } else {
+                    this._socket.emit('getAllObjects', (err, res) => {
+                        this.objects = res || {};
+                        disableProgressUpdate && this.onProgress(PROGRESS.OBJECTS_LOADED);
+                        callback(this.objects);
+                    });
 
-                    obj = res[id];
-                    if (obj.type === 'instance') {
-                        id.startsWith('system.adapter.javascript.') && this.scripts.instances.push(parseInt(id.split('.').pop()));
-                    }
-                    if (obj.type === 'script')   this.scripts.list.push(id);
-                    if (obj.type === 'channel' && id.match(/^script\.js\./)) this.scripts.groups.push(id);
-                    if (obj.type === 'host')     this.scripts.hosts.push(id);
                 }
-                disableProgressUdpate && this.onProgress(PROGRESS.OBJECTS_LOADED);
+            }
+        } else {
+            if (!this.connected) {
+                return Promise.reject(NOT_CONNECTED);
+            }
+            return new Promise((resolve, reject) => {
+                if (!update && this.objects) {
+                    return resolve(this.objects);
+                }
 
-                cb && cb(this.objects);
-            }, 0);
-        });
+                this._socket.emit('getAllObjects', (err, res) => {
+                    this.objects = res;
+                    disableProgressUpdate && this.onProgress(PROGRESS.OBJECTS_LOADED);
+                    err ? reject(err) : resolve(this.objects);
+                });
+            });
+        }
     }
 
-    subscribe(isEnable) {
+    _subscribe(isEnable) {
         if (isEnable && !this.subscribed) {
             this.subscribed = true;
-            this.autoSubscribes.forEach(id => this.socket.emit('subscribeObjects', id));
-            Object.keys(this.objectsSubscribes).forEach(id => this.socket.emit('subscribeObjects', id));
-            this.autoSubscribeLog && this.socket.emit('requireLog', true);
-
-            Object.keys(this.statesSubscribes).forEach(id => this.socket.emit('subscribe', id));
+            this.autoSubscribes.forEach(id => this._socket.emit('subscribeObjects', id));
+            // re subscribe objects
+            Object.keys(this.objectsSubscribes).forEach(id => this._socket.emit('subscribeObjects', id));
+            // re-subscribe logs
+            this.autoSubscribeLog && this._socket.emit('requireLog', true);
+            // re subscribe states
+            Object.keys(this.statesSubscribes).forEach(id => this._socket.emit('subscribe', id));
         } else if (!isEnable && this.subscribed) {
             this.subscribed = false;
-            this.autoSubscribes.forEach(id => this.socket.emit('unsubscribeObjects', id));
-            Object.keys(this.objectsSubscribes).forEach(id => this.socket.emit('unsubscribeObjects', id));
-            this.autoSubscribeLog && this.socket.emit('requireLog', false);
+            // un-subscribe objects
+            this.autoSubscribes.forEach(id => this._socket.emit('unsubscribeObjects', id));
+            Object.keys(this.objectsSubscribes).forEach(id => this._socket.emit('unsubscribeObjects', id));
+            // un-subscribe logs
+            this.autoSubscribeLog && this._socket.emit('requireLog', false);
 
-            Object.keys(this.statesSubscribes).forEach(id => this.socket.emit('unsubscribe', id));
+            // un-subscribe states
+            Object.keys(this.statesSubscribes).forEach(id => this._socket.emit('unsubscribe', id));
         }
+    }
+
+    requireLog(isEnabled) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('requireLog', isEnabled, err =>
+                err ? reject(err) : resolve()));
     }
 
     delObject(id) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
-            this.socket.emit('delObject', id, err =>
-                err ? reject(err) : resolve()));
+            this._socket.emit('delObject', id, err => {
+                err ? reject(err) : resolve();
+            }));
     }
 
     setObject(id, obj) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
-            this.socket.emit('setObject', id, obj, err =>
-                err ? reject(err) : resolve()));
+            this._socket.emit('setObject', id, obj, err => {
+                err ? reject(err) : resolve()
+            }));
     }
 
     getObject(id) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
-            this.socket.emit('getObject', id, (err, obj) =>
+            this._socket.emit('getObject', id, (err, obj) =>
                 err ? reject(err) : resolve(obj)));
     }
 
-    updateScript(oldId, newId, newCommon) {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('getObject', oldId, (err, _obj) => {
-                setTimeout(() => {
-                    const obj = {common: {}};
+    getAdapterInstances(adapter, update) {
+        if (typeof adapter === 'boolean') {
+            update = adapter;
+            adapter = '';
+        }
+        adapter = adapter || '';
 
-                    if (newCommon.engine  !== undefined) obj.common.engine  = newCommon.engine;
-                    if (newCommon.enabled !== undefined) obj.common.enabled = newCommon.enabled;
-                    if (newCommon.source  !== undefined) obj.common.source  = newCommon.source;
-                    if (newCommon.debug   !== undefined) obj.common.debug   = newCommon.debug;
-                    if (newCommon.verbose !== undefined) obj.common.verbose = newCommon.verbose;
-
-                    obj.from = 'system.adapter.admin.0'; // we must distinguish between GUI(admin.0) and disk(javascript.0)
-
-                    if (oldId === newId && _obj && _obj.common && newCommon.name === _obj.common.name) {
-                        if (!newCommon.engineType || newCommon.engineType !== _obj.common.engineType) {
-                            if (newCommon.engineType !== undefined) obj.common.engineType  = newCommon.engineType || 'Javascript/js';
-
-                            this.socket.emit('extendObject', oldId, obj, err => err ? reject(err) : resolve());
-                        } else {
-                            this.socket.emit('extendObject', oldId, obj, err => err ? reject(err) : resolve());
-                        }
-                    } else {
-                        // let prefix;
-
-                        // let parts = _obj.common.engineType.split('/');
-
-                        // prefix = 'script.' + (parts[1] || parts[0]) + '.';
-
-                        if (_obj && _obj.common) {
-                            _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
-                            this.socket.emit('delObject', oldId, err => {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    if (obj.common.engine  !== undefined) _obj.common.engine  = obj.common.engine;
-                                    if (obj.common.enabled !== undefined) _obj.common.enabled = obj.common.enabled;
-                                    if (obj.common.source  !== undefined) _obj.common.source  = obj.common.source;
-                                    if (obj.common.name    !== undefined) _obj.common.name    = obj.common.name;
-                                    if (obj.common.debug   !== undefined) _obj.common.debug   = obj.common.debug;
-                                    if (obj.common.verbose !== undefined) _obj.common.verbose = obj.common.verbose;
-
-                                    delete _obj._rev;
-
-                                    // Name must always exist
-                                    _obj.common.name = newCommon.name;
-
-                                    _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
-
-                                    this.socket.emit('setObject', newId, _obj, err => err ? reject(err) : resolve());
-                                }
-                            });
-                            return;
-                        } else {
-                            _obj = obj;
-                        }
-
-                        // Name must always exist
-                        _obj.common.name = newCommon.name;
-
-                        _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
-
-                        this.socket.emit('setObject', newId, _obj, err => err ? reject(err) : resolve());
-                    }
-                }, 0);
-            });
-        });
-    }
-
-    getAdapterInstances(adapter) {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.' + (adapter || ''), endkey: 'system.adapter.' + (adapter ? adapter + '.' : '') + '\u9999'}, (err, doc) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(doc.rows.map(item => item.value));
-                }
-            });
-        });
-    }
-
-    _deleteGroup(id, originalGroup, confirmed, deleted) {
-        if (confirmed.indexOf(id) === -1) {
-            confirmed.push(id);
+        if (!update && this._promises['instances' + adapter]) {
+            return this._promises['instances' + adapter];
         }
 
-        return new Promise((resolve, reject) => {
-            // find all elements
-            for (let l = 0; l < this.scripts.list.length; l++) {
-                if (this.scripts.list[l].substring(0, id.length + 1) === id + '.' &&
-                    (!deleted || deleted.indexOf(this.scripts.list[l]) === -1)) {
-                    return this.deleteId(this.scripts.list[l], id, confirmed, deleted);
-                }
-            }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
 
-            for (let g = 0; g < this.scripts.groups.length; g++) {
-                if (this.scripts.groups[g].substring(0, id.length + 1) === id + '.') {
-                    return this.deleteId(this.scripts.groups[g], id, confirmed, deleted);
-                }
-            }
-
-            this.socket.emit('delObject', id, err => {
-                if (err) {
-                    reject(err);
-                } else if (originalGroup !== id) {
-                    return this.deleteId(originalGroup, null, confirmed, deleted);
-                } else {
-                    // finish
-                    resolve();
-                }
-            });
-        });
-    }
-
-    deleteId(id, originalGroup, confirmed, deleted) {
-        originalGroup = originalGroup || id;
-        confirmed     = confirmed     || [];
-        deleted       = deleted       || [];
-
-        return new Promise((resolve, reject) => {
-            if (this.objects[id] && this.objects[id].type === 'script') {
-                if (this.props.onConfirmDelete) {
-                    this.props.onConfirmDelete(false, this.objects[id].common.name, result => {
-                        if (result) {
-                            this.socket.emit('delObject', id, err => {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    deleted.push(id);
-                                    return this.deleteId(originalGroup, null, confirmed, deleted);
-                                }
-                            });
-                        } else {
-                            // Do nothing
-                            reject('canceled');
-                        }
-                    });
-                } else {
-                    this.socket.emit('delObject', id, err => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            deleted.push(id);
-                            return this.deleteId(originalGroup, null, confirmed, deleted);
-                        }
-                    });
-                }
-            } else {
-                let name = id;
-                if (confirmed.indexOf(id) === -1) {
-                    if (this.objects[id] && this.objects[id].common && this.objects[id].common.name) {
-                        name = this.objects[id].common.name;
-                    }
-
-                    if (this.props.onConfirmDelete) {
-                        this.props.onConfirmDelete(true, name, result => {
-                            if (result) {
-                                return this._deleteGroup(id, originalGroup, confirmed, deleted);
-                            } else {
-                                reject('canceled');
-                            }
-                        });
-                    } else {
-                        return this._deleteGroup(id, originalGroup, confirmed, deleted);
-                    }
-                } else {
-                    return this._deleteGroup(id, originalGroup, confirmed, deleted);
-                }
-            }
-        });
-    }
-
-    renameGroup(id, newId, newName, _list) {
-        return new Promise((resolve, reject) => {
-            if (!_list) {
-                _list = [];
-
-                // collect all elements to rename
-                // find all elements
-                for (let l = 0; l < this.scripts.list.length; l++) {
-                    if (this.scripts.list[l].substring(0, id.length + 1) === id + '.') {
-                        _list.push(this.scripts.list[l]);
-                    }
-                }
-                for (let g = 0; g < this.scripts.groups.length; g++) {
-                    if (this.scripts.groups[g].substring(0, id.length + 1) === id + '.') {
-                        _list.push(this.scripts.list[g]);
-                    }
-                }
-
-                this.socket.emit('getObject', id, (err, obj) => {
+        this._promises['instances' + adapter] = this._promises['instances' + adapter] || new Promise((resolve, reject) => {
+            this._socket.emit(
+                'getObjectView',
+                'system',
+                'instance',
+                {startkey: 'system.adapter.' + (adapter || ''), endkey: 'system.adapter.' + (adapter ? adapter + '.' : '') + '\u9999'},
+                (err, doc) => {
                     if (err) {
                         reject(err);
                     } else {
-                        obj = obj || {common: {}};
-                        obj.common.name = newName;
-                        obj._id = newId;
-
-                        this.socket.emit('delObject', id, err => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                this.socket.emit('setObject', newId, obj, err => {
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        return this.renameGroup(id, newId, newName, _list);
-                                    }
-                                });
-                            }
-                        });
+                        resolve(doc.rows.map(item => item.value));
                     }
                 });
-            } else {
-                if (_list.length) {
-                    let nId = _list.pop();
-
-                    this.socket.emit('getObject', nId, (err, obj) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            this.socket.emit('delObject', nId, err => {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    nId = newId + nId.substring(id.length);
-                                    this.socket.emit('setObject', nId, obj, err => {
-                                        if (err) {
-                                            reject(err);
-                                        } else {
-                                            return this.renameGroup(id, newId, newName, _list);
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    resolve();
-                }
-            }
         });
+
+        return this._promises['instances' + adapter];
     }
 
-    getScripts() {
-        return this.scripts;
+    _renameGroups(objs, cb) {
+        if (!objs || !objs.length) {
+            cb && cb();
+        } else {
+            let obj = objs.pop();
+            this.delObject(obj._id)
+                .then(() => {
+                    obj._id = obj.newId;
+                    delete obj.newId;
+                    return this.setObject(obj._id, obj)
+                })
+                .then(() => setTimeout(() => this._renameGroups(objs, cb), 0))
+                .catch(err => cb && cb(err));
+        }
     }
 
-    sendTo(instance, command, data, cb) {
-        this.socket.emit('sendTo', instance, command, data, cb);
+    renameGroup(id, newId, newName) {
+        return this.getGroups(true)
+            .then(groups => {
+                if (groups.length) {
+                    // find all elements
+                    const groupsToRename = groups
+                        .filter(group => group._id.startsWith(id + '.'))
+                        .forEach(group => group.newId = newId + group._id.substring(id.length));
+
+                    return new Promise((resolve, reject) =>
+                        this._renameGroups(groupsToRename, err => err ? reject(err) : resolve()))
+                        .then(() => {
+                            const obj = groups.find(group => group._id === id);
+
+                            if (obj) {
+                                obj._id = newId;
+                                if (newName !== undefined) {
+                                    obj.common = obj.common || {};
+                                    obj.common.name = newName;
+                                }
+
+                                return this.setObject(obj._id, obj);
+                            }
+                        });
+                }
+            });
     }
 
-    extendObject(id, obj, cb) {
-        this.socket.emit('extendObject', id, obj, cb);
+    sendTo(instance, command, data) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise(resolve =>
+            this._socket.emit('sendTo', instance, command, data, result => resolve(result)));
+    }
+
+    extendObject(id, obj) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('extendObject', id, obj, err => err ? reject(err) : resolve()));
     }
 
     registerLogHandler(handler) {
-        this.onLogHandler = handler;
+        !this.onLogHandlers.includes(handler) && this.onLogHandlers.push(handler);
     }
 
     unregisterLogHandler(handler) {
-        this.onLogHandler = null;
+        const pos = this.onLogHandlers.indexOf(handler);
+        pos !== -1 && this.onLogHandlers.splice(pos, 1);
     }
 
-    getEnums(_enum) {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('getObjectView', 'system', 'enum', {startkey: 'enum.' + (_enum || ''), endkey: 'enum.' + (_enum ? (_enum + '.') : '') + '\u9999'}, (err, res) => {
+    registerConnectionHandler(handler) {
+        !this.onConnectionHandlers.includes(handler) && this.onConnectionHandlers.push(handler);
+    }
+
+    unregisterConnectionHandler(handler) {
+        const pos = this.onConnectionHandlers.indexOf(handler);
+        pos !== -1 && this.onConnectionHandlers.splice(pos, 1);
+    }
+
+    registerCmdStdoutHandler(handler) {
+        this.onCmdStdoutHandler = handler;
+    }
+
+    unregisterCmdStdoutHandler(handler) {
+        this.onCmdStdoutHandler = null;
+    }
+
+    registerCmdStderrHandler(handler) {
+        this.onCmdStderrHandler = handler;
+    }
+
+    unregisterCmdStderrHandler(handler) {
+        this.onCmdStderrHandler = null;
+    }
+
+    registerCmdExitHandler(handler) {
+        this.onCmdExitHandler = handler;
+    }
+
+    unregisterCmdExitHandler(handler) {
+        this.onCmdExitHandler = null;
+    }
+
+    getEnums(_enum, update) {
+        if (!update && this._promises['enums_' + (_enum || 'all')] ) {
+            return this._promises['enums_' + (_enum || 'all')];
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises['enums_' + (_enum || 'all')] = new Promise((resolve, reject) => {
+            this._socket.emit('getObjectView', 'system', 'enum', {startkey: 'enum.' + (_enum || ''), endkey: 'enum.' + (_enum ? (_enum + '.') : '') + '\u9999'}, (err, res) => {
                 if (!err && res) {
                     const _res   = {};
                     for (let i = 0; i < res.rows.length; i++) {
-                        if (_enum && res.rows[i].id === 'enum.' + _enum) continue;
+                        if (_enum && res.rows[i].id === 'enum.' + _enum) {
+                            continue;
+                        }
                         _res[res.rows[i].id] = res.rows[i].value;
+                    }
+                    resolve(_res);
+                } else {
+                    reject(err);
+                }
+            });
+        });
+
+        return this._promises['enums_' + (_enum || 'all')];
+    }
+
+    getObjectView(start, end, type) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) => {
+            this._socket.emit('getObjectView', 'system', type, {startkey: start, endkey: end}, (err, res) => {
+                if (!err) {
+                    const _res = {};
+                    if (res && res.rows) {
+                        for (let i = 0; i < res.rows.length; i++) {
+                            _res[res.rows[i].id] = res.rows[i].value;
+                        }
                     }
                     resolve(_res);
                 } else {
@@ -733,54 +729,555 @@ class Connection {
         });
     }
 
-    getCertificates() {
-        if (this.certPromise) {
-            return this.certPromise;
+    getCertificates(update) {
+        if (this._promises.cert && !update) {
+            return this._promises.cert;
         }
 
-        this.certPromise = this.getObject('system.certificates')
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.cert = this.getObject('system.certificates')
             .then(res => {
                 const certs = [];
                 if (res && res.native && res.native.certificates) {
                     Object.keys(res.native.certificates).forEach(c => {
-                            const cert = res.native.certificates[c];
-                            if (!cert) {
-                                return;
+                        const cert = res.native.certificates[c];
+                        if (!cert) {
+                            return;
+                        }
+                        const _cert = {
+                            name: c,
+                            type: ''
+                        };
+                        // If it is filename, it could be everything
+                        if (cert.length < 700 && (cert.indexOf('/') !== -1 || cert.indexOf('\\') !== -1)) {
+                            if (c.toLowerCase().includes('private')) {
+                                _cert.type = 'private';
+                            } else if (cert.toLowerCase().includes('private')) {
+                                _cert.type = 'private';
+                            } else if (c.toLowerCase().includes('public')) {
+                                _cert.type = 'public';
+                            } else if (cert.toLowerCase().includes('public')) {
+                                _cert.type = 'public';
                             }
-                            const _cert = {
-                                name: c,
-                                type: ''
-                            };
-                            // If it is filename, it could be everything
-                            if (cert.length < 700 && (cert.indexOf('/') !== -1 || cert.indexOf('\\') !== -1)) {
-                                if (c.toLowerCase().includes('private')) {
-                                    _cert.type = 'private';
-                                } else if (cert.toLowerCase().includes('private')) {
-                                    _cert.type = 'private';
-                                } else if (c.toLowerCase().includes('public')) {
-                                    _cert.type = 'public';
-                                } else if (cert.toLowerCase().includes('public')) {
-                                    _cert.type = 'public';
-                                }
-                                certs.push(_cert);
-                            } else {
-                                _cert.type = (cert.substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || cert.substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public';
+                            certs.push(_cert);
+                        } else {
+                            _cert.type = (cert.substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || cert.substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public';
 
-                                if (_cert.type === 'public') {
-                                    const m = cert.split('-----END CERTIFICATE-----');
-                                    if (m.filter(t => t.replace(/\r\n|\r|\n/, '').trim()).length > 1) {
-                                        _cert.type = 'chained';
-                                    }
+                            if (_cert.type === 'public') {
+                                const m = cert.split('-----END CERTIFICATE-----');
+                                if (m.filter(t => t.replace(/\r\n|\r|\n/, '').trim()).length > 1) {
+                                    _cert.type = 'chained';
                                 }
-
-                                certs.push(_cert);
                             }
-                        });
+
+                            certs.push(_cert);
+                        }
+                    });
                 }
                 return certs;
             });
 
-        return this.certPromise;
+        return this._promises.cert;
+    }
+
+    getLogs(host, linesNumber) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise(resolve =>
+            this._socket.emit('sendToHost', host, 'getLogs', linesNumber || 200, lines =>
+                resolve(lines)));
+    }
+
+    getLogsFiles() {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('readLogs', (err, files) =>
+                err ? reject(err) : resolve(files)));
+    }
+
+    delLogs(host) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('sendToHost', host, 'delLogs', null, error =>
+                error ? reject(error) : resolve()));
+    }
+
+    readMetaItems() {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getObjectView', 'system', 'meta', {startkey: '', endkey: '\u9999'}, (err, objs) =>
+                err ? reject(err) : resolve(objs.rows && objs.rows.map(obj => obj.value))));
+    }
+
+    readDir(adapter, fileName) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('readDir', adapter, fileName, (err, files) =>
+                err ? reject(err) : resolve(files)));
+    }
+
+    writeFile64(adapter, fileName, data) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) => {
+            if (typeof data === 'string') {
+                this._socket.emit('writeFile', adapter, fileName, data, err =>
+                    err ? reject(err) : resolve());
+            } else {
+                const base64 = btoa(
+                    new Uint8Array(data)
+                        .reduce((data, byte) => data + String.fromCharCode(byte), '')
+                );
+
+                this._socket.emit('writeFile64', adapter, fileName, base64, err =>
+                    err ? reject(err) : resolve());
+            }
+        });
+    }
+
+    deleteFile(adapter, fileName) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('deleteFile', adapter, fileName, err =>
+                err ? reject(err) : resolve()));
+    }
+
+    getHosts(update) {
+        if (!update && this._promises.hosts) {
+            return this._promises.hosts;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.hosts = new Promise((resolve, reject) =>
+            this._socket.emit(
+                'getObjectView',
+                'system',
+                'host',
+                {startkey: 'system.host.', endkey: 'system.host.\u9999'},
+                (err, doc) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc.rows.map(item => item.value));
+                    }
+                }));
+
+        return this._promises.hosts;
+    }
+
+    getUsers(update) {
+        if (!update && this._promises.users) {
+            return this._promises.users;
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.users = new Promise((resolve, reject) =>
+            this._socket.emit(
+                'getObjectView',
+                'system',
+                'user',
+                {startkey: 'system.user.', endkey: 'system.user.\u9999'},
+                (err, doc) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc.rows.map(item => item.value));
+                    }
+                }));
+
+        return this._promises.users;
+    }
+
+    getGroups(update) {
+        if (!update && this._promises.groups) {
+            return this._promises.groups;
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.groups = new Promise((resolve, reject) =>
+            this._socket.emit(
+                'getObjectView',
+                'system',
+                'group',
+                {startkey: 'system.group.', endkey: 'system.group.\u9999'},
+                (err, doc) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc.rows.map(item => item.value));
+                    }
+                }));
+
+        return this._promises.groups;
+    }
+
+    getHostInfo(host, update) {
+        if (!host.startsWith(host)) {
+            host += 'system.host.' + host;
+        }
+
+        if (!update && this._promises['hostInfo' + host]) {
+            return this._promises['hostInfo' + host];
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises['hostInfo' + host] = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('timeout');
+                }
+            }, 5000);
+
+            this._socket.emit('sendToHost', host, 'getHostInfo', null, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getHostInfo"');
+                    } else if (!data) {
+                        reject('Cannot read "getHostInfo"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+
+        return this._promises['hostInfo' + host];
+    }
+
+    getRepository(host, args, update) {
+        if (!update && this._promises.repo) {
+            return this._promises.repo;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        if (!host.startsWith(host)) {
+            host += 'system.host.' + host;
+        }
+
+        this._promises.repo = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('timeout');
+                }
+            }, 5000);
+
+            this._socket.emit('sendToHost', host, 'getRepository', args, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getRepository"');
+                    } else if (!data) {
+                        reject('Cannot read "getRepository"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+
+        return this._promises.repo;
+    }
+
+    getInstalled(host, update) {
+        if (!update && this._promises.installed) {
+            return this._promises.installed;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        if (!host.startsWith(host)) {
+            host += 'system.host.' + host;
+        }
+
+        this._promises.installed = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('timeout');
+                }
+            }, 5000);
+
+            this._socket.emit('sendToHost', host, 'getInstalled', null, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getInstalled"');
+                    } else if (!data) {
+                        reject('Cannot read "getInstalled"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+
+        return this._promises.installed;
+    }
+
+    cmdExec(host, cmd, cmdId) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        if (!host.startsWith(host)) {
+            host += 'system.host.' + host;
+        }
+
+        return new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('timeout');
+                }
+            }, 5000);
+
+            this._socket.emit('cmdExec', host, cmdId, cmd, null, err => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+    }
+
+    checkFeatureSupported(feature, update) {
+        if (!update && this._promises['supportedFeatures_' + feature]) {
+            return this._promises['supportedFeatures_' + feature];
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises['supportedFeatures_' + feature] = new Promise((resolve, reject) =>
+            this._socket.emit('checkFeatureSupported', feature, (err, features) => {
+                console.log(features);
+                err ? reject(err) : resolve(features)
+            }));
+
+        return this._promises['supportedFeatures_' + feature];
+    }
+
+    readBaseSettings(host) {
+        return this.checkFeatureSupported('CONTROLLER_READWRITE_BASE_SETTINGS')
+            .then(result => {
+                if (result) {
+                    if (!this.connected) {
+                        return Promise.reject(NOT_CONNECTED);
+                    }
+                    return new Promise((resolve, reject) => {
+                        let timeout = setTimeout(() => {
+                            if (timeout) {
+                                timeout = null;
+                                reject('timeout');
+                            }
+                        }, 5000);
+
+                        this._socket.emit('sendToHost', host, 'readBaseSettings', null, data => {
+                            if (timeout) {
+                                clearTimeout(timeout);
+                                timeout = null;
+
+                                if (data === PERMISSION_ERROR) {
+                                    reject('May not read "BaseSettings"');
+                                } else if (!data) {
+                                    reject('Cannot read "BaseSettings"');
+                                } else {
+                                    resolve(data);
+                                }
+                            }
+                        });
+                    });
+                } else {
+                    return Promise.reject('Not supported');
+                }
+            })
+    }
+
+    writeBaseSettings(host, config) {
+        return this.checkFeatureSupported('CONTROLLER_READWRITE_BASE_SETTINGS')
+            .then(result => {
+                if (result) {
+                    if (!this.connected) {
+                        return Promise.reject(NOT_CONNECTED);
+                    }
+                    return new Promise((resolve, reject) => {
+                        let timeout = setTimeout(() => {
+                            if (timeout) {
+                                timeout = null;
+                                reject('timeout');
+                            }
+                        }, 5000);
+
+                        this._socket.emit('sendToHost', host, 'writeBaseSettings', config, data => {
+                            if (timeout) {
+                                clearTimeout(timeout);
+                                timeout = null;
+
+                                if (data === PERMISSION_ERROR) {
+                                    reject('May not write "BaseSettings"');
+                                } else if (!data) {
+                                    reject('Cannot write "BaseSettings"');
+                                } else {
+                                    resolve(data);
+                                }
+                            }
+                        });
+                    });
+                } else {
+                    return Promise.reject('Not supported');
+                }
+            })
+    }
+
+    getForeignStates(pattern) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getForeignStates', pattern || '*', (err, states) =>
+                err ? reject(err) : resolve(states)));
+    }
+
+    // type could be undefined
+    getForeignObjects(pattern, type) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getForeignObjects', pattern || '*', type, (err, states) =>
+                err ? reject(err) : resolve(states)));
+    }
+
+    getSystemConfig(update) {
+        if (update) {
+            this._promises.systemConfig = null;
+        }
+        if (!this._promises.systemConfig && !this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.systemConfig = this._promises.systemConfig || this.getObject('system.config')
+            .then(systemConfig => {
+                systemConfig = systemConfig || {};
+                systemConfig.common = systemConfig.common || {};
+                systemConfig.native = systemConfig.native || {};
+                return systemConfig;
+            });
+
+        return this._promises.systemConfig;
+    }
+
+    setSystemConfig(obj) {
+        return this.setObject('system.config', obj)
+            .then(() => this._promises.systemConfig = Promise.resolve(obj));
+    }
+
+    getRawSocket() {
+        return this._socket;
+    }
+
+    getHistory(id, options) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getHistory', id, options, (err, values) =>
+                err ? reject(err) : resolve(values)));
+    }
+
+    changePassword(user, password) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('changePassword', user, password, err =>
+                err ? reject(err) : resolve()));
+    }
+
+    getIpAddresses(host, update) {
+        if (!host.startsWith('system.host.')) {
+            host = 'system.host.' + host;
+        }
+
+        if (!update && this._promises['IPs_' + host]) {
+            return this._promises['IPs_' + host];
+        }
+        this._promises['IPs_' + host] = this.getObject(host)
+            .then(obj => obj && obj.common ? obj.common.address || [] : []);
+
+        return this._promises['IPs_' + host];
+
+    }
+
+    decryptPhrase(encryptedPhrase) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('decryptPhrase', encryptedPhrase, (err, text) =>
+                err ? reject(err) : resolve(text)));
+    }
+
+    encryptPhrase(phrasePlainText) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('encryptPhrase', phrasePlainText, (err, text) =>
+                err ? reject(err) : resolve(text)));
+    }
+
+    encrypt(text) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('encrypt', text, (err, text) =>
+                err ? reject(err) : resolve(text)));
+    }
+
+    decrypt(encryptedText) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('decrypt', encryptedText, (err, text) =>
+                err ? reject(err) : resolve(text)));
+    }
+
+    getAdminVersion() {
+        this._promises.version = this._promises.version || new Promise((resolve, reject) =>
+            this._socket.emit('getVersion', (err, version) =>
+                err ? reject(err) : resolve(version)));
+
+        return this._promises.version;
     }
 }
 

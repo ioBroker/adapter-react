@@ -11,7 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import {MdSave as IconSave} from 'react-icons/md'
 import {MdClose as IconClose} from 'react-icons/md'
 
-import Theme from './Theme';
+import theme from './Theme';
 import Loader from './Components/Loader';
 import Router from './Components/Router';
 
@@ -36,6 +36,8 @@ class GenericApp extends Router {
         const location = Router.getLocation();
         location.tab = location.tab || window.localStorage[this.adapterName + '-adapter'] || '';
 
+        const themeInstance = this.getTheme();
+
         this.state = {
             selectedTab: window.localStorage[this.adapterName + '-adapter'] || '',
             selectedTabNum: -1,
@@ -45,8 +47,10 @@ class GenericApp extends Router {
             connected: false,
             loaded: false,
             isConfigurationError: '',
-            themeType: 'light',
             toast: '',
+            theme:          themeInstance,
+            themeName:      this.getThemeName(themeInstance),
+            themeType:      this.getThemeType(themeInstance),
             bottomButtons: settings && settings.bottomButtons === false ? false : (props && props.bottomButtons === false ? false : true),
         };
 
@@ -98,9 +102,58 @@ class GenericApp extends Router {
                         }
                     });
             },
-            onError: err => {
-                console.error(err);
-            }
+            onError: err => console.error(err)
+        });
+    }
+
+    /**
+     * Get a theme
+     * @param {string} name Theme name
+     * @returns {Theme}
+     */
+    getTheme(name = '') {
+        return theme(name ? name : window.localStorage && window.localStorage.getItem('App.themeName') ?
+            window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored');
+    }
+
+    /**
+     * Get the theme name
+     * @param {Theme} theme Theme
+     * @returns {string} Theme name
+     */
+    getThemeName(theme) {
+        return theme.name;
+    }
+
+    /**
+     * Get the theme type
+     * @param {Theme} theme Theme
+     * @returns {string} Theme type
+     */
+    getThemeType(theme) {
+        return theme.palette.type;
+    }
+
+    /**
+     * Changes the current theme
+     */
+    toggleTheme() {
+        const themeName = this.state.themeName;
+
+        const newThemeName = themeName === 'dark' ? 'blue' :
+            themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
+                themeName === 'light' ? 'dark' : 'colored';
+
+        window.localStorage.setItem('App.themeName', newThemeName);
+        window.localStorage.setItem('App.theme', newThemeName === 'dark' || newThemeName === 'blue' ?
+            'dark' : 'light');
+
+        const theme = this.getTheme(newThemeName);
+
+        this.setState({
+            theme: theme,
+            themeName: this.getThemeName(theme),
+            themeType: this.getThemeType(theme)
         });
     }
 
@@ -118,7 +171,7 @@ class GenericApp extends Router {
 
     encrypt(value) {
         let result = '';
-        for(let i = 0; i < value.length; i++) {
+        for (let i = 0; i < value.length; i++) {
             result += String.fromCharCode(this._secret[i % this._secret.length].charCodeAt(0) ^ value.charCodeAt(i));
         }
         return result;

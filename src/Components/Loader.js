@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2019 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2020 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -20,20 +20,21 @@ class Loader extends React.Component {
     }
 
     render() {
+        const theme = this.props.theme || 'light';
         return (
-            <div className={'logo-back logo-background-' + this.props.theme}>
+            <div className={'logo-back logo-background-' + theme}>
                 <div className="logo-div" style={{width: this.size, height: this.size}}>
-                    <div className={'logo-top logo-background-' + this.props.theme} style={{left: '37%'}}/>
-                    <div className={'logo-top logo-background-' + this.props.theme} style={{left: '57%'}}/>
+                    <div className={'logo-top logo-background-' + theme} style={{left: '37%'}}/>
+                    <div className={'logo-top logo-background-' + theme} style={{left: '57%'}}/>
                     <div
-                        className={'logo-border logo-background-' + this.props.theme + ' logo-animate-wait'}
+                        className={'logo-border logo-background-' + theme + ' logo-animate-wait'}
                         style={{borderWidth: this.size * 0.132}}
                     />
-                    <div className={'logo-i logo-animate-color-inside-' + this.props.theme}/>
-                    <div className={'logo-i-top logo-animate-color-inside-' + this.props.theme} style={{top: '18%'}}/>
-                    <div className={'logo-i-top logo-animate-color-inside-' + this.props.theme} style={{bottom: '18%'}}/>
+                    <div className={'logo-i logo-animate-color-inside-' + theme}/>
+                    <div className={'logo-i-top logo-animate-color-inside-' + theme} style={{top: '18%'}}/>
+                    <div className={'logo-i-top logo-animate-color-inside-' + theme} style={{bottom: '18%'}}/>
                 </div>
-                <div className={'logo-animate-grow logo-animate-grow-' + this.props.theme}
+                <div className={'logo-animate-grow logo-animate-grow-' + theme}
                      style={{width: this.size + 11, height: this.size + 11}}
                 />
             </div>
