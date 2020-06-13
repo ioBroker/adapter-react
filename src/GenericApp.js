@@ -30,7 +30,7 @@ class GenericApp extends Router {
         this.instance = parseInt(window.location.search.slice(1), 10) || 0;
         // extract adapter name from URL
         const tmp = window.location.pathname.split('/');
-        this.adapterName = (settings && settings.adapterName) || props.adapterName || tmp[tmp.length - 2] || 'iot';
+        this.adapterName = (settings && settings.adapterName) || props.adapterName || window.adapterName || tmp[tmp.length - 2] || 'iot';
         this.instanceId  = 'system.adapter.' + this.adapterName + '.' + this.instance;
 
         const location = Router.getLocation();
@@ -73,6 +73,7 @@ class GenericApp extends Router {
 
         this.socket = new Connection({
             ...((props && props.socket) || (settings && settings.socket)),
+            name: this.adapterName,
             doNotLoadAllObjects: (settings && settings.doNotLoadAllObjects),
             onProgress: progress => {
                 if (progress === PROGRESS.CONNECTING) {
@@ -102,7 +103,10 @@ class GenericApp extends Router {
                         }
                     });
             },
-            onError: err => console.error(err)
+            onError: err => {
+                console.error(err);
+                this.showError(err);
+            }
         });
     }
 
