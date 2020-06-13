@@ -6,7 +6,7 @@
  **/
 import React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
+import copy from './copy-to-clipboard';
 
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -19,7 +19,6 @@ import Input from '@material-ui/core/Input';
 import Grid from '@material-ui/core/Grid';
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip';
-import copy from 'copy-to-clipboard';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -1747,7 +1746,7 @@ class ObjectBrowser extends React.Component {
 
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
-            return <IconButton className={ clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone) }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
+            return <IconButton className={ Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone) }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
                 <IconDelete className={ classes.cellButtonsButtonIcon }  />
             </IconButton>;
         }
@@ -1768,7 +1767,7 @@ class ObjectBrowser extends React.Component {
                 <IconDelete className={ classes.cellButtonsButtonIcon }  />
             </IconButton>,
             this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
-                className={ clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
+                className={ Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
                 key="custom"
                 size="small"
                 aria-label="config"
@@ -1878,8 +1877,8 @@ class ObjectBrowser extends React.Component {
                 <span key="valText">{ info.valText.v.toString() }</span>,
                 info.valText.u ? <span className={ classes.cellValueTextUnit } key="unit">{ info.valText.u }</span> : null,
                 info.valText.s !== undefined ? <span  className={ classes.cellValueTextState } key="states">({ info.valText.s })</span> : null,
-                <IconCopy className={ clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy) } onClick={e => this.onCopy(e) } data-copy={ info.valText.v } key="cc" />,
-                //<IconEdit className={ clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } key="ce" />
+                <IconCopy className={ Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy) } onClick={e => this.onCopy(e) } data-copy={ info.valText.v } key="cc" />,
+                //<IconEdit className={ Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } key="ce" />
             ];
         }
 
@@ -1911,7 +1910,7 @@ class ObjectBrowser extends React.Component {
         let iconItem = null;
         if (item.data.icon) {
             if (typeof item.data.icon === 'string') {
-                iconItem = <img className={ clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } alt="" />;
+                iconItem = <img className={ Utils.clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } alt="" />;
             } else {
                 iconItem = item.data.icon;
             }
@@ -1942,7 +1941,7 @@ class ObjectBrowser extends React.Component {
             <Grid
                 container
                 direction="row"
-                className={ clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected) }
+                className={ Utils.clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected) }
                 key={ id }
                 id={ id }
                 onClick={ () => this.onSelect(id) }
@@ -1988,7 +1987,7 @@ class ObjectBrowser extends React.Component {
                         container
                         alignItems="center"
                     >
-                        <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
+                        <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
                     </Grid>
                 </Grid>
                 {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
@@ -2038,7 +2037,7 @@ class ObjectBrowser extends React.Component {
             {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.role }}>{ this.getFilterSelectRole() }</div> : null }
             {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.room }}>{ this.getFilterSelectRoom() }</div> : null }
             {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.func }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS.val}}>{ this.props.t('Value') }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS.val}}>{ this.props.t('Value') }</div> : null }
             {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.buttons }}> { this.getFilterSelectCustoms() }</div> : null }
         </div>;
     }

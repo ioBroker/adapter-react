@@ -22,14 +22,16 @@ If you want to create the configuration page with react:
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-scripts": "^3.0.1",
-    "@material-ui/core": "^4.2.0",
-    "react-icons": "^3.7.0",
+    "clsx": "^1.1.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-icons": "^3.10.0",
+    "react-scripts": "^3.4.1",
+    "@material-ui/core": "^4.10.2",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@iobroker/adapter-react": "^actual-version",
-    "gulp": "^4.0.2",
-    "del": "^5.0.0"
+    "del": "^5.1.0",
+    "gulp": "^4.0.2"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -3,7 +3,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
+import Utils from './Utils';
 
 import { Grid } from '@material-ui/core';
 import { Paper } from '@material-ui/core';
@@ -30,7 +30,7 @@ class TabContainer extends React.Component {
         return (
             <Paper
                 elevation={ !isNaN(this.props.elevation) ? this.props.elevation : 1 }
-                className={ clsx(classes.root, {[classes.overflowHidden]: this.props.overflow !== 'visible'}) }
+                className={ Utils.clsx(classes.root, {[classes.overflowHidden]: this.props.overflow !== 'visible'}) }
             >
                 <Grid
                     container

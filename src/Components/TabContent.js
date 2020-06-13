@@ -3,7 +3,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
+import Utils from './Utils';
 
 import { Grid } from '@material-ui/core';
 
@@ -26,7 +26,7 @@ class TabContent extends React.Component {
         return (
             <Grid
                 item
-                className={ clsx(classes.root, {[classes.overflowAuto]: this.props.overflow === 'auto'}) }
+                className={ Utils.clsx(classes.root, {[classes.overflowAuto]: this.props.overflow === 'auto'}) }
             >
                 { this.props.children }
             </Grid>

@@ -732,6 +732,53 @@ class Utils {
         // pad each with zeros and return
         return '#' + r.padStart(2, '0') + g.padStart(2, '0') + b.padStart(2, '0');
     }
+
+    // https://github.com/lukeed/clsx/blob/master/src/index.js
+    // License
+    // MIT © Luke Edwards
+    static _toVal(mix) {
+        var k, y, str='';
+
+        if (typeof mix === 'string' || typeof mix === 'number') {
+            str += mix;
+        } else if (typeof mix === 'object') {
+            if (Array.isArray(mix)) {
+                for (k=0; k < mix.length; k++) {
+                    if (mix[k]) {
+                        if (y = toVal(mix[k])) {
+                            str && (str += ' ');
+                            str += y;
+                        }
+                    }
+                }
+            } else {
+                for (k in mix) {
+                    if (mix[k]) {
+                        str && (str += ' ');
+                        str += k;
+                    }
+                }
+            }
+        }
+
+        return str;
+    }
+
+    // https://github.com/lukeed/clsx/blob/master/src/index.js
+    // License
+    // MIT © Luke Edwards
+    static clsx () {
+        var i=0, tmp, x, str='';
+        while (i < arguments.length) {
+            if (tmp = arguments[i++]) {
+                if (x = Utils._toVal(tmp)) {
+                    str && (str += ' ');
+                    str += x
+                }
+            }
+        }
+        return str;
+    }
 }
 
 export default Utils;
