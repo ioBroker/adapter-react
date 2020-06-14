@@ -26,7 +26,7 @@ class Connection {
 
         this.props.protocol = this.props.protocol || window.location.protocol;
         this.props.host     = this.props.host     || (window.location.host && window.location.host.substr(0, window.location.host.indexOf(':')));
-        this.props.port     = this.props.port     || 8081;
+        this.props.port     = this.props.port     || window.location.port;
 
         // breaking change. Do not load all objects by default is true
         this.doNotLoadAllObjects = this.props.doNotLoadAllObjects === undefined ? true : this.props.doNotLoadAllObjects;
