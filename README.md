@@ -177,6 +177,45 @@ class App extend GenericApp {
 ### Dialogs
 
 #### Confirm.js
+Usage: 
+```
+import React from 'react';
+import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm'
+import I18n from '@iobroker/adapter-react/i18n';
+
+class ExportImportDialog extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            confirmDialog: false,
+        };
+    }   
+
+    renderConfirmDialog() {
+        if (!this.state.confirmDialog) {
+            return null;
+        }
+        return <ConfirmDialog
+            title={ I18n.t('Scene will be overwritten.') }
+            text={ I18n.t('All data will be lost. Confirm?') }
+            ok={ I18n.t('Yes') }
+            cancel={ I18n.t('Cancel') }
+            onClose={isYes => {
+                this.setState({ confirmDialog: false} );
+            }}
+        />;
+    }
+    render() {
+        return <div>
+            <Button onClick={ () => this.setState({confirmDialog: true}) }>Click</Button>
+            { this.renderConfirmDialog() }
+        </div>
+    }
+}
+
+export default ExportImportDialog;
+```
 
 #### Error.js
 
