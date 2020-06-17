@@ -779,6 +779,16 @@ class Utils {
         }
         return str;
     }
+
+    static getThemeName(themeName = '') {
+        return themeName ? themeName : window.localStorage && window.localStorage.getItem('App.themeName') ?
+            window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored';
+    }
+
+    static setThemeName(themeName) {
+        window.localStorage.setItem('App.themeName', themeName);
+        window.localStorage.setItem('App.theme', themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light');
+    }
 }
 
 export default Utils;

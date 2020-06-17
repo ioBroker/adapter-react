@@ -14,6 +14,7 @@ import {MdClose as IconClose} from 'react-icons/md'
 import theme from './Theme';
 import Loader from './Components/Loader';
 import Router from './Components/Router';
+import Utils from './Components/Utils';
 
 if (!window.localStorage) {
     window.localStorage = {
@@ -36,7 +37,7 @@ class GenericApp extends Router {
         const location = Router.getLocation();
         location.tab = location.tab || window.localStorage[this.adapterName + '-adapter'] || '';
 
-        const themeInstance = this.getTheme();
+        const themeInstance = this.createTheme();
 
         this.state = {
             selectedTab: window.localStorage[this.adapterName + '-adapter'] || '',
@@ -115,9 +116,8 @@ class GenericApp extends Router {
      * @param {string} name Theme name
      * @returns {Theme}
      */
-    getTheme(name = '') {
-        return theme(name ? name : window.localStorage && window.localStorage.getItem('App.themeName') ?
-            window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored');
+    createTheme(name = '') {
+        return theme(Utils.getThemeName(name));
     }
 
     /**
@@ -148,11 +148,9 @@ class GenericApp extends Router {
             themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
                 themeName === 'light' ? 'dark' : 'colored';
 
-        window.localStorage.setItem('App.themeName', newThemeName);
-        window.localStorage.setItem('App.theme', newThemeName === 'dark' || newThemeName === 'blue' ?
-            'dark' : 'light');
+        Utils.setThemeName(newThemeName);
 
-        const theme = this.getTheme(newThemeName);
+        const theme = this.createTheme(newThemeName);
 
         this.setState({
             theme: theme,
