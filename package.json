@@ -1,6 +1,6 @@
 {
   "name": "@iobroker/adapter-react",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "React classes to develop admin interfaces for ioBroker with react.",
   "author": {
     "name": "bluefox",
@@ -25,9 +25,9 @@
   "homepage": "https://github.com/ioBroker/adapter-react#readme",
   "devDependencies": {
     "clsx": "^1.1.1",
-    "@babel/core": "^7.10.2",
+    "@babel/core": "^7.10.3",
     "@babel/plugin-proposal-class-properties": "^7.10.1",
-    "@babel/preset-env": "^7.10.2",
+    "@babel/preset-env": "^7.10.3",
     "@babel/preset-flow": "^7.10.1",
     "@babel/preset-react": "^7.10.1",
     "react-icons": "^3.10.0",

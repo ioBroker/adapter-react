@@ -385,7 +385,6 @@ class Connection {
     }
 
     stateChange(id, state) {
-        id = id ? id.replace(/[\s'"]/g, '_') : '';
         for (const task in this.statesSubscribes) {
             if (this.statesSubscribes.hasOwnProperty(task) && this.statesSubscribes[task].reg.test(id)) {
                 this.statesSubscribes[task].cbs.forEach(cb => cb(id, state));
