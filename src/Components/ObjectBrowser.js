@@ -2213,7 +2213,10 @@ class ObjectBrowser extends React.Component {
 ObjectBrowser.propTypes = {
     classes: PropTypes.object,
     defaultFilters: PropTypes.object,
-    selected: PropTypes.string,
+    selected: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.array
+    ]),
     onSelect: PropTypes.func,
     onFilterChanged: PropTypes.func,
     socket: PropTypes.object,

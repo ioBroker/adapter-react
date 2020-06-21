@@ -142,7 +142,10 @@ SelectID.propTypes = {
     dialogName: PropTypes.string,
     onOk: PropTypes.func.isRequired,
     title: PropTypes.string,
-    selected: PropTypes.string,
+    selected: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.array
+    ]),
     statesOnly: PropTypes.bool,
     socket: PropTypes.object.isRequired,
     cancel: PropTypes.string,
