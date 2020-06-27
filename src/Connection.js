@@ -24,9 +24,10 @@ class Connection {
         this.autoSubscribes   = this.props.autoSubscribes || [];
         this.autoSubscribeLog = this.props.autoSubscribeLog;
 
-        this.props.protocol = this.props.protocol || window.location.protocol;
-        this.props.host     = this.props.host     || window.location.hostname;
-        this.props.port     = this.props.port     || (window.location.port === '3000' ? 8081 : window.location.port);
+        this.props.protocol  = this.props.protocol || window.location.protocol;
+        this.props.host      = this.props.host     || window.location.hostname;
+        this.props.port      = this.props.port     || (window.location.port === '3000' ? 8081 : window.location.port);
+        this.props.ioTimeout = Math.max(this.props.ioTimeout || 20000, 20000);
 
         // breaking change. Do not load all objects by default is true
         this.doNotLoadAllObjects = this.props.doNotLoadAllObjects === undefined ? true : this.props.doNotLoadAllObjects;
@@ -82,7 +83,11 @@ class Connection {
         }
         this._socket = window.io.connect(
             this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
-            {query: 'ws=true', name: this.props.name}
+            {
+                query: 'ws=true', 
+                name: this.props.name,
+                timeout: this.props.ioTimeout
+            }
         );
 
         this._socket.on('connect', () => {
