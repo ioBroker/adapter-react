@@ -580,7 +580,7 @@ function getSystemIcon(objects, id, k) {
     return icon || null;
 }
 
-function buildTree(objects, options, enums) {
+function buildTree(objects, options) {
     options = options || {};
 
     const ids = Object.keys(objects);
@@ -1250,7 +1250,7 @@ class ObjectBrowser extends React.Component {
             }
         }
 
-        filter.expertMode =  this.props.expertMode || false;
+        filter.expertMode = this.props.expertMode !== undefined ? this.props.expertMode : (window.localStorage.getItem('App.expertMode') === 'true');
         this.tableRef  = React.createRef();
         this.filterRefs = {};
 
@@ -1386,7 +1386,7 @@ class ObjectBrowser extends React.Component {
     static getDerivedStateFromProps(props, state) {
         const newState = {};
         let changed = false;
-        if (props.expertMode !== state.filter.expertMode) {
+        if (props.expertMode !== undefined && props.expertMode !== state.filter.expertMode) {
             changed = true;
             newState.filter = Object.assign({}, state.filter);
             newState.filter.expertMode = props.expertMode;
@@ -1581,7 +1581,7 @@ class ObjectBrowser extends React.Component {
 
         Object.keys(this.filterRefs).forEach(name => {
             if (this.filterRefs[name] && this.filterRefs[name].current) {
-                for (var i = 0; i < this.filterRefs[name].current.childNodes.length; i++) {
+                for (let i = 0; i < this.filterRefs[name].current.childNodes.length; i++) {
                     if (this.filterRefs[name].current.childNodes[i].tagName === 'INPUT') {
                         filter[name] =this.filterRefs[name].current.childNodes[i].value;
                         break;
@@ -1589,6 +1589,13 @@ class ObjectBrowser extends React.Component {
                 }
             }
         });
+
+        if (name) {
+            filter[name] = value;
+            if (name === 'expertMode') {
+                window.localStorage.setItem('App.expertMode', value ? 'true' : 'false');
+            }
+        }
 
         filter = Object.assign({}, this.state.filter, filter);
 
@@ -1755,14 +1762,14 @@ class ObjectBrowser extends React.Component {
     getToolbar() {
         return (
             <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-                { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={this.props.classes.toolbarButtons} color={this.state.filter.expertMode ? 'secondary' : 'primary'} onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}><IconExpert /></IconButton>: null }
-                { this.state.expandAllVisible ? <IconButton key="expandAll"       variant="contained" className={ this.props.classes.toolbarButtons } onClick={() => this.onExpandAll()}><IconOpen /></IconButton> : null }
-                <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={() => this.onCollapseAll()}><IconClosed /></IconButton>
+                { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={ this.props.classes.toolbarButtons } color={ this.state.filter.expertMode ? 'secondary' : 'default' } onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }><IconExpert /></IconButton>: null }
+                { this.state.expandAllVisible ? <IconButton key="expandAll"  variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onExpandAll() }><IconOpen /></IconButton> : null }
+                <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onCollapseAll() }><IconClosed /></IconButton>
                 <StyledBadge badgeContent={ this.state.depth } color="secondary">
-                    <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onExpandVisible()}><IconOpen /></IconButton>
+                    <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onExpandVisible() }><IconOpen /></IconButton>
                 </StyledBadge>
                 <StyledBadge badgeContent={ this.state.depth } color="secondary">
-                    <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onCollapseVisible()}><IconClosed /></IconButton>
+                    <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onCollapseVisible() }><IconClosed /></IconButton>
                 </StyledBadge>
             </Toolbar>);
     }
@@ -2090,6 +2097,7 @@ class ObjectBrowser extends React.Component {
                     <Grid
                         item
                         className={ classes.cellIdSpan }
+                        style={ {color: id === 'system' ? 'red' : 'inherit'} }
                     >
                         { item.data.name }
                     </Grid>
@@ -2191,7 +2199,7 @@ class ObjectBrowser extends React.Component {
 
             return <ObjectCustomDialog
                 objectIDs={ this.state.customDialog }
-                expertMode={ this.props.expertMode }
+                expertMode={ this.state.filter.expertMode }
                 t={ this.props.t }
                 lang={ this.props.lang }
                 socket={ this.props.socket }
@@ -2225,7 +2233,7 @@ class ObjectBrowser extends React.Component {
             obj={ this.objects[this.state.editObjectDialog] }
             themeName={ this.props.themeName }
             t={ this.props.t }
-            expertMode={ this.props.expertMode }
+            expertMode={ this.state.filter.expertMode }
             onClose={ obj => {
                 this.setState({editObjectDialog: ''});
                 obj && this.props.socket.setObject(obj._id, obj);
@@ -2247,7 +2255,7 @@ class ObjectBrowser extends React.Component {
         return <ObjectBrowserValue
             t={ this.props.t }
             type={ type }
-            expertMode={ this.props.expertMode }
+            expertMode={ this.state.filter.expertMode }
             value={ this.edit.val }
             onClose={ res => {
                 this.setState({ updateOpened: false });
