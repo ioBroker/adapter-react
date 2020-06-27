@@ -108,9 +108,11 @@ class SelectID extends React.Component {
                         columns={ this.props.columns || ['name', 'type', 'role', 'room', 'func', 'val'] }
                         types={ this.props.types || ['state'] }
                         t={ I18n.t }
+                        lang={ this.props.lang || I18n.getLanguage() }
                         socket={ this.props.socket }
                         selected={ this.state.selected }
                         multiSelect={ this.props.multiSelect }
+                        notEditable={ this.props.notEditable === undefined ? true : this.props.notEditable }
                         name={ this.state.name }
                         theme={ this.props.theme }
                         onFilterChanged={ filterConfig => {
@@ -140,8 +142,10 @@ SelectID.propTypes = {
     classes: PropTypes.object,
     onClose: PropTypes.func,
     dialogName: PropTypes.string,
+    notEditable: PropTypes.bool,
     onOk: PropTypes.func.isRequired,
     title: PropTypes.string,
+    lang: PropTypes.string,
     selected: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.array

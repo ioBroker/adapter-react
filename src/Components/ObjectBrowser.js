@@ -11,6 +11,7 @@ import copy from './copy-to-clipboard';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
 import {withStyles} from '@material-ui/core/styles';
+import withWidth from '@material-ui/core/withWidth';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -22,6 +23,13 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import Checkbox from '@material-ui/core/Checkbox';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
 
 // own
 import Utils from './Utils';
@@ -172,6 +180,8 @@ const styles = theme => ({
     cellName : {
         display: 'inline-block',
         verticalAlign: 'top',
+        fontSize: 14,
+        marginLeft: 5,
     },
     cellType: {
         display: 'inline-block',
@@ -200,17 +210,17 @@ const styles = theme => ({
         verticalAlign: 'top'
     },
     cellValueTooltip: {
-        width: '100%',
+        fontSize: 12,
     },
     cellValueText: {
         width: '100%',
         height: ROW_HEIGHT,
+        fontSize: 16,
         display: 'inline-block',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         position: 'relative',
         verticalAlign: 'top',
-        cursor: 'text',
         '& .copyButton': {
             display: 'none'
         },
@@ -220,7 +230,7 @@ const styles = theme => ({
     },
     cellValueTooltipTitle: {
         fontStyle: 'italic',
-        width: 80,
+        width: 100,
         display: 'inline-block',
     },
     cellValueTooltipValue: {
@@ -229,6 +239,9 @@ const styles = theme => ({
         //overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
+    },
+    cellValueTooltipBox: {
+        width: 250,
     },
     cellValueTextUnit: {
         marginLeft: theme.spacing(0.5),
@@ -397,6 +410,25 @@ const styles = theme => ({
     },
     grow: {
         flexGrow: 1
+    },
+    enumIconDiv: {
+        marginRight: theme.spacing(1),
+        width: 32,
+        height: 32,
+        borderRadius: 8,
+        background: '#FFFFFF'
+    },
+    enumIcon: {
+        marginTop: 4,
+        marginLeft: 4,
+        width: 24,
+        height: 24
+    },
+    enumList: {
+        minWidth: 250,
+    },
+    enumCheckbox: {
+        minWidth: 0,
     }
 });
 
@@ -548,7 +580,7 @@ function getSystemIcon(objects, id, k) {
     return icon || null;
 }
 
-function buildTree(objects, options) {
+function buildTree(objects, options, enums) {
     options = options || {};
 
     const ids = Object.keys(objects);
@@ -656,7 +688,7 @@ function buildTree(objects, options) {
                 const _croot = {
                     data: {
                         name:   parts[parts.length - 1],
-                        title:  getName(obj, options.lang),
+                        title:  getName(obj && obj.common && obj.common.name, options.lang),
                         obj,
                         parent: croot,
                         icon:   getSelectIdIcon(objects, id, '.') || getSystemIcon(objects, id, 0),
@@ -774,21 +806,22 @@ function findRoomsForObject(data, id, lang, withParentInfo, rooms) {
     return rooms;
 }
 
-/* function findRoomsForObjectAsIds(data, id, rooms) {
+function findEnumsForObjectAsIds(data, id, enumName, funcs) {
     if (!id) {
         return [];
     }
-    rooms = rooms || [];
-    for (let i = 0; i < data.roomEnums.length; i++) {
-        const common = data.objects[data.roomEnums[i]] && data.objects[data.roomEnums[i]].common;
+    funcs = funcs || [];
+    for (let i = 0; i < data[enumName].length; i++) {
+        const common = data.objects[data[enumName][i]] && data.objects[data[enumName][i]].common;
         if (common && common.members && common.members.indexOf(id) !== -1 &&
-            rooms.indexOf(data.roomEnums[i]) === -1) {
-            rooms.push(data.roomEnums[i]);
+            funcs.indexOf(data[enumName][i]) === -1) {
+            funcs.push(data[enumName][i]);
         }
     }
-    return rooms;
+
+    return funcs;
 }
-*/
+
 function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     if (!id) {
         return [];
@@ -815,22 +848,6 @@ function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     return funcs;
 }
 
-/*function findFunctionsForObjectAsIds(data, id, funcs) {
-    if (!id) {
-        return [];
-    }
-    funcs = funcs || [];
-    for (let i = 0; i < data.funcEnums.length; i++) {
-        const common = data.objects[data.funcEnums[i]] && data.objects[data.funcEnums[i]].common;
-        if (common && common.members && common.members.indexOf(id) !== -1 &&
-            funcs.indexOf(data.funcEnums[i]) === -1) {
-            funcs.push(data.funcEnums[i]);
-        }
-    }
-
-    return funcs;
-}
-*/
 function getStates(obj) {
     let states;
     if (obj &&
@@ -1166,6 +1183,38 @@ const StyledBadge = withStyles((theme) => ({
     },
 }))(Badge);
 
+const SCREEN_WIDTHS = {
+    // extra-small: 0px
+    xs: {idWidth: 300, fields: ['room'], widths: {room: 200}},
+    // small: 600px
+    sm: {idWidth: 300, fields: ['room', 'func', 'buttons'], widths: {room: 180, func: 180, buttons: 76}},
+    // medium: 960px
+    md: {idWidth: 300, fields: ['room', 'func', 'val', 'buttons'], widths: {room: 150, func: 150, val: 120, buttons: 76}},
+    // large: 1280px
+    lg: {idWidth: 300, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'],
+        widths: {
+            type: 80,
+            role: 120,
+            room: 180,
+            func: 180,
+            val: 120,
+            buttons: 76
+        }
+    },
+
+    // extra-large: 1920px
+    xl: {idWidth: 650, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'],
+        widths: {
+            type: 80,
+            role: 120,
+            room: 180,
+            func: 180,
+            val: 170,
+            buttons: 76
+        }
+    },
+};
+
 class ObjectBrowser extends React.Component {
     constructor(props) {
         super(props);
@@ -1220,7 +1269,7 @@ class ObjectBrowser extends React.Component {
 
         this.onObjectChangeBound = this.onObjectChange.bind(this);
 
-        this.visibleCols = this.props.columns || ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'];
+        this.visibleCols = this.props.columns || SCREEN_WIDTHS[props.width].fields;
 
         // remove type column if only one type must be selected
         if (this.props.types && this.props.types.length === 1) {
@@ -1256,7 +1305,8 @@ class ObjectBrowser extends React.Component {
             scrollBarWidth: 16,
             hasSomeCustoms: false,
             customDialog,
-            editObjectDialog: ''
+            editObjectDialog: '',
+            enumDialog: null,
         };
 
         this.edit = {};
@@ -1290,7 +1340,7 @@ class ObjectBrowser extends React.Component {
                 if (this.props.types) {
                     this.objects = {};
                     Object.keys(objects).forEach(id => {
-                        if (objects[id] && this.props.types.includes(objects[id].type)) {
+                        if (objects[id] && (objects[id].type === 'enum' || this.props.types.includes(objects[id].type))) {
                             this.objects[id] = objects[id];
                         }
                     });
@@ -1317,7 +1367,6 @@ class ObjectBrowser extends React.Component {
                         this.state.selected && this.state.selected.length && this.onSelect());
                 }
             });
-
 
         // read default history
         this.props.socket.getSystemConfig()
@@ -1606,12 +1655,13 @@ class ObjectBrowser extends React.Component {
     }
 
     getFilterSelectRoom() {
-        const rooms = this.info.roomEnums.map(id => {
-            return {name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()), value: id};
-        });
+        const rooms = this.info.roomEnums.map(id =>
+            ({
+                name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()),
+                value: id,
+            }));
 
         return this.getFilterSelect('room', rooms);
-
     }
 
     getFilterSelectFunction() {
@@ -1882,11 +1932,76 @@ class ObjectBrowser extends React.Component {
             ];
         }
 
-        return <Tooltip title={ info.valFull } onOpen={ () => this.readHistory(id) }>
+        return <Tooltip title={ info.valFull } classes={ {tooltip: this.props.classes.cellValueTooltip, popper: this.props.classes.cellValueTooltipBox} } onOpen={ () => this.readHistory(id) }>
             <div style={ info.style } className={ classes.cellValueText }>
                 { info.valText }
             </div>
         </Tooltip>;
+    }
+
+    renderEnumDialog() {
+        if (this.state.enumDialog) {
+
+            const type = this.state.enumDialog.type;
+            const item = this.state.enumDialog.item;
+            const itemEnums = findEnumsForObjectAsIds(this.info, item.data.id, type === 'room' ? 'roomEnums' : 'funcEnums');
+
+            const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums).map(id =>
+                ({
+                    name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop(), this.props.lang),
+                    value: id,
+                    icon: getSelectIdIcon(this.objects, id, '.')  // todo other for web
+                }));
+
+            enums.forEach(item => {
+                if (item.icon) {
+                    item.icon = <div className={ this.props.classes.enumIconDiv }><img src={ item.icon } className={ this.props.classes.enumIcon } alt={ item.name }/></div>;
+                }
+            });
+
+            // const hasIcons = !!enums.find(item => item.icon);
+
+            return <Dialog onClose={() => this.setState({enumDialog: null})} aria-labelledby="enum-dialog-title" open={ true }>
+                <DialogTitle id="simple-dialog-title">{ type === 'func' ? this.props.t('Define functions') : this.props.t('Define rooms') }</DialogTitle>
+                <List classes={{ root: this.props.classes.enumList }}>
+                    {
+                        enums.map(item => {
+                            let id;
+                            let name;
+                            let icon;
+
+                            if (typeof item === 'object') {
+                                id   = item.value;
+                                name = item.name;
+                                icon = item.icon;
+                            } else {
+                                id   = item;
+                                name = item;
+                            }
+                            const labelId = `checkbox-list-label-${id}`;
+
+                            return <ListItem className={ this.props.classes.headerCellSelectItem } key={ id } onClick={() => {
+
+                            }}>
+                                <ListItemIcon classes={{ root: this.props.classes.enumCheckbox }}>
+                                    <Checkbox
+                                        edge="start"
+                                        checked={ itemEnums.includes(id) }
+                                        tabIndex={ -1 }
+                                        disableRipple
+                                        inputProps={{ 'aria-labelledby': labelId }}
+                                    />
+                                </ListItemIcon>
+                                <ListItemText id={ labelId }>{ name }</ListItemText>
+                                { icon ? <ListItemSecondaryAction>{ icon }</ListItemSecondaryAction> : null }
+                            </ListItem>;
+                        })
+                    }
+                </List>
+            </Dialog>
+        } else {
+            return null;
+        }
     }
 
     renderLeaf(item, isExpanded, widths, classes) {
@@ -1936,6 +2051,10 @@ class ObjectBrowser extends React.Component {
                     checked={ this.state.selected.includes(id) }
                 /> :
                 null;
+
+        if (item.data.funcs && item.data.funcs.length) {
+            console.log(item.data.funcs);
+        }
 
         return (
             <Grid
@@ -1993,9 +2112,12 @@ class ObjectBrowser extends React.Component {
                 {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
                 {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS.type }}>{ typeImg } { obj && obj.type }</div> : null }
                 {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS.role }}>{ obj && obj.common && obj.common.role }</div> : null }
-                {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS.room }}>{ item.data.rooms }</div> : null }
-                {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS.func }}>{ item.data.funcs }</div> : null }
-                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS.val }} onClick={e => {
+                {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS.room, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'room'}}) }>{ item.data.rooms }</div> : null }
+                {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS.func, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'func'}}) }>{ item.data.funcs }</div> : null }
+                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS.val,  cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => {
+                    if (!this.props.notEditable) {
+                        return;
+                    }
                     if (!item.data.obj || !this.states) {
                         return null;
                     }
@@ -2111,6 +2233,7 @@ class ObjectBrowser extends React.Component {
         />
 
     }
+
     renderEditValueDialog() {
         if (!this.state.updateOpened || !this.props.objectBrowserValue) {
             return null;
@@ -2161,15 +2284,8 @@ class ObjectBrowser extends React.Component {
         if (!this.state.loaded) {
             return (<CircularProgress/>);
         } else {
-            const idWidth = 300;
-            const WIDTHS = {
-                type: 80,
-                role: 120,
-                room: 180,
-                func: 180,
-                val: 120,
-                buttons: 76
-            };
+            const idWidth = SCREEN_WIDTHS[this.props.width].idWidth;
+            const WIDTHS = SCREEN_WIDTHS[this.props.width].widths;
 
             let widthSum = idWidth;
             widthSum += this.visibleCols.includes('type')    ? WIDTHS.type : 0;
@@ -2182,8 +2298,8 @@ class ObjectBrowser extends React.Component {
             const widths = {
                 idWidth,
                 WIDTHS,
-                widthName:       `calc(100% - ${widthSum}px)`,
-                widthNameHeader: `calc(100% - ${widthSum + this.state.scrollBarWidth}px)`,
+                widthName:       `calc(100% - ${widthSum + 5}px)`,
+                widthNameHeader: `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`,
             };
 
             const classes = this.props.classes;
@@ -2204,6 +2320,7 @@ class ObjectBrowser extends React.Component {
                     { this.renderCustomDialog() }
                     { this.renderEditValueDialog() }
                     { this.renderEditObjectDialog() }
+                    { this.renderEnumDialog() }
                 </TabContainer>
             );
         }
@@ -2225,15 +2342,22 @@ ObjectBrowser.propTypes = {
     prefix: PropTypes.string,
     themeName: PropTypes.string,
     t: PropTypes.func,
-    lang: PropTypes.string,
+    lang: PropTypes.string.isRequired,
     columns: PropTypes.array,
     multiSelect: PropTypes.bool,
+    notEditable: PropTypes.bool,
 
     // components
-    objectCustomDialog: PropTypes.object,
+    objectCustomDialog: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.func
+    ]),
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
-    router: PropTypes.object,
+    router: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.func
+    ]),
 };
 
-export default withStyles(styles)(ObjectBrowser);
+export default withWidth()(withStyles(styles)(ObjectBrowser));
