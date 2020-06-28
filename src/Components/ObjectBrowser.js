@@ -1417,7 +1417,7 @@ class ObjectBrowser extends React.Component {
     }
 
     renderErrorDialog() {
-        return <Dialog
+        return this.state.error ? <Dialog
             open={true}
             maxWidth="sm"
             fullWidth={true}
@@ -1434,7 +1434,7 @@ class ObjectBrowser extends React.Component {
             <DialogActions>
                 <Button onClick={ () => this.setState({error: ''}) } color="primary" autoFocus>{ this.props.t('Ok') }</Button>
             </DialogActions>
-        </Dialog>;
+        </Dialog> : null;
     }
 
     showError(error) {

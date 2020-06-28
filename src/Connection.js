@@ -468,24 +468,24 @@ class Connection {
                         disableProgressUpdate && this.onProgress(PROGRESS.OBJECTS_LOADED);
                         callback(this.objects);
                     });
-
                 }
             }
         } else {
             if (!this.connected) {
                 return Promise.reject(NOT_CONNECTED);
-            }
-            return new Promise((resolve, reject) => {
-                if (!update && this.objects) {
-                    return resolve(this.objects);
-                }
+            } else {
+                return new Promise((resolve, reject) => {
+                    if (!update && this.objects) {
+                        return resolve(this.objects);
+                    }
 
-                this._socket.emit('getAllObjects', (err, res) => {
-                    this.objects = res;
-                    disableProgressUpdate && this.onProgress(PROGRESS.OBJECTS_LOADED);
-                    err ? reject(err) : resolve(this.objects);
+                    this._socket.emit('getAllObjects', (err, res) => {
+                        this.objects = res;
+                        disableProgressUpdate && this.onProgress(PROGRESS.OBJECTS_LOADED);
+                        err ? reject(err) : resolve(this.objects);
+                    });
                 });
-            });
+            }
         }
     }
 
