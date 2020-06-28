@@ -283,10 +283,13 @@ class Connection {
         if (typeof cb === 'function' && this.connected) {
             if (binary) {
                 this.getBinaryState(id)
-                    .then(base64 => cb(id, base64));
+                    .then(base64 => cb(id, base64))
+                    .catch(e =>console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(e)}`));
             } else {
-                this._socket.emit('getForeignStates', id, (err, states) =>
-                    states && Object.keys(states).forEach(id => cb(id, states[id])));
+                this._socket.emit('getForeignStates', id, (err, states) => {
+                    err && console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(err)}`);
+                    states && Object.keys(states).forEach(id => cb(id, states[id]));
+                });
             }
         }
     }

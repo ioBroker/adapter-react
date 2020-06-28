@@ -17,6 +17,12 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import I18n from '../i18n';
 
 const styles = theme => ({
+    titleBackground: {
+
+    },
+    titleColor: {
+
+    }
 });
 
 class DialogError extends React.Component {

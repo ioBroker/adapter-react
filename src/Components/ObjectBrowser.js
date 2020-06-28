@@ -62,6 +62,11 @@ import {FaScrewdriver as IconInstance} from 'react-icons/fa';
 import {FaChartLine as IconChart} from 'react-icons/fa';
 import {FaListOl as IconEnum} from 'react-icons/fa';
 import {FaScrewdriver as IconAdapter} from 'react-icons/fa';
+import I18n from "../i18n";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
 
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = ROW_HEIGHT;
@@ -1380,7 +1385,8 @@ class ObjectBrowser extends React.Component {
                             }
                         });
                 }
-            });
+            })
+            .catch(e => this.showError(e));
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -1408,6 +1414,31 @@ class ObjectBrowser extends React.Component {
         });
 
         this.subscribes = [];
+    }
+
+    renderErrorDialog() {
+        return <Dialog
+            open={true}
+            maxWidth="sm"
+            fullWidth={true}
+            onClose={ () => this.setState({error: ''}) }
+            aria-labelledby="error-dialog-title"
+            aria-describedby="error-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">{this.props.title || this.props.t('Error')}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    { this.state.error }
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={ () => this.setState({error: ''}) } color="primary" autoFocus>{ this.props.t('Ok') }</Button>
+            </DialogActions>
+        </Dialog>;
+    }
+
+    showError(error) {
+        this.setState({error: typeof error !== 'string' ? JSON.stringify(error) : error});
     }
 
     onSelect(toggleItem, isDouble) {
@@ -1512,6 +1543,8 @@ class ObjectBrowser extends React.Component {
 
     onObjectChange(id, obj, oldObj) {
         console.log('> objectChange ' + id);
+
+        this.objects = this.objects || [];
 
         if (this.objects[id]) {
             if (obj) {
@@ -1894,7 +1927,8 @@ class ObjectBrowser extends React.Component {
                             break;
                         }
                     }
-                });
+                })
+                .catch(e => this.showError(e));
         }
     }
 
@@ -2219,8 +2253,7 @@ class ObjectBrowser extends React.Component {
 
     onUpdate(valAck) {
         this.props.socket.setState(this.edit.id, {val: valAck.val, ack: valAck.ack, q: valAck.q || 0})
-            .then(err =>
-                err && window.alert('Cannot write value: ' + err));
+            .catch(e => this.showError('Cannot write value: ' + e));
     }
 
     renderEditObjectDialog() {
@@ -2236,10 +2269,12 @@ class ObjectBrowser extends React.Component {
             expertMode={ this.state.filter.expertMode }
             onClose={ obj => {
                 this.setState({editObjectDialog: ''});
-                obj && this.props.socket.setObject(obj._id, obj);
+                if (obj) {
+                    this.props.socket.setObject(obj._id, obj)
+                        .catch(e => this.showError('Cannot write object: ' + e));
+                }
             }}
         />
-
     }
 
     renderEditValueDialog() {
@@ -2329,6 +2364,7 @@ class ObjectBrowser extends React.Component {
                     { this.renderEditValueDialog() }
                     { this.renderEditObjectDialog() }
                     { this.renderEnumDialog() }
+                    { this.renderErrorDialog() }
                 </TabContainer>
             );
         }
