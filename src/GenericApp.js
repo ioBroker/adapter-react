@@ -1,20 +1,19 @@
-import React from 'react';
-import Connection from './Connection';
-import {PROGRESS} from './Connection';
-import I18n from './i18n';
+import Connection, {PROGRESS} from './Connection';
+
 import DialogError from './Dialogs/Error';
 import Toolbar from '@material-ui/core/Toolbar';
 import Fab from '@material-ui/core/Fab';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 
-import {MdSave as IconSave} from 'react-icons/md'
-import {MdClose as IconClose} from 'react-icons/md'
+import IconSave from '@material-ui/icons/Save';
+import IconClose from '@material-ui/icons/Close';
 
 import theme from './Theme';
 import Loader from './Components/Loader';
 import Router from './Components/Router';
 import Utils from './Components/Utils';
+import I18n from './i18n';
 
 if (!window.localStorage) {
     window.localStorage = {

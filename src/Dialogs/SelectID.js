@@ -7,15 +7,16 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import withStyles from '@material-ui/core/styles/withStyles';
+
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '../i18n';
 import ObjectBrowser from '../Components/ObjectBrowser';
-import {withStyles} from '@material-ui/core/styles/index';
 
 const styles = theme => ({
     headerID: {

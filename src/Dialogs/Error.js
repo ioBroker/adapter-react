@@ -4,9 +4,10 @@
  * MIT License
  *
  **/
-import React from 'react';
+import {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
+import withStyles from '@material-ui/core/styles/withStyles';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -25,7 +26,7 @@ const styles = theme => ({
     }
 });
 
-class DialogError extends React.Component {
+class DialogError extends Component {
     handleOk() {
         this.props.onClose && this.props.onClose();
     };

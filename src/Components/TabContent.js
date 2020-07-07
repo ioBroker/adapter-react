@@ -1,11 +1,11 @@
-import React from 'react';
+import {Component} from 'react';
 
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@material-ui/core/styles/withStyles';
 
 import PropTypes from 'prop-types';
 import Utils from './Utils';
 
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
 const styles = {
     root: {
@@ -17,7 +17,7 @@ const styles = {
     }
 };
 
-class TabContent extends React.Component {
+class TabContent extends Component {
 
     render() {
 

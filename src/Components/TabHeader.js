@@ -1,8 +1,8 @@
-import React from 'react';
+import {Component} from 'react';
 
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
-class TabHeader extends React.Component {
+class TabHeader extends Component {
 
     render() {
         return (

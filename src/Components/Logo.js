@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import withStyles from '@material-ui/core/styles/withStyles';
 import Fab from '@material-ui/core/Fab';
 import PropTypes from 'prop-types';
 
 import I18n from '../i18n';
 
-import {MdHelpOutline as IconHelp} from 'react-icons/md';
-import {FaFileDownload as IconDownload} from 'react-icons/fa';
-import {FaFileUpload as IconUpload} from 'react-icons/fa';
+import IconHelp from '@material-ui/icons/Help'
+import IconUpload from '@material-ui/icons/VerticalAlignTop'
+import IconDownload from '@material-ui/icons/VerticalAlignBottom'
 
 const styles = theme => ({
     buttons: {

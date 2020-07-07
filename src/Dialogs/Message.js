@@ -5,8 +5,9 @@
  *
  **/
 
-import React from 'react';
+import {Component} from 'react';
 import PropTypes from 'prop-types';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -16,7 +17,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import I18n from '../i18n';
 
-class DialogMessage extends React.Component {
+class DialogMessage extends Component {
 
     handleOk() {
         this.props.onClose && this.props.onClose();
