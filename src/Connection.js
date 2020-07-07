@@ -719,6 +719,9 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
 
+        start = start || '';
+        end = end || '\u9999';
+
         return new Promise((resolve, reject) => {
             this._socket.emit('getObjectView', 'system', type, {startkey: start, endkey: end}, (err, res) => {
                 if (!err) {
