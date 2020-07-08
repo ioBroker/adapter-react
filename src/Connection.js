@@ -90,19 +90,26 @@ class Connection {
             }
         );
 
-        this._socket.on('connect', () => {
-            this.getAdminVersion()
-                .then(version => {
-                    const [major, minor, patch] = version.split('.');
-                    const v = parseInt(major, 10) * 10000 + parseInt(minor, 10) * 100 + parseInt(patch, 10);
-                    if (v < 40102) {
-                        this._authTimer = null;
-                        // possible this is old version of admin
-                        this.onPreConnect(false, false);
-                    } else {
-                        this._socket.emit('authenticate', (isOk, isSecure) => this.onPreConnect(isOk, isSecure));
-                    }
-                });
+        this._socket.on('connect', noTimeout => {
+            // If the user is not admin it takes some time to install the handlers, because all rights must be checked
+            if (noTimeout !== true) {
+                setTimeout(() =>
+                    this.getAdminVersion()
+                        .then(version => {
+                            const [major, minor, patch] = version.split('.');
+                            const v = parseInt(major, 10) * 10000 + parseInt(minor, 10) * 100 + parseInt(patch, 10);
+                            if (v < 40102) {
+                                this._authTimer = null;
+                                // possible this is old version of admin
+                                this.onPreConnect(false, false);
+                            } else {
+                                this._socket.emit('authenticate', (isOk, isSecure) => this.onPreConnect(isOk, isSecure));
+                            }
+                        }), 500);
+            } else {
+                // iobroker websocket waits, till all handlers are installed
+                this._socket.emit('authenticate', (isOk, isSecure) => this.onPreConnect(isOk, isSecure));
+            }
         });
 
         this._socket.on('reconnect', () => {

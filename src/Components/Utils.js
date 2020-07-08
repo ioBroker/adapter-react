@@ -4,7 +4,7 @@
  * MIT License
  *
  **/
-
+import React from 'react';
 import I18n from '../i18n';
 
 const NAMESPACE = 'material';
@@ -736,7 +736,7 @@ class Utils {
     // License
     // MIT © Luke Edwards
     static _toVal(mix) {
-        var k, y, str='';
+        let k, y, str='';
 
         if (typeof mix === 'string' || typeof mix === 'number') {
             str += mix;
@@ -744,7 +744,7 @@ class Utils {
             if (Array.isArray(mix)) {
                 for (k=0; k < mix.length; k++) {
                     if (mix[k]) {
-                        if (y = toVal(mix[k])) {
+                        if (y = Utils._toVal(mix[k])) {
                             str && (str += ' ');
                             str += y;
                         }
@@ -767,7 +767,7 @@ class Utils {
     // License
     // MIT © Luke Edwards
     static clsx () {
-        var i=0, tmp, x, str='';
+        let i=0, tmp, x, str='';
         while (i < arguments.length) {
             if (tmp = arguments[i++]) {
                 if (x = Utils._toVal(tmp)) {
