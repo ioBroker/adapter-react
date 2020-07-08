@@ -5,7 +5,7 @@
  *
  **/
 
-import React from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 
@@ -32,7 +32,7 @@ const styles = theme => ({
     }
 });
 
-class SelectID extends React.Component {
+class SelectID extends Component {
     constructor(props) {
         super(props);
         this.dialogName = this.props.dialogName || 'default';

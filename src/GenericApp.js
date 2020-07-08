@@ -1,3 +1,4 @@
+import React from 'react';
 import Connection, {PROGRESS} from './Connection';
 
 import DialogError from './Dialogs/Error';
@@ -9,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import IconSave from '@material-ui/icons/Save';
 import IconClose from '@material-ui/icons/Close';
 
+import printPrompt from './Prompt';
 import theme from './Theme';
 import Loader from './Components/Loader';
 import Router from './Components/Router';
@@ -25,6 +27,7 @@ if (!window.localStorage) {
 class GenericApp extends Router {
     constructor(props, settings) {
         super(props);
+        printPrompt();
 
         // extract instance from URL
         this.instance = parseInt(window.location.search.slice(1), 10) || 0;
