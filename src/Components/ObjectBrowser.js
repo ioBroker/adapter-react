@@ -770,9 +770,9 @@ function findNode(root, id, _parts, _path, _level) {
 
 function getName(name, lang) {
     if (name && typeof name === 'object') {
-        return name[lang] || name.en;
+        return (name[lang] || name.en || '').toString();
     } else {
-        return name || '';
+        return (name || '').toString();
     }
 }
 
@@ -2195,7 +2195,7 @@ class ObjectBrowser extends React.Component {
                         <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
                     </Grid>
                 </Grid>
-                {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
+                {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ (item.data && item.data.title) || '' }</div> : null }
                 {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS.type }}>{ typeImg } { obj && obj.type }</div> : null }
                 {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS.role }}>{ obj && obj.common && obj.common.role }</div> : null }
                 {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS.room, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'room'}}) }>{ item.data.rooms }</div> : null }
