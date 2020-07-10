@@ -72,21 +72,21 @@ class SelectID extends Component {
         if (this.state.name || this.state.selected.length) {
             if (this.state.selected.length === 1) {
                 title = [
-                    <span key="selected">{ I18n.t('Selected') } </span>,
+                    <span key="selected">{ I18n.t('ra_Selected') } </span>,
                     <span key="id" className={ this.props.classes.headerID }>{
                         (this.state.name || this.state.selected) + (this.state.name ? ' [' + this.state.selected + ']' : '')
                     }</span>
                 ];
             } else {
                 title = [
-                    <span key="selected">{ I18n.t('Selected') } </span>,
+                    <span key="selected">{ I18n.t('ra_Selected') } </span>,
                     <span key="id" className={ this.props.classes.headerID }>{
                         I18n.t('%s items', this.state.selected.length)
                     }</span>
                 ];
             }
         } else {
-            title = this.props.title || I18n.t('Please select object ID...');
+            title = this.props.title || I18n.t('ra_Please select object ID...');
         }
 
         return (
@@ -131,8 +131,8 @@ class SelectID extends Component {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={ () => this.handleOk() } disabled={ !this.state.selected.length } color="primary">{ this.props.ok || I18n.t('Ok') }</Button>
-                    <Button onClick={ () => this.handleCancel() } color="primary">{ this.props.cancel || I18n.t('Cancel') }</Button>
+                    <Button onClick={ () => this.handleOk() } disabled={ !this.state.selected.length } color="primary">{ this.props.ok || I18n.t('ra_Ok') }</Button>
+                    <Button onClick={ () => this.handleCancel() } color="primary">{ this.props.cancel || I18n.t('ra_Cancel') }</Button>
                 </DialogActions>
             </Dialog>
         );

@@ -58,11 +58,27 @@ class GenericApp extends Router {
         };
 
         // init translations
+        const translations = {
+            'en': require('./i18n/en'),
+            'de': require('./i18n/de'),
+            'ru': require('./i18n/ru'),
+            'pt': require('./i18n/pt'),
+            'nl': require('./i18n/nl'),
+            'fr': require('./i18n/fr'),
+            'it': require('./i18n/it'),
+            'es': require('./i18n/es'),
+            'pl': require('./i18n/pl'),
+            'zh-cn': require('./i18n/zh-cn'),
+        };
+
+        // merge together
         if (settings && settings.translations) {
-            I18n.setTranslations(settings.translations);
+            Object.keys(settings.translations).forEach(lang => translations[lang] = Object.assign(translations[lang], settings.translations[lang]));
         } else if (props.translations) {
-            I18n.setTranslations(props.translations);
+            Object.keys(props.translations).forEach(lang => translations[lang] = Object.assign(translations[lang], props.translations[lang]));
         }
+
+        I18n.setTranslations(translations);
 
         try {
             this.isIFrame = window.self !== window.top;
@@ -234,7 +250,7 @@ class GenericApp extends Router {
     getIpAddresses(host) {
         return new Promise((resolve, reject) => {
             this.socket.socket.emit('getHostByIp', host || this.common.host, (ip, _host) => {
-                const IPs4 = [{name: '[IPv4] 0.0.0.0 - ' + I18n.t('Listen on all IPs'), address: '0.0.0.0', family: 'ipv4'}];
+                const IPs4 = [{name: '[IPv4] 0.0.0.0 - ' + I18n.t('ra_Listen on all IPs'), address: '0.0.0.0', family: 'ipv4'}];
                 const IPs6 = [{name: '[IPv6] ::',      address: '::',      family: 'ipv6'}];
                 if (_host) {
                     host = _host;
@@ -361,21 +377,21 @@ class GenericApp extends Router {
             return;
         }
         const buttonStyle = {
-            borderRadius: Theme.saveToolbar.button.borderRadius || 3,
-            height: Theme.saveToolbar.button.height || 32,
+            borderRadius: this.state.theme.saveToolbar.button.borderRadius || 3,
+            height: this.state.theme.saveToolbar.button.height || 32,
         };
 
         return (
-            <Toolbar position="absolute" style={{bottom: this.isIFrame ? 38 : 0, left: 0, right: 0, position: 'absolute', background: Theme.saveToolbar.background}}>
+            <Toolbar position="absolute" style={{bottom: this.isIFrame ? 38 : 0, left: 0, right: 0, position: 'absolute', background: this.state.theme.saveToolbar.background}}>
                 <Fab variant="extended" aria-label="Save" disabled={!this.state.changed} onClick={() => this.onSave(false)} style={buttonStyle}>
-                    <IconSave />{I18n.t('Save')}
+                    <IconSave />{I18n.t('ra_Save')}
                 </Fab>
                 <Fab variant="extended" aria-label="Save and close" disabled={!this.state.changed} onClick={() => this.onSave(true)} style={Object.assign({}, buttonStyle, {marginLeft: 10})}>
-                    <IconSave />{I18n.t('Save and close')}
+                    <IconSave />{I18n.t('ra_Save and close')}
                 </Fab>
                 <div style={{flexGrow: 1}}/>
                 <Fab variant="extended" aria-label="Close" onClick={() => GenericApp.onClose()} style={buttonStyle}>
-                    <IconClose />{I18n.t('Close')}
+                    <IconClose />{I18n.t('ra_Close')}
                 </Fab>
             </Toolbar>)
     }

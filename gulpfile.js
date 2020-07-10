@@ -60,7 +60,10 @@ gulp.task('compile', gulp.series('copy',
                 ]
             }))
             .pipe(sourcemaps.write('.'))
-            .pipe(gulp.dest('dist/Components'))
+            .pipe(gulp.dest('dist/Components')),
+
+        gulp.src(['src/i18n/*.json'])
+            .pipe(gulp.dest('dist/i18n')),
         ])
 ));
 

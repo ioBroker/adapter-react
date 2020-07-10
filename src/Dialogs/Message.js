@@ -33,14 +33,14 @@ class DialogMessage extends Component {
                 aria-labelledby="message-dialog-title"
                 aria-describedby="message-dialog-description"
             >
-                <DialogTitle id="message-dialog-title">{this.props.title || I18n.t('Message')}</DialogTitle>
+                <DialogTitle id="message-dialog-title">{this.props.title || I18n.t('ra_Message')}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="message-dialog-description">
                         {this.props.text}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('Close')}</Button>
+                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('ra_Close')}</Button>
                 </DialogActions>
             </Dialog>
         );

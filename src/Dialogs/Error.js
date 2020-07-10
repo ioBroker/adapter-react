@@ -42,14 +42,14 @@ class DialogError extends Component {
             >
                 <DialogTitle className={this.props.classes.titleBackground}
                              classes={{root: this.props.classes.titleColor}}
-                             id="alert-dialog-title">{this.props.title || I18n.t('Error')}</DialogTitle>
+                             id="alert-dialog-title">{this.props.title || I18n.t('ra_Error')}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        {this.props.text || I18n.t('Unknown error!')}
+                        {this.props.text || I18n.t('ra_Unknown error!')}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('Ok')}</Button>
+                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('ra_Ok')}</Button>
                 </DialogActions>
             </Dialog>);
     }

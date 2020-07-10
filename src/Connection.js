@@ -639,7 +639,8 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise(resolve =>
-            this._socket.emit('sendTo', instance, command, data, result => resolve(result)));
+            this._socket.emit('sendTo', instance, command, data, result =>
+                resolve(result)));
     }
 
     extendObject(id, obj) {

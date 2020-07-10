@@ -46,12 +46,12 @@ class Logo extends Component {
                     const json = JSON.parse(contents);
                     if (json.native && json.common) {
                         if (json.common.name !== this.props.common.name) {
-                            this.props.onError(I18n.t('otherConfig', json.common.name));
+                            this.props.onError(I18n.t('ra_otherConfig', json.common.name));
                         } else {
                             this.props.onLoad(json.native);
                         }
                     } else {
-                        this.props.onError(I18n.t('invalidConfig'));
+                        this.props.onError(I18n.t('ra_invalidConfig'));
                     }
                 } catch (e) {
                     this.props.onError(e.toString());

@@ -463,23 +463,32 @@ class Utils {
             now = new Date(now);
         }
 
-        let date = I18n.t('dow_' + days[now.getDay()]).replace('dow_', '');
-        date += '. ' + now.getDate() + ' ' + I18n.t('month_' + months[now.getMonth()]).replace('month_', '');
+        let date = I18n.t('ra_dow_' + days[now.getDay()]).replace('ra_dow_', '');
+        date += '. ' + now.getDate() + ' ' + I18n.t('ra_month_' + months[now.getMonth()]).replace('ra_month_', '');
         return date;
     }
 
     static renderTextWithA(text) {
-        const m = text.match(/<a .*<\/a>/);
+        let m = text.match(/<a [^<]+<\/a>/);
         if (m) {
-            let href = m[0].match(/href="([^"]+)"/) || m[0].match(/href='([^']+)'/);
-            let target = m[0].match(/target="([^"]+)"/) || m[0].match(/target='([^']+)'/);
-            const title = m[0].match(/>([^<]*)</);
-            const p = text.split(m[0]);
-            return [
-                p[0] ? (<span key="a1">{p[0]}</span>) : null,
-                (<a  key="a2" href={href ? href[1] : ''} target={target ? target[1] : '_blank'}>{title ? title[1] : ''}</a>),
-                p[1] ? (<span key="a3">{p[1]}</span>) : null
-            ];
+            const result = [];
+            let key = 1;
+            do {
+                let href = m[0].match(/href="([^"]+)"/) || m[0].match(/href='([^']+)'/);
+                let target = m[0].match(/target="([^"]+)"/) || m[0].match(/target='([^']+)'/);
+                let rel = m[0].match(/rel="([^"]+)"/) || m[0].match(/rel='([^']+)'/);
+                const title = m[0].match(/>([^<]*)</);
+
+                const p = text.split(m[0]);
+                p[0] && result.push(<span key={'a' + (key++)}>{p[0]}</span>);
+                result.push(<a key={'a' + (key++)} href={href ? href[1] : ''} target={target ? target[1] : '_blank'} rel={rel ? rel[1] : ''}>{title ? title[1] : ''}</a>);
+                text = p[1];
+                m = text && text.match(/<a [^<]+<\/a>/);
+                if (!m) {
+                    p[1] && result.push(<span key={'a' + (key++)}>{p[1]}</span>);
+                }
+            } while (m);
+            return result;
         } else {
             return text;
         }

@@ -1359,25 +1359,25 @@ class ObjectBrowser extends React.Component {
         this.edit = {};
 
         this.texts = {
-            value:          this.props.t('tooltip_value'),
-            ack:            this.props.t('tooltip_ack'),
-            ts:             this.props.t('tooltip_ts'),
-            lc:             this.props.t('tooltip_lc'),
-            from:           this.props.t('tooltip_from'),
-            user:           this.props.t('tooltip_user'),
-            quality:        this.props.t('tooltip_quality'),
-            editObject:     this.props.t('tooltip_editObject'),
-            deleteObject:   this.props.t('tooltip_deleteObject'),
-            customConfig:   this.props.t('tooltip_customConfig'),
-            copyState:      this.props.t('tooltip_copyState'),
-            editState:      this.props.t('tooltip_editState'),
-            filter_id:      this.props.t('filter_id'),
-            filter_name:    this.props.t('filter_name'),
-            filter_type:    this.props.t('filter_type'),
-            filter_role:    this.props.t('filter_role'),
-            filter_room:    this.props.t('filter_room'),
-            filter_func:    this.props.t('filter_func'),
-            filter_customs: this.props.t('filter_customs'),
+            value:          this.props.t('ra_tooltip_value'),
+            ack:            this.props.t('ra_tooltip_ack'),
+            ts:             this.props.t('ra_tooltip_ts'),
+            lc:             this.props.t('ra_tooltip_lc'),
+            from:           this.props.t('ra_tooltip_from'),
+            user:           this.props.t('ra_tooltip_user'),
+            quality:        this.props.t('ra_tooltip_quality'),
+            editObject:     this.props.t('ra_tooltip_editObject'),
+            deleteObject:   this.props.t('ra_tooltip_deleteObject'),
+            customConfig:   this.props.t('ra_tooltip_customConfig'),
+            copyState:      this.props.t('ra_tooltip_copyState'),
+            editState:      this.props.t('ra_tooltip_editState'),
+            filter_id:      this.props.t('ra_filter_id'),
+            filter_name:    this.props.t('ra_filter_name'),
+            filter_type:    this.props.t('ra_filter_type'),
+            filter_role:    this.props.t('ra_filter_role'),
+            filter_room:    this.props.t('ra_filter_room'),
+            filter_func:    this.props.t('ra_filter_func'),
+            filter_customs: this.props.t('ra_filter_customs'),
         };
 
         this.onStateChangeBound = this.onStateChange.bind(this);
@@ -1467,14 +1467,14 @@ class ObjectBrowser extends React.Component {
             aria-labelledby="error-dialog-title"
             aria-describedby="error-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title">{this.props.title || this.props.t('Error')}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">{this.props.title || this.props.t('ra_Error')}</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     { this.state.error }
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={ () => this.setState({error: ''}) } color="primary" autoFocus>{ this.props.t('Ok') }</Button>
+                <Button onClick={ () => this.setState({error: ''}) } color="primary" autoFocus>{ this.props.t('ra_Ok') }</Button>
             </DialogActions>
         </Dialog> : null;
     }
@@ -1872,9 +1872,9 @@ class ObjectBrowser extends React.Component {
         const text = e.target.parentNode.dataset.copy || '';
         copy(text);
         if (text.length < 50) {
-            this.setState({ toast: this.props.t('Copied %s', text) });
+            this.setState({ toast: this.props.t('ra_Copied %s', text) });
         } else {
-            this.setState({ toast: this.props.t('Copied') });
+            this.setState({ toast: this.props.t('ra_Copied') });
         }
     }
 
@@ -2047,7 +2047,7 @@ class ObjectBrowser extends React.Component {
             // const hasIcons = !!enums.find(item => item.icon);
 
             return <Dialog onClose={() => this.setState({enumDialog: null})} aria-labelledby="enum-dialog-title" open={ true }>
-                <DialogTitle id="simple-dialog-title">{ type === 'func' ? this.props.t('Define functions') : this.props.t('Define rooms') }</DialogTitle>
+                <DialogTitle id="simple-dialog-title">{ type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms') }</DialogTitle>
                 <List classes={{ root: this.props.classes.enumList }}>
                     {
                         enums.map(item => {
@@ -2245,7 +2245,7 @@ class ObjectBrowser extends React.Component {
             {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.role }}>{ this.getFilterSelectRole() }</div> : null }
             {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.room }}>{ this.getFilterSelectRoom() }</div> : null }
             {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.func }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS.val}}>{ this.props.t('Value') }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS.val}}>{ this.props.t('ra_Value') }</div> : null }
             {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.buttons }}> { this.getFilterSelectCustoms() }</div> : null }
         </div>;
     }

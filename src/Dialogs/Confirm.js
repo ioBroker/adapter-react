@@ -38,15 +38,15 @@ class DialogConfirm extends Component {
                 aria-labelledby="confirmation-dialog-title"
                 aria-describedby="confirmation-dialog-description"
             >
-                <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Are you sure?')}</DialogTitle>
+                <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('ra_Are you sure?')}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="confirmation-dialog-description">
                         {this.props.text}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{this.props.ok || I18n.t('Ok')}</Button>
-                    <Button onClick={() => this.handleCancel()}>{this.props.cancel || I18n.t('Cancel')}</Button>
+                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{this.props.ok || I18n.t('ra_Ok')}</Button>
+                    <Button onClick={() => this.handleCancel()}>{this.props.cancel || I18n.t('ra_Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );

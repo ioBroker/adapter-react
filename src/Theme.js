@@ -58,8 +58,9 @@ function getElevations(color, overlay) {
 }
 
 export default type => {
+    let theme;
     if (type === 'dark') {
-        return createMuiTheme({
+        theme = {
             name: type,
             palette: {
                 type: 'dark',
@@ -96,9 +97,9 @@ export default type => {
                 },
                 MuiPaper: getElevations('#121212', '#fff')
             }
-        });
+        };
     } else if (type === 'blue') {
-        return createMuiTheme({
+        theme = {
             name: type,
             palette: {
                 type: 'dark',
@@ -135,9 +136,9 @@ export default type => {
                 },
                 MuiPaper: getElevations('#151d21', '#fff')
             }
-        });
+        };
     } else if (type === 'colored') {
-        return createMuiTheme({
+        theme = {
             name: type,
             palette: {
                 type: 'light',
@@ -165,9 +166,9 @@ export default type => {
                     }
                 }
             }
-        });
+        };
     } else {
-        return createMuiTheme({
+        theme = {
             name: type,
             palette: {
                 type: 'light',
@@ -190,6 +191,16 @@ export default type => {
                     }
                 }
             }
-        });
+        };
     }
+
+    // add save toolbar
+    theme.saveToolbar = {
+        background: theme.palette.primary.main,
+        button: {
+            borderRadius: 3,
+            height: 32
+        }
+    };
+    return createMuiTheme(theme);
 }
