@@ -29,8 +29,15 @@ class GenericApp extends Router {
         super(props);
         printPrompt();
 
+        let query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
+        let args = {};
+        query.trim().split('&').filter(t => t).forEach(b => {
+            const parts = b.split('=');
+            args[parts[0]] = parts.length === 2 ? parts[1] : true;
+        });
+
         // extract instance from URL
-        this.instance = parseInt(window.location.search.slice(1), 10) || 0;
+        this.instance = args.instance !== undefined ? parseInt(args.instance, 10) || 0 : (parseInt(window.location.search.slice(1), 10) || 0);
         // extract adapter name from URL
         const tmp = window.location.pathname.split('/');
         this.adapterName = (settings && settings.adapterName) || props.adapterName || window.adapterName || tmp[tmp.length - 2] || 'iot';
