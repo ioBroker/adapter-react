@@ -79,7 +79,7 @@ const styles = theme => ({
     },
 
     tableDiv: {
-        paddingTop: theme.spacing(1),
+        paddingTop: 0,//theme.spacing(1),
         paddingLeft: 0,
         width: 'calc(100% - ' + theme.spacing(1) + 'px)',
         height: 'calc(100% - ' + 38 + 'px)',
@@ -453,7 +453,7 @@ function binarySearch(list, find, _start, _end) {
     }
 }
 
-function applyFilter(item, filters, lang, objects, context, counter) {
+function applyFilter(item, filters, lang, objects, context, counter, customFilter) {
     let filteredOut = false;
     if (!context) {
         context = {};
@@ -485,7 +485,18 @@ function applyFilter(item, filters, lang, objects, context, counter) {
     if (data && data.id) {
         const common = data.obj && data.obj.common;
 
-        if (!filters.expertMode) {
+        if (customFilter) {
+            if (customFilter.type && customFilter.type !== data.obj.type) {
+                filteredOut = true;
+            } else
+            if (customFilter.common && customFilter.common.custom) {
+                if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
+                    filteredOut = true;
+                }
+            }
+        }
+
+        if (!filteredOut && !filters.expertMode) {
             filteredOut =
                 data.id === 'system' ||
                 data.id === 'enum' ||
@@ -493,7 +504,7 @@ function applyFilter(item, filters, lang, objects, context, counter) {
                 data.id.startsWith('system.') ||
                 data.id.startsWith('enum.') ||
                 data.id.startsWith('_design/') ||
-                (common && common.expertMode);
+                (common && common.expert);
         }
         if (!filteredOut && context.id) {
             if (data.fID === undefined) {
@@ -528,7 +539,7 @@ function applyFilter(item, filters, lang, objects, context, counter) {
     data.hasVisibleChildren = false;
     if (item.children) {
         item.children.forEach(_item => {
-            const visible = applyFilter(_item, filters, lang, objects, context, counter);
+            const visible = applyFilter(_item, filters, lang, objects, context, counter, customFilter);
             if (visible) {
                 data.hasVisibleChildren = true;
             }
@@ -1403,7 +1414,7 @@ class ObjectBrowser extends React.Component {
                 let node = this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
 
                 // If selected ID is not visible, reset filter
-                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects)) {
+                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, this.props.customFilter)) {
                     // reset filter
                     this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
                         this.setState({ loaded: true }, () =>
@@ -2352,7 +2363,7 @@ class ObjectBrowser extends React.Component {
         if (this.lastAppliedFilter !== jsonFilter && this.objects && this.root) {
             const counter = {count: 0};
 
-            applyFilter(this.root, this.state.filter, this.state.lang, this.objects, null, counter);
+            applyFilter(this.root, this.state.filter, this.state.lang, this.objects, null, counter, this.props.customFilter);
 
             if (counter.count < 500 && !this.state.expandAllVisible) {
                 setTimeout(() => this.setState({ expandAllVisible: true }));
@@ -2431,7 +2442,6 @@ ObjectBrowser.propTypes = {
     themeName: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string.isRequired,
-    columns: PropTypes.array,
     multiSelect: PropTypes.bool,
     notEditable: PropTypes.bool,
 
@@ -2440,12 +2450,15 @@ ObjectBrowser.propTypes = {
         PropTypes.object,
         PropTypes.func
     ]),
+    customFilter: PropTypes.object, // optional {common: {custom: true}} or {common: {custom: 'sql.0'}}
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
     router: PropTypes.oneOfType([
         PropTypes.object,
         PropTypes.func
     ]),
+    types: PropTypes.array,   // optional ['state', 'instance', 'channel']
+    columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
 };
 
 export default withWidth()(withStyles(styles)(ObjectBrowser));

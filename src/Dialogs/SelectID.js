@@ -116,6 +116,7 @@ class SelectID extends Component {
                         notEditable={ this.props.notEditable === undefined ? true : this.props.notEditable }
                         name={ this.state.name }
                         theme={ this.props.theme }
+                        customFilter={ this.props.customFilter }
                         onFilterChanged={ filterConfig => {
                             this.filters = filterConfig;
                             window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
@@ -151,6 +152,7 @@ SelectID.propTypes = {
         PropTypes.string,
         PropTypes.array
     ]),
+    customFilter: PropTypes.object, // optional {common: {custom: true}} or {common: {custom: 'sql.0'}}
     statesOnly: PropTypes.bool,
     socket: PropTypes.object.isRequired,
     cancel: PropTypes.string,
