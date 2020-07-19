@@ -1240,9 +1240,20 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
         return new Promise((resolve, reject) =>
             this._socket.emit('getHistory', id, options, (err, values) =>
                 err ? reject(err) : resolve(values)));
+    }
+
+    getHistoryEx(id, options) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getHistory', id, options, (err, values, stepIgnore, sessionId) =>
+                err ? reject(err) : resolve({values, sessionId, stepIgnore})));
     }
 
     changePassword(user, password) {

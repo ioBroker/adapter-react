@@ -797,6 +797,34 @@ class Utils {
         window.localStorage.setItem('App.themeName', themeName);
         window.localStorage.setItem('App.theme', themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light');
     }
+
+    static parseQuery(query) {
+        query = (query || '').toString().replace(/^\?/, '');
+        const result = {};
+        query.split('&').forEach(part => {
+            part = part.trim();
+            if (part) {
+                const parts = part.split('=');
+                const attr = decodeURIComponent(parts[0]).trim();
+                if (parts.length > 1) {
+                    result[attr] = decodeURIComponent(parts[1]);
+                    if (result[attr] === 'true') {
+                        result[attr] = true;
+                    } else if (result[attr] === 'false') {
+                        result[attr] = false;
+                    } else {
+                        const f = parseFloat(result[attr]);
+                        if (f.toString() === result[attr]) {
+                            result[attr] = f;
+                        }
+                    }
+                } else {
+                    result[attr] = true;
+                }
+            }
+        });
+        return result;
+    }
 }
 
 export default Utils;

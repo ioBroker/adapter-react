@@ -31,7 +31,7 @@ class GenericApp extends Router {
 
         let query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
         let args = {};
-        query.trim().split('&').filter(t => t).forEach(b => {
+        query.trim().split('&').filter(t => t.trim()).forEach(b => {
             const parts = b.split('=');
             args[parts[0]] = parts.length === 2 ? parts[1] : true;
         });
@@ -434,6 +434,7 @@ class GenericApp extends Router {
         return (
             <div className="App">
                 {this.renderError()}
+                {this.renderToast()}
                 {this.renderSaveCloseButtons()}
             </div>
         );
