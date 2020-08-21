@@ -143,16 +143,16 @@ export default type => {
             palette: {
                 type: 'light',
                 primary: {
-                    main: '#3499CC'
+                    main: '#3399CC'
                 },
                 secondary: {
-                    main: '#144578'
+                    main: '#164477'
                 }
             },
             overrides: {
                 MuiAppBar: {
                     colorDefault: {
-                        backgroundColor: '#3499CC'
+                        backgroundColor: '#3399CC'
                     }
                 },
                 MuiLink: {
@@ -173,10 +173,10 @@ export default type => {
             palette: {
                 type: 'light',
                 primary: {
-                    main: '#3499CC'
+                    main: '#3399CC'
                 },
                 secondary: {
-                    main: '#144578'
+                    main: '#164477'
                 }
             },
             overrides: {
