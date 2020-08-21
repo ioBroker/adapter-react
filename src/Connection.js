@@ -94,16 +94,22 @@ class Connection {
             // If the user is not admin it takes some time to install the handlers, because all rights must be checked
             if (noTimeout !== true) {
                 setTimeout(() =>
-                    this.getAdminVersion()
-                        .then(version => {
-                            const [major, minor, patch] = version.split('.');
-                            const v = parseInt(major, 10) * 10000 + parseInt(minor, 10) * 100 + parseInt(patch, 10);
-                            if (v < 40102) {
-                                this._authTimer = null;
-                                // possible this is old version of admin
-                                this.onPreConnect(false, false);
+                    this.getVersion()
+                        .then(info => {
+                            if (info.serverName.startsWith('admin')) {
+                                const [major, minor, patch] = info.version.split('.');
+                                const v = parseInt(major, 10) * 10000 + parseInt(minor, 10) * 100 + parseInt(patch, 10);
+                                if (v < 40102) {
+                                    this._authTimer = null;
+                                    // possible this is old version of admin
+                                    this.onPreConnect(false, false);
+                                } else {
+                                    this._socket.emit('authenticate', (isOk, isSecure) => this.onPreConnect(isOk, isSecure));
+                                }
                             } else {
-                                this._socket.emit('authenticate', (isOk, isSecure) => this.onPreConnect(isOk, isSecure));
+                                this._authTimer = null;
+                                // Web server does not support authentication yet over socket.io
+                                this.onPreConnect(false, false);
                             }
                         }), 500);
             } else {
@@ -1301,12 +1307,31 @@ class Connection {
                 err ? reject(err) : resolve(text)));
     }
 
-    getAdminVersion() {
+    getVersion() {
         this._promises.version = this._promises.version || new Promise((resolve, reject) =>
-            this._socket.emit('getVersion', (err, version) =>
-                err ? reject(err) : resolve(version)));
+            this._socket.emit('getVersion', (err, version, serverName) => {
+                // support of old socket.io
+                if (err && !version && typeof err === 'string' && err.match(/\d+\.\d+\.\d+/)) {
+                    resolve({version, serverName: 'socketio'});
+                } else {
+                    return err ? reject(err) : resolve({version, serverName});
+                }
+            }));
 
         return this._promises.version;
+    }
+
+    getWebServerName() {
+        this._promises.webName = this._promises.webName || new Promise((resolve, reject) =>
+            this._socket.emit('getAdapterName', (err, name) =>
+                err ? reject(err) : resolve(name)));
+
+        return this._promises.webName;
+    }
+
+    getAdminVersion() {
+        console.log('Deprecated: use getVersion');
+        return this.getVersion();
     }
 }
 
