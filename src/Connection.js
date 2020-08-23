@@ -81,8 +81,27 @@ class Connection {
                 return;
             }
         }
+
+        let host = this.props.host;
+        let port = this.props.port;
+        let protocol = this.props.protocol.replace(':', '');
+
+        // if web adapter, socket io could be on other port or even host
+        if (window.socketUrl) {
+            let parts = window.socketUrl.split(':');
+            host = parts[0] || host;
+            port = parts[1] || port;
+            if (host.includes('://')) {
+                parts = host.split('://');
+                protocol = parts[0];
+                host = parts[1];
+            }
+        }
+
+        const url = `${protocol}://${host}:${port}`;
+
         this._socket = window.io.connect(
-            this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
+            url,
             {
                 query: 'ws=true', 
                 name: this.props.name,
