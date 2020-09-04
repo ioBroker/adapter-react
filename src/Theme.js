@@ -194,6 +194,10 @@ export default type => {
         };
     }
 
+    theme.toolbar = {
+        height: 48
+    };
+
     // add save toolbar
     theme.saveToolbar = {
         background: theme.palette.primary.main,

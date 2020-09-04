@@ -803,6 +803,18 @@ class Utils {
         window.localStorage.setItem('App.theme', themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light');
     }
 
+    static toggleTheme(themeName) {
+        themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
+
+        const newThemeName = themeName === 'dark' ? 'blue' :
+            themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
+                themeName === 'light' ? 'dark' : 'colored';
+
+        Utils.setThemeName(newThemeName);
+
+        return newThemeName;
+    }
+
     static parseQuery(query) {
         query = (query || '').toString().replace(/^\?/, '');
         const result = {};
