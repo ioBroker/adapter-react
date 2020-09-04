@@ -793,6 +793,11 @@ class Utils {
             window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored';
     }
 
+    static getThemeType(themeName = '') {
+        themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
+        return themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light';
+    }
+
     static setThemeName(themeName) {
         window.localStorage.setItem('App.themeName', themeName);
         window.localStorage.setItem('App.theme', themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light');

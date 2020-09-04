@@ -309,7 +309,7 @@ class Connection {
                 this._socket.emit('subscribe', id);
             }
         } else {
-            this.statesSubscribes[id].cbs.indexOf(cb) === -1 && this.statesSubscribes[id].cbs.push(cb);
+            !this.statesSubscribes[id].cbs.includes(cb) && this.statesSubscribes[id].cbs.push(cb);
         }
         if (typeof cb === 'function' && this.connected) {
             if (binary) {
@@ -407,14 +407,8 @@ class Connection {
             }
         });
 
-        if (this.props.onBlocklyChanges && id.match(/^system\.adapter\.[-\w\d]+\$/)) {
-            if (obj[id].common && obj[id].common.blockly) {
-                this.props.onBlocklyChanges(id);
-            }
-        }
-
         if (changed && this.props.onObjectChange) {
-            this.props.onObjectChange(this.objects);
+            this.props.onObjectChange(id, obj);
         }
     }
 

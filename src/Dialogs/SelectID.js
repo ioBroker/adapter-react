@@ -115,7 +115,8 @@ class SelectID extends Component {
                         multiSelect={ this.props.multiSelect }
                         notEditable={ this.props.notEditable === undefined ? true : this.props.notEditable }
                         name={ this.state.name }
-                        theme={ this.props.theme }
+                        themeName={ this.props.themeName }
+                        themeType={ this.props.themeType }
                         customFilter={ this.props.customFilter }
                         onFilterChanged={ filterConfig => {
                             this.filters = filterConfig;
@@ -133,7 +134,7 @@ class SelectID extends Component {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={ () => this.handleOk() } disabled={ !this.state.selected.length } color="primary">{ this.props.ok || I18n.t('ra_Ok') }</Button>
-                    <Button onClick={ () => this.handleCancel() } color="primary">{ this.props.cancel || I18n.t('ra_Cancel') }</Button>
+                    <Button onClick={ () => this.handleCancel() }>{ this.props.cancel || I18n.t('ra_Cancel') }</Button>
                 </DialogActions>
             </Dialog>
         );
@@ -158,7 +159,8 @@ SelectID.propTypes = {
     cancel: PropTypes.string,
     prefix: PropTypes.string,
     ok: PropTypes.string,
-    theme: PropTypes.string,
+    themeName: PropTypes.string,
+    themeType: PropTypes.string,
     showExpertButton: PropTypes.bool,
     multiSelect: PropTypes.bool,
     types: PropTypes.array,   // optional ['state', 'instance', 'channel']

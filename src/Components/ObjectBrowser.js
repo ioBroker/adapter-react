@@ -368,7 +368,7 @@ const styles = theme => ({
     },
     */
     itemSelected: {
-        background: theme.palette.primary.main,
+        background: theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark,
         color: Utils.invertColor(theme.palette.primary.main, true),
     },
     header: {
@@ -1418,11 +1418,11 @@ class ObjectBrowser extends React.Component {
                     // reset filter
                     this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
                         this.setState({ loaded: true }, () =>
-                            this.state.selected && this.state.selected.length && this.onSelect());
+                            this.onAfterSelect());
                     });
                 } else {
                     this.setState({ loaded: true }, () =>
-                        this.state.selected && this.state.selected.length && this.onSelect());
+                        this.onAfterSelect());
                 }
             });
 
@@ -1440,6 +1440,19 @@ class ObjectBrowser extends React.Component {
                 }
             })
             .catch(e => this.showError(e));
+    }
+
+    onAfterSelect(isDouble) {
+        this.lastSelectedItems = [...this.state.selected];
+        if (this.state.selected && this.state.selected.length) {
+            window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', JSON.stringify(this.lastSelectedItems));
+
+            const name = this.lastSelectedItems.length === 1 ? Utils.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.state.lang }) : '';
+            this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
+        } else {
+            window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', '');
+            this.setState({selected: []}, () => this.props.onSelect && this.props.onSelect([], ''));
+        }
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -1498,39 +1511,27 @@ class ObjectBrowser extends React.Component {
         if (!this.props.multiSelect) {
             if (this.objects[toggleItem] && (!this.props.types || this.props.types.includes(this.objects[toggleItem].type))) {
                 if (this.state.selected[0] !== toggleItem) {
-                    this.lastSelectedItems = [toggleItem];
-
-                    window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', JSON.stringify(this.lastSelectedItems));
-
-                    this.setState({ selected: this.lastSelectedItems }, () => {
-                        const name = this.props.onSelect ? Utils.getObjectName(this.objects, toggleItem, null, { language: this.state.lang }) : '';
-                        this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
-                    });
+                    this.setState({ selected: [toggleItem] }, () =>
+                        this.onAfterSelect(isDouble));
                 } else if (isDouble && this.props.onSelect) {
-                    const name = toggleItem ? Utils.getObjectName(this.objects, toggleItem, null, { language: this.state.lang }) : '';
-                    this.props.onSelect(this.lastSelectedItems, name, isDouble);
+                    this.onAfterSelect(isDouble);
                 }
             } else {
-                this.lastSelectedItems = [];
-                window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', '');
-                this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
+                this.setState({selected: []}, () => this.onAfterSelect());
             }
         } else {
             if (this.objects[toggleItem] && (!this.props.types || this.props.types.includes(this.objects[toggleItem].type))) {
-                this.lastSelectedItems = [...this.state.selected];
-                const pos = this.lastSelectedItems.indexOf(toggleItem);
+                const selected = [...this.state.selected];
+                const pos = selected.indexOf(toggleItem);
                 if (pos === -1) {
-                    this.lastSelectedItems.push(toggleItem);
-                    this.lastSelectedItems.sort();
+                    selected.push(toggleItem);
+                    selected.sort();
                 } else if (!isDouble) {
-                    this.lastSelectedItems.splice(pos, 1);
+                    selected.splice(pos, 1);
                 }
-                window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', JSON.stringify(this.lastSelectedItems));
 
-                this.setState({ selected: this.lastSelectedItems }, () => {
-                    const name = this.lastSelectedItems.length === 1 ? Utils.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.state.lang }) : '';
-                    this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
-                });
+                this.setState({selected}, () =>
+                    this.onAfterSelect(isDouble));
             }
         }
     }
@@ -2440,6 +2441,7 @@ ObjectBrowser.propTypes = {
     expertMode: PropTypes.bool,
     prefix: PropTypes.string,
     themeName: PropTypes.string,
+    themeType: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string.isRequired,
     multiSelect: PropTypes.bool,
