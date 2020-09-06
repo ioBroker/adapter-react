@@ -1418,11 +1418,13 @@ class ObjectBrowser extends React.Component {
                     // reset filter
                     this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
                         this.setState({ loaded: true }, () =>
-                            this.onAfterSelect());
+                            this.expandAllSelected(() =>
+                                this.onAfterSelect()));
                     });
                 } else {
                     this.setState({ loaded: true }, () =>
-                        this.onAfterSelect());
+                        this.expandAllSelected(() =>
+                            this.onAfterSelect()));
                 }
             });
 
@@ -1440,6 +1442,29 @@ class ObjectBrowser extends React.Component {
                 }
             })
             .catch(e => this.showError(e));
+    }
+
+    expandAllSelected(cb) {
+        let expanded = [...this.state.expanded];
+        let changed = false;
+        this.state.selected.forEach(id => {
+            const parts = id.split('.');
+            let path = [];
+            for (let i = 0; i < parts.length - 1; i++) {
+                path.push(parts[i]);
+                if (!expanded.includes(path.join('.'))) {
+                    expanded.push(path.join('.'));
+                    changed = true;
+                }
+            }
+        });
+        if (changed) {
+            expanded.sort();
+            window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify(expanded));
+            this.setState({expanded}, cb)
+        } else {
+            cb && cb();
+        }
     }
 
     onAfterSelect(isDouble) {

@@ -590,7 +590,7 @@ class Connection {
                 'getObjectView',
                 'system',
                 'instance',
-                {startkey: 'system.adapter.' + (adapter || ''), endkey: 'system.adapter.' + (adapter ? adapter + '.' : '') + '\u9999'},
+                {startkey: `system.adapter.${adapter || ''}`, endkey: `system.adapter.${adapter ? adapter + '.' : ''}\u9999`},
                 (err, doc) => {
                     if (err) {
                         reject(err);
