@@ -44,12 +44,12 @@ class GenericApp extends Router {
         this.instanceId  = 'system.adapter.' + this.adapterName + '.' + this.instance;
 
         const location = Router.getLocation();
-        location.tab = location.tab || window.localStorage[this.adapterName + '-adapter'] || '';
+        location.tab = location.tab || window.localStorage.getItem(this.adapterName + '-adapter') || '';
 
         const themeInstance = this.createTheme();
 
         this.state = {
-            selectedTab: window.localStorage[this.adapterName + '-adapter'] || '',
+            selectedTab: window.localStorage.getItem(this.adapterName + '-adapter') || '',
             selectedTabNum: -1,
             native: {},
             errorText: '',
@@ -403,16 +403,36 @@ class GenericApp extends Router {
             </Toolbar>)
     }
 
+    _updateNativeValue(obj, attrs, value) {
+        if (typeof attrs !== 'object') {
+            attrs = attrs.split('.');
+        }
+        const attr = attrs.shift();
+        if (!attrs.length) {
+            if (value && typeof value === 'object') {
+                if (JSON.stringify(obj[attr]) !== JSON.stringify(value)) {
+                    obj[attr] = value;
+                    return true;
+                }
+            } else if (obj[attr] !== value) {
+                obj[attr] = value;
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            obj[attr] = obj[attr] || {};
+            if (typeof obj[attr] !== 'object') {
+                throw new Error('attribute ' + attr + ' is no object, but ' + typeof obj[attr]);
+            }
+            return this._updateNativeValue(obj[attr], attrs, value);
+        }
+    }
+
     updateNativeValue(attr, value, cb) {
         const native = JSON.parse(JSON.stringify(this.state.native));
-        if (value && typeof value === 'object') {
-            if (JSON.stringify(native[attr]) !== JSON.stringify(value)) {
-                native[attr] = value;
-                const changed = this.getIsChanged(native);
-                this.setState({native, changed}, cb);
-            }
-        } else if (native[attr] !== value) {
-            native[attr] = value;
+        if (this._updateNativeValue(native, attr, value)) {
             const changed = this.getIsChanged(native);
             this.setState({native, changed}, cb);
         }

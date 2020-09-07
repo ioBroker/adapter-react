@@ -107,6 +107,9 @@ class App extends GenericApp {
         };
         // get actual admin port
         extendedProps.socket = {port: parseInt(window.location.port, 10)};
+        
+        // Only if close, save buttons are not required at the bottom (e.g. if admin tab)
+        // extendedProps.bottomButtons = false; 
 
         // only for debug purposes
         if (extendedProps.socket.port === 3000) {
