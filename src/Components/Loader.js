@@ -20,7 +20,7 @@ class Loader extends React.Component {
     }
 
     render() {
-        const theme = this.props.theme || 'light';
+        const theme = this.props.themeType || this.props.theme || 'light';
         return (
             <div className={'logo-back logo-background-' + theme}>
                 <div className="logo-div" style={{width: this.size, height: this.size}}>
@@ -44,7 +44,7 @@ class Loader extends React.Component {
 
 Loader.propTypes = {
     size: PropTypes.number,
-    theme: PropTypes.string
+    themeType: PropTypes.string
 };
 
 export default withStyles(styles)(Loader);

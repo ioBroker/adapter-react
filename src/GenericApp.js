@@ -24,9 +24,17 @@ if (!window.localStorage) {
     };
 }
 
+const styles = {
+    buttonIcon: {
+        marginRight: 8
+    },
+};
+
+
 class GenericApp extends Router {
     constructor(props, settings) {
         super(props);
+
         printPrompt();
 
         let query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
@@ -61,7 +69,8 @@ class GenericApp extends Router {
             theme:          themeInstance,
             themeName:      this.getThemeName(themeInstance),
             themeType:      this.getThemeType(themeInstance),
-            bottomButtons: settings && settings.bottomButtons === false ? false : (props && props.bottomButtons === false ? false : true),
+            bottomButtons: (settings && settings.bottomButtons) === false ? false : ((props && props.bottomButtons) === false ? false : true),
+            width:          GenericApp.getWidth(),
         };
 
         // init translations
@@ -134,6 +143,45 @@ class GenericApp extends Router {
                 this.showError(err);
             }
         });
+    }
+
+    componentDidMount() {
+        window.addEventListener('resize', this.onResize, true);
+        super.componentDidMount();
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.onResize, true);
+        super.componentWillUnmount();
+    }
+
+    onResize = () => {
+        this.resizeTimer && clearTimeout(this.resizeTimer);
+        this.resizeTimer = setTimeout(() => {
+            this.resizeTimer = null;
+            this.setState({width: GenericApp.getWidth()});
+        }, 200)
+    };
+
+    static getWidth() {
+        /**
+         * innerWidth |xs      sm      md      lg      xl
+         *            |-------|-------|-------|-------|------>
+         * width      |  xs   |  sm   |  md   |  lg   |  xl
+         */
+
+        const SIZES = {
+            xs: 0,
+            sm: 600,
+            md: 960,
+            lg: 1280,
+            xl: 1920
+        };
+        const width = window.innerWidth;
+        const keys = Object.keys(SIZES).reverse();
+        const widthComputed = keys.find(key => width >= SIZES[key]);
+
+        return widthComputed || 'xs';
     }
 
     /**
@@ -383,6 +431,8 @@ class GenericApp extends Router {
         if (!this.state.bottomButtons) {
             return;
         }
+
+        const narrowWidth = this.state.width === 'xs' || this.state.width === 'sm' || this.state.width === 'md';
         const buttonStyle = {
             borderRadius: this.state.theme.saveToolbar.button.borderRadius || 3,
             height: this.state.theme.saveToolbar.button.height || 32,
@@ -390,15 +440,28 @@ class GenericApp extends Router {
 
         return (
             <Toolbar position="absolute" style={{bottom: this.isIFrame ? 38 : 0, left: 0, right: 0, position: 'absolute', background: this.state.theme.saveToolbar.background}}>
-                <Fab variant="extended" aria-label="Save" disabled={!this.state.changed} onClick={() => this.onSave(false)} style={buttonStyle}>
-                    <IconSave />{I18n.t('ra_Save')}
+                <Fab
+                    variant="extended"
+                    aria-label="Save"
+                    disabled={!this.state.changed}
+                    onClick={() => this.onSave(false)}
+                    style={buttonStyle}
+                >
+                    <IconSave style={!narrowWidth ? styles.buttonIcon : {}}/>{!narrowWidth && I18n.t('ra_Save')}
                 </Fab>
-                <Fab variant="extended" aria-label="Save and close" disabled={!this.state.changed} onClick={() => this.onSave(true)} style={Object.assign({}, buttonStyle, {marginLeft: 10})}>
-                    <IconSave />{I18n.t('ra_Save and close')}
+                <Fab
+                    variant="extended"
+                    aria-label="Save and close"
+                    disabled={!this.state.changed}
+                    onClick={() => this.onSave(true)}
+                    style={Object.assign({}, buttonStyle, {marginLeft: 10})}>
+                    <IconSave style={!narrowWidth ? styles.buttonIcon : {}}/>
+                    {!narrowWidth ? I18n.t('ra_Save and close') : '+'}
+                    {narrowWidth && <IconClose/>}
                 </Fab>
                 <div style={{flexGrow: 1}}/>
                 <Fab variant="extended" aria-label="Close" onClick={() => GenericApp.onClose()} style={buttonStyle}>
-                    <IconClose />{I18n.t('ra_Close')}
+                    <IconClose style={!narrowWidth ? styles.buttonIcon : {}}/>{!narrowWidth && I18n.t('ra_Close')}
                 </Fab>
             </Toolbar>)
     }
@@ -448,16 +511,14 @@ class GenericApp extends Router {
 
     render() {
         if (!this.state.loaded) {
-            return (<Loader theme={this.state.themeType}/>);
+            return <Loader theme={this.state.themeType}/>;
         }
 
-        return (
-            <div className="App">
-                {this.renderError()}
-                {this.renderToast()}
-                {this.renderSaveCloseButtons()}
-            </div>
-        );
+        return <div className="App">
+            {this.renderError()}
+            {this.renderToast()}
+            {this.renderSaveCloseButtons()}
+        </div>;
     }
 }
 
