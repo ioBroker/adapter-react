@@ -7,11 +7,11 @@ class Router extends Component {
     }
 
     componentDidMount() {
-        window.addEventListener('onhashchange', this.onHashChangedBound);
+        window.addEventListener('hashchange', this.onHashChangedBound);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('onhashchange', this.onHashChangedBound);
+        window.removeEventListener('hashchange', this.onHashChangedBound);
     }
 
     onHashChanged() {
@@ -36,6 +36,9 @@ class Router extends Component {
             dialog = location.dialog;
         }
         if (dialog && !tab) {
+            tab = location.tab;
+        } else
+        if (tab === null) {
             tab = location.tab;
         }
 
