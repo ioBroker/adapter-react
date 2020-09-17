@@ -103,7 +103,7 @@ class Connection {
         this._socket = window.io.connect(
             url,
             {
-                query: 'ws=true', 
+                query: 'ws=true',
                 name: this.props.name,
                 timeout: this.props.ioTimeout
             }
@@ -1319,7 +1319,7 @@ class Connection {
             this._socket.emit('getVersion', (err, version, serverName) => {
                 // support of old socket.io
                 if (err && !version && typeof err === 'string' && err.match(/\d+\.\d+\.\d+/)) {
-                    resolve({version, serverName: 'socketio'});
+                    resolve({version: err, serverName: 'socketio'});
                 } else {
                     return err ? reject(err) : resolve({version, serverName});
                 }
