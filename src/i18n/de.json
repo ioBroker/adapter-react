@@ -43,5 +43,13 @@
   "ra_Listen on all IPs": "Hören Sie auf alle IPs",
   "ra_Save": "Speichern",
   "ra_Save and close": "Speichern und schließen",
-  "ra_Close": "Schließen"
+  "ra_Close": "Schließen",
+  "ra_Auto (no custom columns)": "Auto (keine benutzerdefinierten Spalten)",
+  "ra_Transparent dialog": "Transparenter Dialog",
+  "ra_Width": "Breite",
+  "ra_val": "Wert",
+  "ra_buttons": "Tasten",
+  "ra_Configure visible columns": "Spalten Konfigurieren",
+  "ra_close": "Schließen"
+
 }

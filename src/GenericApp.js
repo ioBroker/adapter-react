@@ -17,6 +17,8 @@ import Router from './Components/Router';
 import Utils from './Components/Utils';
 import I18n from './i18n';
 
+import './index.css';
+
 if (!window.localStorage) {
     window.localStorage = {
         getItem: () => null,

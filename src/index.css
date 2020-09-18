@@ -21,18 +21,23 @@ body {
 }
 
 /* scrollbar */
-*::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
+    background-color: #ccc;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
     background-color: #ccc;
 }
 
-*::-webkit-scrollbar {
-    width: 6px;
-    background-color: #ccc;
-}
-
-*::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     background-color: #575757;
+    border-radius: 5px;
 }
+
+
 
 #root {
     height: 100%;

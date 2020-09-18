@@ -41,5 +41,11 @@
   "ra_dow_Th": "Th",
   "ra_Save": "Sparen",
   "ra_Save and close": "Opslaan en afsluiten",
-  "ra_Close": "Dichtbij"
+  "ra_Close": "Dichtbij",
+  "ra_Auto (no custom columns)": "Auto (geen aangepaste kolommen)",
+  "ra_Transparent dialog": "Transparant dialoogvenster",
+  "ra_Width": "Breedte",
+  "ra_val": "Waarde",
+  "ra_buttons": "Toetsen",
+  "ra_Configure visible columns": "Configureer zichtbare kolommen"
 }

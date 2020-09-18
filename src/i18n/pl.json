@@ -41,5 +41,11 @@
   "ra_dow_Th": "Th",
   "ra_Save": "Zapisać",
   "ra_Save and close": "Zapisz i zamknij",
-  "ra_Close": "Blisko"
+  "ra_Close": "Blisko",
+  "ra_Auto (no custom columns)": "Auto (bez kolumn niestandardowych)",
+  "ra_Transparent dialog": "Przejrzyste okno dialogowe",
+  "ra_Width": "Szerokość",
+  "ra_val": "Wartość",
+  "ra_buttons": "guziki",
+  "ra_Configure visible columns": "Skonfiguruj widoczne kolumny"
 }

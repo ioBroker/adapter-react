@@ -41,5 +41,11 @@
   "ra_dow_Th": "º",
   "ra_Save": "Salve ",
   "ra_Save and close": "Salvar e fechar",
-  "ra_Close": "Perto"
+  "ra_Close": "Perto",
+  "ra_Auto (no custom columns)": "Auto (sem colunas personalizadas)",
+  "ra_Transparent dialog": "Diálogo transparente",
+  "ra_Width": "Largura",
+  "ra_val": "Valor",
+  "ra_buttons": "Botões",
+  "ra_Configure visible columns": "Configurar colunas visíveis"
 }

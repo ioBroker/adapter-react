@@ -546,9 +546,8 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise((resolve, reject) =>
-            this._socket.emit('delObject', id, err => {
-                err ? reject(err) : resolve();
-            }));
+            this._socket.emit('delObject', id, err =>
+                err ? reject(err) : resolve()));
     }
 
     setObject(id, obj) {
@@ -556,9 +555,8 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise((resolve, reject) =>
-            this._socket.emit('setObject', id, obj, err => {
-                err ? reject(err) : resolve()
-            }));
+            this._socket.emit('setObject', id, obj, err =>
+                err ? reject(err) : resolve()));
     }
 
     getObject(id) {
@@ -601,6 +599,39 @@ class Connection {
         });
 
         return this._promises['instances' + adapter];
+    }
+
+    getAdapters(adapter, update) {
+        if (typeof adapter === 'boolean') {
+            update = adapter;
+            adapter = '';
+        }
+        adapter = adapter || '';
+
+        if (!update && this._promises['adapter_' + adapter]) {
+            return this._promises['adapter_' + adapter];
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises['adapter_' + adapter] = this._promises['adapter_' + adapter] || new Promise((resolve, reject) => {
+            this._socket.emit(
+                'getObjectView',
+                'system',
+                'adapter',
+                {startkey: `system.adapter.${adapter || ''}`, endkey: `system.adapter.${adapter || ''}\u9999`},
+                (err, doc) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc.rows.map(item => item.value).filter(obj => obj && (!adapter || (obj.common && obj.common.name === adapter))));
+                    }
+                });
+        });
+
+        return this._promises['adapter_' + adapter];
     }
 
     _renameGroups(objs, cb) {
@@ -741,7 +772,7 @@ class Connection {
         }
 
         start = start || '';
-        end = end || '\u9999';
+        end   = end   || '\u9999';
 
         return new Promise((resolve, reject) => {
             this._socket.emit('getObjectView', 'system', type, {startkey: start, endkey: end}, (err, res) => {

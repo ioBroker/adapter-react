@@ -34,6 +34,10 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import Slider from '@material-ui/core/Slider';
+import Typography from '@material-ui/core/Typography';
 
 // own
 import Utils from './Utils';
@@ -58,6 +62,7 @@ import IconMeta from '@material-ui/icons/Description';
 import IconScript from '@material-ui/icons/Code';
 import IconChart from '@material-ui/icons/ShowChart';
 import IconEnum from '@material-ui/icons/ListAlt';
+import IconColumns from '@material-ui/icons/ViewColumn';
 
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = ROW_HEIGHT;
@@ -73,9 +78,56 @@ const styles = theme => ({
         padding: 4,
         marginLeft: 4
     },
+    switchColumnAuto: {
+        marginLeft: theme.spacing(2),
+    },
+    dialogColumns: {
+        transition: 'opacity 1s'
+    },
+    dialogColumnsLabel: {
+        fontSize: 12,
+        paddingTop: theme.spacing(1),
+    },
+    width100: {
+        width: '100%',
+    },
+    transparent_10: {
+        opacity: 0.1
+    },
+    transparent_20: {
+        opacity: 0.2
+    },
+    transparent_30: {
+        opacity: 0.3
+    },
+    transparent_40: {
+        opacity: 0.4
+    },
+    transparent_50: {
+        opacity: 0.5
+    },
+    transparent_60: {
+        opacity: 0.6
+    },
+    transparent_70: {
+        opacity: 0.7
+    },
+    transparent_80: {
+        opacity: 0.8
+    },
+    transparent_90: {
+        opacity: 0.9
+    },
+    transparent_100: {
+        opacity: 1
+    },
+    columnsDialogInputWidth: {
+        width: 80
+    },
     headerRow: {
         paddingLeft: theme.spacing(1),
         height: 38,
+        whiteSpace: 'nowrap',
     },
 
     tableDiv: {
@@ -97,6 +149,8 @@ const styles = theme => ({
             background: theme.palette.primary.main,
             color: Utils.invertColor(theme.palette.primary.main, true),
         },
+        whiteSpace: 'nowrap',
+        flexWrap: 'nowrap',
     },
     checkBox: {
         padding: 0,
@@ -104,6 +158,8 @@ const styles = theme => ({
     cellId: {
         //display: 'inline-block',
         fontSize: '1rem',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
         //verticalAlign: 'top',
         //position: 'relative',
         '& .copyButton': {
@@ -179,6 +235,8 @@ const styles = theme => ({
         verticalAlign: 'top',
         fontSize: 14,
         marginLeft: 5,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
     cellType: {
         display: 'inline-block',
@@ -203,6 +261,10 @@ const styles = theme => ({
         verticalAlign: 'top',
     },
     cellValue : {
+        display: 'inline-block',
+        verticalAlign: 'top'
+    },
+    cellAdapter : {
         display: 'inline-block',
         verticalAlign: 'top'
     },
@@ -379,8 +441,9 @@ const styles = theme => ({
         verticalAlign: 'top',
     },
     headerCellValue: {
-        paddingTop: 8,
+        paddingTop: 4,
         paddingLeft: 4,
+        fontSize: 16
     },
     headerCellInput: {
         width: 'calc(100% - 5px)',
@@ -1243,14 +1306,15 @@ const StyledBadge = withStyles((theme) => ({
 
 const SCREEN_WIDTHS = {
     // extra-small: 0px
-    xs: {idWidth: 300, fields: ['room'], widths: {room: 200}},
+    xs: {idWidth: 300, fields: ['room'], widths: {name: 200, room: 200}},
     // small: 600px
-    sm: {idWidth: 300, fields: ['room', 'func', 'buttons'], widths: {room: 180, func: 180, buttons: 76}},
+    sm: {idWidth: 300, fields: ['room', 'func', 'buttons'], widths: {name: 200,room: 180, func: 180, buttons: 76}},
     // medium: 960px
-    md: {idWidth: 300, fields: ['room', 'func', 'val', 'buttons'], widths: {room: 150, func: 150, val: 120, buttons: 76}},
+    md: {idWidth: 300, fields: ['room', 'func', 'val', 'buttons'], widths: {name: 200,room: 150, func: 150, val: 120, buttons: 76}},
     // large: 1280px
     lg: {idWidth: 300, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'],
         widths: {
+            name: 300,
             type: 80,
             role: 120,
             room: 180,
@@ -1263,6 +1327,7 @@ const SCREEN_WIDTHS = {
     // extra-large: 1920px
     xl: {idWidth: 650, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'],
         widths: {
+            name: 400,
             type: 80,
             role: 120,
             room: 180,
@@ -1325,8 +1390,6 @@ class ObjectBrowser extends React.Component {
         this.statesUpdateTimer = null;
         this.objectsUpdateTimer = null;
 
-        this.onObjectChangeBound = this.onObjectChange.bind(this);
-
         this.visibleCols = this.props.columns || SCREEN_WIDTHS[props.width].fields;
 
         // remove type column if only one type must be selected
@@ -1334,6 +1397,8 @@ class ObjectBrowser extends React.Component {
             const pos = this.visibleCols.indexOf('type');
             pos !== -1 && this.visibleCols.splice(pos, 1);
         }
+
+        this.possibleCols = SCREEN_WIDTHS.xl.fields;
 
         let customDialog = null;
 
@@ -1351,6 +1416,20 @@ class ObjectBrowser extends React.Component {
         }
         selected = selected.map(id => id.replace(/["']/g, '')).filter(id => id);
 
+        let columns = window.localStorage.getItem((this.props.key || 'App') + '.columns');
+        try {
+            columns = columns ? JSON.parse(columns) : null;
+        } catch (e) {
+            columns = null;
+        }
+
+        let columnsWidths = window.localStorage.getItem((this.props.key || 'App') + '.columnsWidths');
+        try {
+            columnsWidths = columnsWidths ? JSON.parse(columnsWidths) : {};
+        } catch (e) {
+            columnsWidths = {};
+        }
+
         this.state = {
             loaded: false,
             selected,
@@ -1365,6 +1444,13 @@ class ObjectBrowser extends React.Component {
             customDialog,
             editObjectDialog: '',
             enumDialog: null,
+
+            columns,
+            columnsForAdmin: null,
+            columnsSelectorShow: false,
+            columnsAuto: window.localStorage.getItem((this.props.key || 'App') + '.columnsAuto') === 'false' ? false : true,
+            columnsWidths,
+            columnsDialogTransparent: 100,
         };
 
         this.edit = {};
@@ -1382,6 +1468,7 @@ class ObjectBrowser extends React.Component {
             customConfig:   this.props.t('ra_tooltip_customConfig'),
             copyState:      this.props.t('ra_tooltip_copyState'),
             editState:      this.props.t('ra_tooltip_editState'),
+            close:          this.props.t('ra_Close'),
             filter_id:      this.props.t('ra_filter_id'),
             filter_name:    this.props.t('ra_filter_name'),
             filter_type:    this.props.t('ra_filter_type'),
@@ -1392,6 +1479,8 @@ class ObjectBrowser extends React.Component {
         };
 
         this.onStateChangeBound = this.onStateChange.bind(this);
+
+        this.calculateColumnsVisibility();
 
         this.props.socket.getObjects(true, true)
             .then(objects => {
@@ -1440,6 +1529,11 @@ class ObjectBrowser extends React.Component {
                             }
                         });
                 }
+            })
+            .then(() => this.getAdditionalColumns())
+            .then(columnsForAdmin => {
+                this.calculateColumnsVisibility(null, null, columnsForAdmin);
+                this.setState({columnsForAdmin});
             })
             .catch(e => this.showError(e));
     }
@@ -1492,11 +1586,11 @@ class ObjectBrowser extends React.Component {
     }
 
     componentDidMount() {
-        this.props.socket.subscribeObject('*', this.onObjectChangeBound);
+        this.props.socket.subscribeObject('*', this.onObjectChange);
     }
 
     componentWillUnmount() {
-        this.props.socket.unsubscribeObject('*', this.onObjectChangeBound);
+        this.props.socket.unsubscribeObject('*', this.onObjectChange);
 
         // remove all subscribes
         this.subscribes.forEach(pattern => {
@@ -1529,7 +1623,7 @@ class ObjectBrowser extends React.Component {
     }
 
     showError(error) {
-        this.setState({error: typeof error !== 'string' ? JSON.stringify(error) : error});
+        this.setState({error: typeof error === 'object' ? (error && typeof error.toString === 'function' ? error.toString() : JSON.stringify(error)) : error});
     }
 
     onSelect(toggleItem, isDouble) {
@@ -1559,6 +1653,169 @@ class ObjectBrowser extends React.Component {
                     this.onAfterSelect(isDouble));
             }
         }
+    }
+
+    _renderDefinedList(isLast) {
+        const cols = [...this.possibleCols];
+        cols.unshift('id');
+        if (this.props.columns && !this.props.columns.includes('buttons')) {
+            const pos = cols.indexOf('buttons');
+            if (pos !== -1) {
+                cols.splice(pos, 1);
+            }
+        }
+        return cols
+            .filter(id => (isLast && (id === 'val' || id === 'buttons')) || (!isLast && id !== 'val' && id !== 'buttons'))
+            .map(id =>
+                <ListItem button onClick={() => {
+                    if (!this.state.columnsAuto && id !== 'id') {
+                        const columns = [...(this.state.columns || [])];
+                        const pos = columns.indexOf(id);
+                        if (pos === -1) {
+                            columns.push(id);
+                            columns.sort();
+                        } else {
+                            columns.splice(pos, 1);
+                        }
+                        window.localStorage.setItem((this.props.key || 'App') + '.columns', JSON.stringify(columns));
+                        this.calculateColumnsVisibility(null, columns);
+                        this.setState({columns});
+                    }
+                }} key={id}>
+                    <ListItemIcon>
+                        <Checkbox
+                            edge="start"
+                            disabled={id === 'id' || this.state.columnsAuto}
+                            checked={ id === 'id' || (this.state.columnsAuto ? this.visibleCols.includes(id) : (this.state.columns && this.state.columns.includes(id)))}
+                            disableRipple
+                        />
+                    </ListItemIcon>
+                    <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_'  + id)} />
+                    <ListItemSecondaryAction>
+                        <FormControl className={ this.props.classes.columnsDialogInputWidth } style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
+                            <Input
+                                classes={{ underline: 'no-underline' }}
+                                placeholder={ this.props.t('ra_Width') }
+                                value={ this.state.columnsWidths[id] || '' }
+                                onChange={e => {
+                                    const columnsWidths = JSON.parse(JSON.stringify(this.state.columnsWidths));
+                                    columnsWidths[id] = e.target.value;
+                                    window.localStorage.setItem((this.props.key || 'App') + '.columnsWidths', JSON.stringify(columnsWidths));
+                                    this.calculateColumnsVisibility(null, null, null, columnsWidths);
+                                    this.setState({columnsWidths});
+                                }}
+                                autoComplete="off"
+                            />
+                        </FormControl>
+                    </ListItemSecondaryAction>
+                </ListItem>
+            );
+    }
+
+    renderColumnsSelector() {
+        if (!this.state.columnsSelectorShow) {
+            return null;
+        } else {
+            return <Dialog
+                onClose={() => this.setState({columnsSelectorShow: false})}
+                open={true}
+                classes={{root: Utils.clsx(this.props.classes.dialogColumns, this.props.classes['transparent_' + this.state.columnsDialogTransparent])}}
+            >
+                <DialogTitle>{this.props.t('ra_Configure visible columns')}</DialogTitle>
+                <DialogContent>
+                    <FormControlLabel
+                        className={this.props.classes.switchColumnAuto}
+                        control={<Switch checked={this.state.columnsAuto} onChange={() => {
+                            window.localStorage.setItem((this.props.key || 'App') + '.columnsAuto', this.state.columnsAuto ? 'false' : 'true');
+                            this.calculateColumnsVisibility(!this.state.columnsAuto);
+                            if (!this.state.columnsAuto) {
+                                this.setState({columnsAuto: true});
+                            } else {
+                                if (!this.state.columns) {
+                                    this.setState({columnsAuto: false, columns: [...this.visibleCols]});
+                                } else {
+                                    this.setState({columnsAuto: false});
+                                }
+                            }
+                        }} />}
+                        label={this.props.t('ra_Auto (no custom columns)')}
+                    />
+                    <Typography classes={{root: this.props.classes.dialogColumnsLabel}}>{this.props.t('ra_Transparent dialog')}</Typography>
+                    <Slider classes={{root: this.props.classes.width100}} value={this.state.columnsDialogTransparent} min={20} max={100} step={10} onChange={(event, newValue) =>
+                        this.setState({columnsDialogTransparent: newValue})
+                    } />
+                    <List>
+                        {this._renderDefinedList(false)}
+
+                        {this.state.columnsForAdmin && Object.keys(this.state.columnsForAdmin).sort().map(adapter =>
+                            this.state.columnsForAdmin[adapter].map(column =>
+                                <ListItem button onClick={() => {
+                                    if (!this.state.columnsAuto) {
+                                        const columns = [...(this.state.columns || [])];
+                                        const id = '_' + adapter + '_' + column.path;
+                                        const pos = columns.indexOf(id);
+                                        if (pos === -1) {
+                                            columns.push(id);
+                                            columns.sort();
+                                        } else {
+                                            columns.splice(pos, 1);
+                                        }
+                                        this.calculateColumnsVisibility(null, columns);
+                                        window.localStorage.setItem((this.props.key || 'App') + '.columns', JSON.stringify(columns));
+                                        this.setState({columns});
+                                    }
+                                }} key={adapter + '_' + column.name}>
+                                    <ListItemIcon>
+                                        <Checkbox
+                                            disabled={this.state.columnsAuto}
+                                            edge="start"
+                                            checked={!this.state.columnsAuto && this.state.columns && this.state.columns.includes('_' + adapter + '_' + column.path)}
+                                            disableRipple
+                                        />
+                                    </ListItemIcon>
+                                    <ListItemText primary={column.name + ' (' + adapter + ')'} />
+                                    <ListItemSecondaryAction>
+                                        <FormControl className={ this.props.classes.columnsDialogInputWidth } style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
+                                            <Input
+                                                classes={{ underline: 'no-underline' }}
+                                                placeholder={ this.props.t('ra_Width') }
+                                                value={ this.state.columnsWidths['_' + adapter + '_' + column.path] || '' }
+                                                onChange={e => {
+                                                    const columnsWidths = JSON.parse(JSON.stringify(this.state.columnsWidths));
+                                                    columnsWidths['_' + adapter + '_' + column.path] = e.target.value;
+                                                    window.localStorage.setItem((this.props.key || 'App') + '.columnsWidths', JSON.stringify(columnsWidths));
+                                                    this.calculateColumnsVisibility(null, null, null, columnsWidths);
+                                                    this.setState({columnsWidths});
+                                                }}
+                                                autoComplete="off"
+                                            />
+                                        </FormControl>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            )
+                        )}
+                        {this._renderDefinedList(true)}
+                    </List>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => this.setState({columnsSelectorShow: false})} color="primary">
+                        {this.texts['close']}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        }
+    }
+
+    getAdditionalColumns() {
+        return this.props.socket.getAdapters()
+            .then(instances => {
+                let columnsForAdmin = null;
+                // find all additional columns
+                instances.forEach(obj =>
+                    columnsForAdmin = this.parseObjectForAdmins(columnsForAdmin, obj));
+
+                return columnsForAdmin;
+            });
     }
 
     checkUnsubscribes() {
@@ -1620,10 +1877,52 @@ class ObjectBrowser extends React.Component {
         }
     }
 
-    onObjectChange(id, obj, oldObj) {
+    parseObjectForAdmins(columnsForAdmin, obj) {
+        if (obj.common && obj.common.adminColumns && obj.common.name) {
+            let columns = obj.common.adminColumns;
+            if (typeof columns !== 'object') {
+                columns = [columns];
+            }
+            columns = columns.map(item => {
+                if (typeof item !== 'object') {
+                    return {path: item, name: item.split('.').pop()};
+                }
+                if (!item.name && item.path) {
+                    return {path: item.path, name: item.path.split('.').pop(), width: item.width};
+                }
+                if (typeof item.name !== 'object' && item.path) {
+                    return {path: item.path, name: item.name, width: item.width};
+                }
+                if (!item.path) {
+                    console.warn(`Admin columns for ${obj._id} ignored, because path not found`);
+                    return null;
+                } else {
+                    return {path: item.path, name: item.name[this.props.lang] || item.name.en, width: item.width};
+                }
+            }).filter(item => item);
+
+            if (columns && columns.length) {
+                columnsForAdmin = columnsForAdmin || {};
+                columnsForAdmin[obj.common.name] = columns.sort((a, b) => a.path > b.path ? -1 : (a.path < b.path ? 1 : 0));
+            }
+        } else if (obj.common && obj.common.name && columnsForAdmin && columnsForAdmin[obj.common.name]) {
+            delete columnsForAdmin[obj.common.name];
+        }
+        return columnsForAdmin;
+    }
+
+    onObjectChange = (id, obj, oldObj) => {
         console.log('> objectChange ' + id);
 
         this.objects = this.objects || [];
+
+        if (id.startsWith('system.adapter.') && obj && obj.type === 'adapter') {
+            let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
+            this.parseObjectForAdmins(columnsForAdmin, obj);
+            if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
+                this.setState({columnsForAdmin});
+            }
+        }
 
         if (this.objects[id]) {
             if (obj) {
@@ -1649,7 +1948,7 @@ class ObjectBrowser extends React.Component {
                 // else it will be re-rendered when dialog will be closed
             }, 500);
         }
-    }
+    };
 
     subscribe(id) {
         if (this.subscribes.indexOf(id) === -1) {
@@ -1872,20 +2171,21 @@ class ObjectBrowser extends React.Component {
     }
 
     getToolbar() {
-        return (
-            <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-                { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={ this.props.classes.toolbarButtons } color={ this.state.filter.expertMode ? 'secondary' : 'default' } onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }><IconExpert /></IconButton>: null }
-                { this.state.expandAllVisible ? <IconButton key="expandAll"  variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onExpandAll() }><IconOpen /></IconButton> : null }
-                <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onCollapseAll() }>
-                    <IconClosed/>
-                </IconButton>
-                <StyledBadge badgeContent={ this.state.depth } color="secondary">
-                    <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onExpandVisible() }><IconOpen /></IconButton>
-                </StyledBadge>
-                <StyledBadge badgeContent={ this.state.depth } color="secondary">
-                    <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onCollapseVisible() }><IconClosed /></IconButton>
-                </StyledBadge>
-            </Toolbar>);
+        return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
+            { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={ this.props.classes.toolbarButtons } color={ this.state.filter.expertMode ? 'secondary' : 'default' } onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }><IconExpert /></IconButton>: null }
+
+            { !this.props.disableColumnSelector ? <IconButton key="columnSelector" variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.setState({columnsSelectorShow: true}) }><IconColumns /></IconButton>: null }
+            { this.state.expandAllVisible ? <IconButton key="expandAll"  variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onExpandAll() }><IconOpen /></IconButton> : null }
+            <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onCollapseAll() }>
+                <IconClosed/>
+            </IconButton>
+            <StyledBadge badgeContent={ this.state.depth } color="secondary">
+                <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onExpandVisible() }><IconOpen /></IconButton>
+            </StyledBadge>
+            <StyledBadge badgeContent={ this.state.depth } color="secondary">
+                <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onCollapseVisible() }><IconClosed /></IconButton>
+            </StyledBadge>
+        </Toolbar>;
     }
 
     toggleExpanded(id) {
@@ -2126,8 +2426,30 @@ class ObjectBrowser extends React.Component {
         }
     }
 
-    renderLeaf(item, isExpanded, widths, classes) {
+    getCustomValue(obj, item) {
+        if (obj && obj._id && obj._id.startsWith(item.adapter + '.') && item.path.length > 1) {
+            const p = item.path;
+            if (obj[p[0]] && typeof obj[p[0]] === 'object') {
+                if (p.length === 2) { // most common case
+                    return obj[p[0]][p[1]];
+                } else if (p.length === 3) {
+                    return obj[p[0]][p[1]] && typeof obj[p[0]][p[1]] === 'object' ? obj[p[0]][p[1]][p[2]] : null;
+                } else if (p.length === 4) {
+                    return obj[p[0]][p[1]] && typeof obj[p[0]][p[1]] === 'object' && obj[p[0]][p[1]][p[2]] ? obj[p[0]][p[1]][p[2]][p[3]] : null;
+                } else if (p.length === 5) {
+                    return obj[p[0]][p[1]] && typeof obj[p[0]][p[1]] === 'object' && obj[p[0]][p[1]][p[2]] && obj[p[0]][p[1]][p[2]][p[3]] ? obj[p[0]][p[1]][p[2]][p[3]][p[4]] : null;
+                } else if (p.length === 6) {
+                    return obj[p[0]][p[1]] && typeof obj[p[0]][p[1]] === 'object' && obj[p[0]][p[1]][p[2]] && obj[p[0]][p[1]][p[2]][p[3]] && obj[p[0]][p[1]][p[2]][p[3]][p[4]] ? obj[p[0]][p[1]][p[2]][p[3]][p[4]][p[5]]  : null;
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+
+    renderLeaf(item, isExpanded, classes, counter) {
         const id = item.data.id;
+        counter.count++;
         isExpanded = isExpanded === undefined ? this.state.expanded.includes(id) : isExpanded;
 
         // icon
@@ -2174,116 +2496,222 @@ class ObjectBrowser extends React.Component {
                 /> :
                 null;
 
-        if (item.data.funcs && item.data.funcs.length) {
+        /*if (item.data.funcs && item.data.funcs.length) {
             console.log(item.data.funcs);
-        }
+        }*/
 
-        return (
+        return <Grid
+            container
+            direction="row"
+            wrap="nowrap"
+            className={ Utils.clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected) }
+            key={ id }
+            id={ id }
+            onClick={ () => this.onSelect(id) }
+            onDoubleClick={ () => {
+                if (!item.children) {
+                    this.onSelect(id, true);
+                } else {
+                    this.toggleExpanded(id);
+                }
+            } }
+        >
             <Grid
                 container
+                wrap="nowrap"
                 direction="row"
-                className={ Utils.clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected) }
-                key={ id }
-                id={ id }
-                onClick={ () => this.onSelect(id) }
-                onDoubleClick={ () => {
-                    if (!item.children) {
-                        this.onSelect(id, true);
-                    } else {
-                        this.toggleExpanded(id);
-                    }
-                } }
+                className={ classes.cellId }
+                style={{ width: this.columnsVisibility.id, paddingLeft }}
             >
                 <Grid
+                    item
                     container
-                    wrap="nowrap"
-                    direction="row"
-                    className={ classes.cellId }
-                    style={{ width: widths.idWidth, paddingLeft }}
+                    alignItems="center"
                 >
-                    <Grid
-                        item
-                        container
-                        alignItems="center"
-                    >
-                        { checkbox }
-                        { iconFolder }
-                    </Grid>
-                    <Grid
-                        item
-                        className={ classes.cellIdSpan }
-                        style={ {color: id === 'system' ? 'red' : 'inherit'} }
-                    >
-                        { item.data.name }
-                    </Grid>
-                    <div className={ classes.grow } />
-                    <Grid
-                        item
-                        container
-                        alignItems="center"
-                    >
-                        { iconItem }
-                    </Grid>
-                    <Grid
-                        item
-                        container
-                        alignItems="center"
-                    >
-                        <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
-                    </Grid>
+                    { checkbox }
+                    { iconFolder }
                 </Grid>
-                {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ (item.data && item.data.title) || '' }</div> : null }
-                {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS.type }}>{ typeImg } { obj && obj.type }</div> : null }
-                {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS.role }}>{ obj && obj.common && obj.common.role }</div> : null }
-                {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS.room, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'room'}}) }>{ item.data.rooms }</div> : null }
-                {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS.func, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'func'}}) }>{ item.data.funcs }</div> : null }
-                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS.val,  cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => {
-                    if (!this.props.notEditable) {
-                        return;
-                    }
-                    if (!item.data.obj || !this.states) {
-                        return null;
-                    }
-                    this.edit = {
-                        val:    this.states[id].val,
-                        q:      0,
-                        ack:    false,
-                        id,
-                    };
-                    this.setState({ updateOpened: true });
-                }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
-                {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS.buttons }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
+                <Grid
+                    item
+                    className={ classes.cellIdSpan }
+                    style={ {color: id === 'system' ? 'red' : 'inherit'} }
+                >
+                    { item.data.name }
+                </Grid>
+                <div className={ classes.grow } />
+                <Grid
+                    item
+                    container
+                    alignItems="center"
+                >
+                    { iconItem }
+                </Grid>
+                <Grid
+                    item
+                    container
+                    alignItems="center"
+                >
+                    <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
+                </Grid>
             </Grid>
-        );
+            {this.columnsVisibility.name    ? <div className={ classes.cellName }    style={{ width: this.columnsVisibility.name }}>{ (item.data && item.data.title) || '' }</div> : null }
+            {this.columnsVisibility.type    ? <div className={ classes.cellType }    style={{ width: this.columnsVisibility.type }}>{ typeImg } { obj && obj.type }</div> : null }
+            {this.columnsVisibility.role    ? <div className={ classes.cellRole }    style={{ width: this.columnsVisibility.role }}>{ obj && obj.common && obj.common.role }</div> : null }
+            {this.columnsVisibility.room    ? <div className={ classes.cellRoom }    style={{ width: this.columnsVisibility.room, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'room'}}) }>{ item.data.rooms }</div> : null }
+            {this.columnsVisibility.func    ? <div className={ classes.cellFunc }    style={{ width: this.columnsVisibility.func, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'func'}}) }>{ item.data.funcs }</div> : null }
+            {this.adapterColumns.map(item => <div className={ classes.cellAdapter }  style={{ width: this.columnsVisibility[item.id] }} key={item.id} title={item.adapter + ' => ' + item.pathText}>{ this.getCustomValue(obj, item) }</div>)}
+            {this.columnsVisibility.val     ? <div className={ classes.cellValue }   style={{ width: this.columnsVisibility.val,  cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => {
+                if (!this.props.notEditable) {
+                    return;
+                }
+                if (!item.data.obj || !this.states) {
+                    return null;
+                }
+                this.edit = {
+                    val:    this.states[id].val,
+                    q:      0,
+                    ack:    false,
+                    id,
+                };
+                this.setState({ updateOpened: true });
+            }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
+            {this.columnsVisibility.buttons ? <div className={ classes.cellButtons } style={{ width: this.columnsVisibility.buttons }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
+        </Grid>;
     }
 
-    renderItem(root, isExpanded, widths, classes) {
+    renderItem(root, isExpanded, classes, counter) {
         const items = [];
+        counter = counter || {count: 0};
 
-        root.data.id && items.push(this.renderLeaf(root, isExpanded, widths, classes));
+        root.data.id && items.push(this.renderLeaf(root, isExpanded, classes, counter));
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
 
         if (!root.data.id || isExpanded) {
-            root.children && items.push(root.children.map(item =>
-                (item.data.visible || item.data.hasVisibleChildren) && this.renderItem(item, undefined, widths, classes)));
+            root.children && items.push(root.children.map(item => {
+                // do not render too many items in column editor mode
+                if (!this.state.columnsSelectorShow || counter.count < 15) {
+                    if (item.data.visible || item.data.hasVisibleChildren) {
+                        return this.renderItem(item, undefined, classes, counter);
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            }));
         }
 
         return items;
     }
 
-    renderHeader(widths) {
+    calculateColumnsVisibility(columnsAuto, columns, columnsForAdmin, columnsWidths) {
+        columnsWidths   = columnsWidths   || this.state.columnsWidths;
+        columnsForAdmin = columnsForAdmin || this.state.columnsForAdmin;
+        columns         = columns         || this.state.columns;
+        columnsAuto     = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
+
+        columnsWidths = JSON.parse(JSON.stringify(columnsWidths));
+        Object.keys(columnsWidths).forEach(name => {
+            if (columnsWidths[name]) {
+                columnsWidths[name] = parseInt(columnsWidths[name], 10) || 0;
+            }
+        });
+
+        this.adapterColumns = [];
+        const WIDTHS  = SCREEN_WIDTHS[this.props.width].widths;
+
+        if (columnsAuto) {
+            this.columnsVisibility = {
+                id:      SCREEN_WIDTHS[this.props.width].idWidth,
+                name:    this.visibleCols.includes('name')    ? WIDTHS.name    : 0,
+                type:    this.visibleCols.includes('type')    ? WIDTHS.type    : 0,
+                role:    this.visibleCols.includes('role')    ? WIDTHS.role    : 0,
+                room:    this.visibleCols.includes('room')    ? WIDTHS.room    : 0,
+                func:    this.visibleCols.includes('func')    ? WIDTHS.func    : 0,
+                val:     this.visibleCols.includes('val')     ? WIDTHS.val     : 0,
+                buttons: this.visibleCols.includes('buttons') ? WIDTHS.buttons : 0,
+            };
+
+            if (this.columnsVisibility.name) {
+                let widthSum = this.columnsVisibility.id; // id is always visible
+                widthSum += this.columnsVisibility.type;
+                widthSum += this.columnsVisibility.role;
+                widthSum += this.columnsVisibility.room;
+                widthSum += this.columnsVisibility.func;
+                widthSum += this.columnsVisibility.val;
+                widthSum += this.columnsVisibility.buttons;
+                this.columnsVisibility.name = `calc(100% - ${widthSum + 5}px)`;
+                this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
+            }
+        } else {
+            this.columnsVisibility = {
+                id:   columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
+                name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS.xl.widths.name : 0,
+                type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS.xl.widths.type : 0,
+                role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS.xl.widths.role : 0,
+                room: columns.includes('room') ? columnsWidths.room || WIDTHS.room || SCREEN_WIDTHS.xl.widths.room : 0,
+                func: columns.includes('func') ? columnsWidths.func || WIDTHS.func || SCREEN_WIDTHS.xl.widths.func : 0
+            };
+            let widthSum = this.columnsVisibility.id; // id is always visible
+            if (this.columnsVisibility.name) {
+                widthSum += this.columnsVisibility.type;
+                widthSum += this.columnsVisibility.role;
+                widthSum += this.columnsVisibility.room;
+                widthSum += this.columnsVisibility.func;
+            }
+
+            if (columnsForAdmin && columns) {
+                Object.keys(columnsForAdmin).sort().forEach(adapter =>
+                    columnsForAdmin[adapter].map(column => {
+                        const id = '_' + adapter + '_' + column.path;
+                        this.columnsVisibility[id] = columns.includes(id);
+                        if (columns.includes(id)) {
+                            const item = {
+                                adapter,
+                                id:      '_' + adapter + '_' + column.path,
+                                name:     column.name,
+                                path:     column.path.split('.'),
+                                pathText: column.path,
+                            };
+                            this.adapterColumns.push(item);
+                            this.columnsVisibility[id] = columnsWidths[item.id] || column.width || SCREEN_WIDTHS[this.props.width].widths.func || SCREEN_WIDTHS.xl.widths.func;
+                            widthSum += this.columnsVisibility[id];
+                        } else {
+                            this.columnsVisibility[id] = 0;
+                        }
+                    }));
+            }
+            this.adapterColumns.sort((a, b) => a.id > b.id ? -1 : (a.id < b.id ? 1: 0));
+            this.columnsVisibility.val = columns.includes('val') ? columnsWidths.val || WIDTHS.val || SCREEN_WIDTHS.xl.widths.val : 0;
+
+            // do not show buttons if not desired
+            if (!this.props.columns || this.props.columns.includes('buttons')) {
+                this.columnsVisibility.buttons = columns.includes('buttons') ? columnsWidths.buttons || WIDTHS.buttons || SCREEN_WIDTHS.xl.widths.buttons : 0;
+                widthSum += this.columnsVisibility.buttons;
+            }
+
+            if (this.columnsVisibility.name && !columnsWidths.name) {
+                widthSum += this.columnsVisibility.val;
+                this.columnsVisibility.name = `calc(100% - ${widthSum + 5}px)`;
+                this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
+            }
+        }
+    }
+
+    renderHeader() {
         const classes = this.props.classes;
 
         return <div className={ classes.headerRow } >
-            <div className={ classes.headerCell } style={{ width: widths.idWidth }}>{ this.getFilterInput('id') }</div>
-            {this.visibleCols.includes('name')    ? <div className={ classes.headerCell } style={{ width: widths.widthNameHeader }}>{ this.getFilterInput('name') }</div> : null }
-            {this.visibleCols.includes('type')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.type }}>{ this.getFilterSelectType() }</div> : null }
-            {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.role }}>{ this.getFilterSelectRole() }</div> : null }
-            {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.room }}>{ this.getFilterSelectRoom() }</div> : null }
-            {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.func }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS.val}}>{ this.props.t('ra_Value') }</div> : null }
-            {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.buttons }}> { this.getFilterSelectCustoms() }</div> : null }
+            <div className={ classes.headerCell } style={{ width: this.columnsVisibility.id }}>{ this.getFilterInput('id') }</div>
+            {this.columnsVisibility.name    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.nameHeader }}>{ this.getFilterInput('name') }</div> : null }
+            {this.columnsVisibility.type    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.type }}>{ this.getFilterSelectType() }</div> : null }
+            {this.columnsVisibility.role    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.role }}>{ this.getFilterSelectRole() }</div> : null }
+            {this.columnsVisibility.room    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.room }}>{ this.getFilterSelectRoom() }</div> : null }
+            {this.columnsVisibility.func    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.func }}>{ this.getFilterSelectFunction() }</div> : null }
+            {this.adapterColumns.map(item => <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: this.columnsVisibility[item.id] }} title={item.adapter} key={item.id}>{ item.name }</div>)}
+            {this.columnsVisibility.val     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: this.columnsVisibility.val}}>{ this.props.t('ra_Value') }</div> : null }
+            {this.columnsVisibility.buttons ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.buttons }}> { this.getFilterSelectCustoms() }</div> : null }
         </div>;
     }
 
@@ -2406,28 +2834,10 @@ class ObjectBrowser extends React.Component {
         }, 200);
 
         if (!this.state.loaded) {
-            return (<CircularProgress/>);
+            return <CircularProgress/>;
         } else {
-            const idWidth = SCREEN_WIDTHS[this.props.width].idWidth;
-            const WIDTHS = SCREEN_WIDTHS[this.props.width].widths;
-
-            let widthSum = idWidth;
-            widthSum += this.visibleCols.includes('type')    ? WIDTHS.type : 0;
-            widthSum += this.visibleCols.includes('role')    ? WIDTHS.role : 0;
-            widthSum += this.visibleCols.includes('room')    ? WIDTHS.room : 0;
-            widthSum += this.visibleCols.includes('func')    ? WIDTHS.func : 0;
-            widthSum += this.visibleCols.includes('val')     ? WIDTHS.val : 0;
-            widthSum += this.visibleCols.includes('buttons') ? WIDTHS.buttons : 0;
-
-            const widths = {
-                idWidth,
-                WIDTHS,
-                widthName:       `calc(100% - ${widthSum + 5}px)`,
-                widthNameHeader: `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`,
-            };
-
             const classes = this.props.classes;
-            const items = this.renderItem(this.root, undefined, widths, classes);
+            const items = this.renderItem(this.root, undefined, classes);
 
             return (
                 <TabContainer>
@@ -2435,12 +2845,13 @@ class ObjectBrowser extends React.Component {
                         { this.getToolbar() }
                     </TabHeader>
                     <TabContent>
-                        { this.renderHeader(widths) }
+                        { this.renderHeader() }
                         <div className={ this.props.classes.tableDiv } ref={ this.tableRef }>
                             { items }
                         </div>
                     </TabContent>
                     { this.renderToast() }
+                    { this.renderColumnsSelector() }
                     { this.renderCustomDialog() }
                     { this.renderEditValueDialog() }
                     { this.renderEditObjectDialog() }
@@ -2471,6 +2882,7 @@ ObjectBrowser.propTypes = {
     lang: PropTypes.string.isRequired,
     multiSelect: PropTypes.bool,
     notEditable: PropTypes.bool,
+    disableColumnSelector: PropTypes.bool,
 
     // components
     objectCustomDialog: PropTypes.oneOfType([

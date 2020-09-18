@@ -43,5 +43,11 @@
   "ra_Listen on all IPs": "Слушай на всех IP",
   "ra_Save": "Сохранить",
   "ra_Save and close": "Сохранить и закрыть",
-  "ra_Close": "Закрыть"
+  "ra_Close": "Закрыть",
+  "ra_Auto (no custom columns)": "Авто (без настраиваемых столбцов)",
+  "ra_Transparent dialog": "Прозрачный диалог",
+  "ra_Width": "Ширина",
+  "ra_val": "Значение",
+  "ra_buttons": "Кнопки",
+  "ra_Configure visible columns": "Настроить видимые столбцы"
 }
