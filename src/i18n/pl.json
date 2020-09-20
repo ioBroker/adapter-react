@@ -47,5 +47,7 @@
   "ra_Width": "Szerokość",
   "ra_val": "Wartość",
   "ra_buttons": "guziki",
-  "ra_Configure visible columns": "Skonfiguruj widoczne kolumny"
+  "ra_Configure visible columns": "Skonfiguruj widoczne kolumny",
+  "ra_Cannot update attribute, because not found in the object": "Nie można zaktualizować atrybutu, ponieważ nie znaleziono go w obiekcie",
+  "ra_Edit object field": "Edytuj pole obiektu"
 }

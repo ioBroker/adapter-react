@@ -102,6 +102,7 @@ class SelectID extends Component {
                 <DialogTitle id="selectid-dialog-title">{ title }</DialogTitle>
                 <DialogContent className={this.props.classes.content}>
                     <ObjectBrowser
+                        foldersFirst={ this.props.foldersFirst }
                         prefix={ this.props.prefix }
                         defaultFilters={ this.filters }
                         showExpertButton={ this.props.showExpertButton !== undefined ? this.props.showExpertButton : true }
@@ -149,6 +150,7 @@ SelectID.propTypes = {
     onOk: PropTypes.func.isRequired,
     title: PropTypes.string,
     lang: PropTypes.string,
+    foldersFirst: PropTypes.bool,
     selected: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.array

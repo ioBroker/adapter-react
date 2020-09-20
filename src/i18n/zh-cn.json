@@ -46,5 +46,7 @@
   "ra_Width": "宽度",
   "ra_val": "值",
   "ra_buttons": "纽扣",
-  "ra_Configure visible columns": "配置可见列"
+  "ra_Configure visible columns": "配置可见列",
+  "ra_Cannot update attribute, because not found in the object": "无法更新属性，因为在对象中找不到",
+  "ra_Edit object field": "编辑对象字段"
 }

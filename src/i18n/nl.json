@@ -47,5 +47,7 @@
   "ra_Width": "Breedte",
   "ra_val": "Waarde",
   "ra_buttons": "Toetsen",
-  "ra_Configure visible columns": "Configureer zichtbare kolommen"
+  "ra_Configure visible columns": "Configureer zichtbare kolommen",
+  "ra_Cannot update attribute, because not found in the object": "Kan kenmerk niet bijwerken, omdat het niet in het object is gevonden",
+  "ra_Edit object field": "Bewerk objectveld"
 }

@@ -49,5 +49,7 @@
   "ra_Width": "Ширина",
   "ra_val": "Значение",
   "ra_buttons": "Кнопки",
-  "ra_Configure visible columns": "Настроить видимые столбцы"
+  "ra_Configure visible columns": "Настроить видимые столбцы",
+  "ra_Cannot update attribute, because not found in the object": "Невозможно обновить атрибут, потому что он не найден в объекте",
+  "ra_Edit object field": "Поле редактирования объекта"
 }

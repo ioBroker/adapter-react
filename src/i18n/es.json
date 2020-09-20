@@ -47,5 +47,7 @@
   "ra_Width": "Anchura",
   "ra_val": "Valor",
   "ra_buttons": "Botones",
-  "ra_Configure visible columns": "Configurar columnas visibles"
+  "ra_Configure visible columns": "Configurar columnas visibles",
+  "ra_Cannot update attribute, because not found in the object": "No se puede actualizar el atributo porque no se encuentra en el objeto",
+  "ra_Edit object field": "Editar campo de objeto"
 }

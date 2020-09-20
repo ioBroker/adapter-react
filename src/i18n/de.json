@@ -50,6 +50,7 @@
   "ra_val": "Wert",
   "ra_buttons": "Tasten",
   "ra_Configure visible columns": "Spalten Konfigurieren",
-  "ra_close": "Schließen"
-
+  "ra_close": "Schließen",
+  "ra_Cannot update attribute, because not found in the object": "Attribut kann nicht aktualisiert werden, da es nicht im Objekt gefunden wurde",
+  "ra_Edit object field": "Objektfeld bearbeiten"
 }
