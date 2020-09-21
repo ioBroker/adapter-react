@@ -9,6 +9,7 @@
 const gulp  = require('gulp');
 const babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
+const typescript = require('gulp-typescript');
 const fs = require('fs');
 
 gulp.task('copy', () => Promise.all([
@@ -30,6 +31,15 @@ gulp.task('copy', () => Promise.all([
     })
 ]));
 
+const tsProject = typescript.createProject('tsconfig.build.json');
+
+gulp.task('typedefs', () => {
+    return gulp.src('src/**/*.js', '!src/gulpfile.js')
+        .pipe(tsProject())
+        .dts
+        .pipe(gulp.dest('dist'));
+});
+
 const babelOptions = {
     presets: ['@babel/preset-env', '@babel/preset-react'],
     plugins: [
@@ -37,7 +47,8 @@ const babelOptions = {
     ]
 };
 
-gulp.task('compile', gulp.series('copy',
+gulp.task('compile', gulp.parallel('copy',
+    'typedefs',
     () => Promise.all([
         gulp.src(['src/Dialogs/*.js'])
             .pipe(sourcemaps.init())
