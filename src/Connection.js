@@ -722,12 +722,12 @@ class Connection {
 
     /**
      * Get all adapter instances.
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<ioBroker.Object[]>}
      *//**
      * Get all instances of the given adapter.
      * @param {string} adapter The name of the adapter.
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<ioBroker.Object[]>}
      */
     getAdapterInstances(adapter, update) {
@@ -765,12 +765,12 @@ class Connection {
 
     /**
      * Get all adapters.
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<ioBroker.Object[]>}
      *//**
      * Get adapters with the given name.
      * @param {string} adapter The name of the adapter.
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<ioBroker.Object[]>}
      */
     getAdapters(adapter, update) {
@@ -865,8 +865,8 @@ class Connection {
     /**
      * Sends a message to a specific instance or all instances of some specific adapter.
      * @param {string} instance The instance to send this message to.
-     * @param {string | undefined} command Command name of the target instance.
-     * @param {ioBroker.MessagePayload | undefined} data The message data to send.
+     * @param {string} [command] Command name of the target instance.
+     * @param {ioBroker.MessagePayload} [data] The message data to send.
      * @returns {Promise<ioBroker.Message | undefined>}
      */
     sendTo(instance, command, data) {
@@ -975,8 +975,8 @@ class Connection {
 
     /**
      * Get all enums with the given name.
-     * @param {string | undefined} _enum The name of the enum
-     * @param {boolean | undefined} update Force update.
+     * @param {string} [_enum] The name of the enum
+     * @param {boolean} [update] Force update.
      * @returns {Promise<Record<string, ioBroker.Object>>}
      */
     getEnums(_enum, update) {
@@ -1042,7 +1042,7 @@ class Connection {
 
     /**
      * Get the stored certificates.
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<{name: string; type: 'public' | 'private' | 'chained'}[]>}
      */
     getCertificates(update) {
@@ -1102,7 +1102,7 @@ class Connection {
     /**
      * Get the logs from a host.
      * @param {string} host
-     * @param {number | undefined} linesNumber
+     * @param {number} [linesNumber]
      * @returns {Promise<string[]>}
      */
     getLogs(host, linesNumber) {
@@ -1213,7 +1213,7 @@ class Connection {
 
     /**
      * Get the list of all hosts.
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<ioBroker.Object[]>}
      */
     getHosts(update) {
@@ -1244,7 +1244,7 @@ class Connection {
 
     /**
      * Get the list of all users.
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<ioBroker.Object[]>}
      */
     getUsers(update) {
@@ -1274,7 +1274,7 @@ class Connection {
 
     /**
      * Get the list of all groups.
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<ioBroker.Object[]>}
      */
     getGroups(update) {
@@ -1305,7 +1305,7 @@ class Connection {
     /**
      * Get the host information.
      * @param {string} host
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<any>}
      */
     getHostInfo(host, update) {
@@ -1350,8 +1350,8 @@ class Connection {
     /**
      * Get the repository.
      * @param {string} host
-     * @param {any | undefined} args
-     * @param {boolean | undefined} update Force update.
+     * @param {any} [args]
+     * @param {boolean} [update] Force update.
      * @returns {Promise<any>}
      */
     getRepository(host, args, update) {
@@ -1396,7 +1396,7 @@ class Connection {
     /**
      * Get the installed.
      * @param {string} host
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<any>}
      */
     getInstalled(host, update) {
@@ -1479,7 +1479,7 @@ class Connection {
     /**
      * Checks if a given feature is supported.
      * @param {string} feature The feature to check.
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<any>}
      */
     checkFeatureSupported(feature, update) {
@@ -1600,7 +1600,7 @@ class Connection {
     /**
      * Get foreign objects by pattern, by specific type and resolve their enums.
      * @param {string} pattern
-     * @param {string | undefined} type
+     * @param {string} [type]
      * @returns {ioBroker.GetObjectsPromise}
      */
     getForeignObjects(pattern, type) {
@@ -1614,7 +1614,7 @@ class Connection {
 
     /**
      * Gets the system configuration.
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<ioBroker.OtherObject>}
      */
     getSystemConfig(update) {
@@ -1701,7 +1701,7 @@ class Connection {
     /**
      * Get the IP addresses of the given host.
      * @param {string} host
-     * @param {boolean | undefined} update Force update.
+     * @param {boolean} [update] Force update.
      * @returns {Promise<string[]>}
      */
     getIpAddresses(host, update) {

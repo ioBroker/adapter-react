@@ -52,9 +52,9 @@ class I18n {
     /**
      * Translate the given string to the selected language.
      * @param {string} word The (key) word to look up the string.
-     * @param {string | undefined} [arg1] Optional argument which will replace the first occurence of %s
-     * @param {string | undefined} [arg2] Optional argument which will replace the second occurence of %s
-     * @param {string | undefined} [arg3] Optional argument which will replace the thrid occurence of %s
+     * @param {string} [arg1] Optional argument which will replace the first occurence of %s
+     * @param {string} [arg2] Optional argument which will replace the second occurence of %s
+     * @param {string} [arg3] Optional argument which will replace the thrid occurence of %s
      */
     static t(word, arg1, arg2, arg3) {
         if (I18n.translations[I18n.lang]) {
