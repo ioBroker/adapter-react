@@ -14,6 +14,7 @@ const fs = require('fs');
 
 gulp.task('copy', () => Promise.all([
     gulp.src(['src/gulpfile.js']).pipe(gulp.dest('dist')),
+    gulp.src(['src/*.d.ts']).pipe(gulp.dest('dist')),
     gulp.src(['src/vendor/*.*']).pipe(gulp.dest('dist/vendor')),
     gulp.src(['src/assets/*.*']).pipe(gulp.dest('dist/assets')),
     gulp.src(['README.md']).pipe(gulp.dest('dist')),
