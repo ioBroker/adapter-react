@@ -11,19 +11,19 @@
 class I18n {
     /**
      * List of all languages with their translations.
-     * @type {Record<string, Record<string, string>>}
+     * @type {{ [lang in ioBroker.Languages]?: Record<string, string>; }}
      */
     static translations = {};
 
     /**
      * The currently displayed language.
-     * @type {string}
+     * @type {ioBroker.Languages}
      */
     static lang = window.sysLang || 'en';
 
     /**
      * Set the language to display.
-     * @param {string} lang
+     * @param {ioBroker.Languages} lang
      */
     static setLanguage(lang) {
         if (lang) {
@@ -33,7 +33,7 @@ class I18n {
 
     /**
      * Sets all translations (in all languages).
-     * @param {Record<string, Record<string, string>>} translations
+     * @param {{ [lang in ioBroker.Languages]?: Record<string, string>; }} translations
      */
     static setTranslations(translations) {
         if (translations) {
@@ -43,7 +43,7 @@ class I18n {
 
     /**
      * Get the currently chosen language.
-     * @returns {string} The current language.
+     * @returns {ioBroker.Languages} The current language.
      */
     static getLanguage() {
         return I18n.lang;
