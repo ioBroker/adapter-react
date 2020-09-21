@@ -1,3 +1,4 @@
+/// <reference path="./types.d.ts" />
 /**
  * Copyright 2020, bluefox <dogafox@gmail.com>
  *
@@ -1139,6 +1140,9 @@ function prepareSparkData(values, from) {
     return v;
 }
 
+/**
+ * @type {import('@iobroker/adapter-react/types/components').ObjectBrowserFilter}
+ */
 const DEFAULT_FILTER = {
     id:     '',
     name:   '',
@@ -1303,6 +1307,9 @@ const SCREEN_WIDTHS = {
 };
 
 class ObjectBrowser extends React.Component {
+    /**
+     * @param {import('@iobroker/adapter-react/types/components').ObjectBrowserProps} props
+     */
     constructor(props) {
         super(props);
 
@@ -1326,7 +1333,7 @@ class ObjectBrowser extends React.Component {
 
         let filter =
             this.props.defaultFilters ||
-            window.localStorage.getItem(this.props.key || 'App.objectFilter') ||
+            window.localStorage.getItem((this.props.key || 'App') + '.objectFilter') ||
             Object.assign({}, DEFAULT_FILTER);
 
         if (typeof filter === 'string') {
@@ -1523,6 +1530,10 @@ class ObjectBrowser extends React.Component {
             .catch(e => this.showError(e));
     }
 
+    /**
+     * @private
+     * @param {ioBroker.EmptyCallback} cb 
+     */
     expandAllSelected(cb) {
         let expanded = [...this.state.expanded];
         let changed = false;
@@ -1546,6 +1557,10 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {boolean} [isDouble]
+     */
     onAfterSelect(isDouble) {
         this.lastSelectedItems = [...this.state.selected];
         if (this.state.selected && this.state.selected.length) {
@@ -1559,6 +1574,11 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {import('@iobroker/adapter-react/types/components').ObjectBrowserProps} props
+     * @param {any} state
+     */
     static getDerivedStateFromProps(props, state) {
         const newState = {};
         let changed = false;
@@ -1570,10 +1590,16 @@ class ObjectBrowser extends React.Component {
         return changed ? newState : null;
     }
 
+    /**
+     * @private
+     */
     componentDidMount() {
         this.props.socket.subscribeObject('*', this.onObjectChange);
     }
 
+    /**
+     * @private
+     */
     componentWillUnmount() {
         this.props.socket.unsubscribeObject('*', this.onObjectChange);
 
@@ -1586,6 +1612,10 @@ class ObjectBrowser extends React.Component {
         this.subscribes = [];
     }
 
+    /**
+     * Renders the error dialog.
+     * @returns {JSX.Element | null}
+     */
     renderErrorDialog() {
         return this.state.error ? <Dialog
             open={true}
@@ -1607,10 +1637,19 @@ class ObjectBrowser extends React.Component {
         </Dialog> : null;
     }
 
+    /**
+     * Show the error dialog.
+     * @param {any} error 
+     */
     showError(error) {
         this.setState({error: typeof error === 'object' ? (error && typeof error.toString === 'function' ? error.toString() : JSON.stringify(error)) : error});
     }
 
+    /**
+     * Called when an item is selected/deselected.
+     * @param {string} toggleItem
+     * @param {boolean} [isDouble]
+     */
     onSelect(toggleItem, isDouble) {
         if (!this.props.multiSelect) {
             if (this.objects[toggleItem] && (!this.props.types || this.props.types.includes(this.objects[toggleItem].type))) {
@@ -1640,6 +1679,10 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {boolean} isLast
+     */
     _renderDefinedList(isLast) {
         const cols = [...this.possibleCols];
         cols.unshift('id');
@@ -1697,6 +1740,10 @@ class ObjectBrowser extends React.Component {
             );
     }
 
+    /**
+     * Renders the columns selector.
+     * @returns {JSX.Element | null}
+     */
     renderColumnsSelectorDialog() {
         if (!this.state.columnsSelectorShow) {
             return null;
@@ -1801,6 +1848,9 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     */
     getAdditionalColumns() {
         return this.props.socket.getAdapters()
             .then(instances => {
@@ -1813,6 +1863,9 @@ class ObjectBrowser extends React.Component {
             });
     }
 
+    /**
+     * @private
+     */
     checkUnsubscribes() {
         // Remove unused subscribed
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
@@ -1822,6 +1875,14 @@ class ObjectBrowser extends React.Component {
         this.recordStates = [];
     }
 
+    /**
+     * Find an item.
+     * @param {string} id
+     * @param {string[] | undefined} [_parts]
+     * @param {{ data: { name: string; id: string; }; children: never[]; } | null | undefined} [_root]
+     * @param {string | undefined} [_partyId]
+     * @returns {any}
+     */
     findItem(id, _parts, _root, _partyId) {
         _parts = _parts || id.split('.');
         _root = _root || this.root;
@@ -1847,6 +1908,11 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * Called when a state changes.
+     * @param {string} id
+     * @param {ioBroker.State} state
+     */
     onStateChange(id, state) {
         console.log('> stateChange ' + id);
         if (this.states[id]) {
@@ -1872,6 +1938,11 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {{ [x: string]: any; }} columnsForAdmin
+     * @param {any} obj
+     */
     parseObjectForAdmins(columnsForAdmin, obj) {
         if (obj.common && obj.common.adminColumns && obj.common.name) {
             let columns = obj.common.adminColumns;
@@ -1914,6 +1985,11 @@ class ObjectBrowser extends React.Component {
         return columnsForAdmin;
     }
 
+    /**
+     * @param {string} id
+     * @param {ioBroker.Object} obj
+     * @param {import('@iobroker/adapter-react/types').OldObject} oldObj
+     */
     onObjectChange = (id, obj, oldObj) => {
         console.log('> objectChange ' + id);
 
@@ -1953,6 +2029,10 @@ class ObjectBrowser extends React.Component {
         }
     };
 
+    /**
+     * @private
+     * @param {string} id
+     */
     subscribe(id) {
         if (this.subscribes.indexOf(id) === -1) {
             this.subscribes.push(id);
@@ -1963,6 +2043,10 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {string} id
+     */
     unsubscribe(id) {
         const pos = this.subscribes.indexOf(id);
         if (pos !== -1) {
@@ -1979,6 +2063,10 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {boolean} isPause
+     */
     pauseSubscribe(isPause) {
         if (!this.pausedSubscribes && isPause) {
             this.pausedSubscribes = true;
@@ -1989,6 +2077,11 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {string} [name]
+     * @param {boolean} [value]
+     */
     onFilter(name, value) {
         this.filterTimer = null;
         let filter = {};
@@ -2018,6 +2111,10 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {string} name
+     */
     getFilterInput(name) {
         return (<FormControl className={ this.props.classes.headerCellInput } style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
             <Input
@@ -2035,6 +2132,11 @@ class ObjectBrowser extends React.Component {
         </FormControl>);
     }
 
+    /**
+     * @private
+     * @param {string} name
+     * @param {any[]} values
+     */
     getFilterSelect(name, values) {
         const hasIcons = !!values.find(item => item.icon);
 
@@ -2071,10 +2173,16 @@ class ObjectBrowser extends React.Component {
         </Select>;
     }
 
+    /**
+     * @private
+     */
     getFilterSelectRole() {
         return this.getFilterSelect('role', this.info.roles);
     }
 
+    /**
+     * @private
+     */
     getFilterSelectRoom() {
         const rooms = this.info.roomEnums.map(id =>
             ({
@@ -2085,6 +2193,9 @@ class ObjectBrowser extends React.Component {
         return this.getFilterSelect('room', rooms);
     }
 
+    /**
+     * @private
+     */
     getFilterSelectFunction() {
         const func = this.info.funcEnums.map(id =>
             ({name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()), value: id}));
@@ -2092,6 +2203,9 @@ class ObjectBrowser extends React.Component {
 
     }
 
+    /**
+     * @private
+     */
     getFilterSelectType() {
         const types = this.info.types.map(type =>
             ({name: type, value: type, icon: ITEM_IMAGES[type]}));
@@ -2099,6 +2213,9 @@ class ObjectBrowser extends React.Component {
         return this.getFilterSelect('type', types);
     }
 
+    /**
+     * @private
+     */
     getFilterSelectCustoms() {
         if (this.info.customs.length) {
             return this.getFilterSelect('customs', this.info.customs);
@@ -2107,6 +2224,11 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {any} [root]
+     * @param {any[]} [expanded]
+     */
     onExpandAll(root, expanded) {
         root = root || this.root;
         expanded = expanded || [];
@@ -2126,11 +2248,20 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     */
     onCollapseAll() {
         window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify([]));
         this.setState({ expanded: [], depth: 0 });
     }
 
+    /**
+     * @private
+     * @param {any} root
+     * @param {number} depth
+     * @param {any[]} expanded
+     */
     expandDepth(root, depth, expanded) {
         root = root || this.root;
         if (depth > 0) {
@@ -2150,10 +2281,18 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {number} depth
+     * @param {any[]} expanded
+     */
     collapseDepth(depth, expanded) {
         return expanded.filter(id => id.split('.').length <= depth);
     }
 
+    /**
+     * @private
+     */
     onExpandVisible() {
         if (this.state.depth < 9) {
             const depth = this.state.depth + 1;
@@ -2164,6 +2303,9 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     */
     onCollapseVisible() {
         if (this.state.depth > 0) {
             const depth = this.state.depth - 1;
@@ -2173,6 +2315,10 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * Renders the toolbar.
+     * @returns {JSX.Element}
+     */
     getToolbar() {
         return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
             { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={ this.props.classes.toolbarButtons } color={ this.state.filter.expertMode ? 'secondary' : 'default' } onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }><IconExpert /></IconButton>: null }
@@ -2191,6 +2337,10 @@ class ObjectBrowser extends React.Component {
         </Toolbar>;
     }
 
+    /**
+     * @private
+     * @param {string} id
+     */
     toggleExpanded(id) {
         const expanded = JSON.parse(JSON.stringify(this.state.expanded));
         const pos = expanded.indexOf(id);
@@ -2206,6 +2356,11 @@ class ObjectBrowser extends React.Component {
         this.setState({ expanded });
     }
 
+    /**
+     * @private
+     * @param {Event} e
+     * @param {string} text
+     */
     onCopy(e, text) {
         e.stopPropagation();
         e.preventDefault();
@@ -2217,6 +2372,11 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @param {string} id
+     * @param {{ data: { obj: { type: string; }; hasCustoms: any; }; }} item
+     * @param {{ cellButtonsButton: string | undefined; cellButtonsButtonAlone: any; cellButtonsButtonIcon: string | undefined; cellButtonsButtonWithCustoms: any; }} classes
+     */
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
             return <IconButton className={ Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone) }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
@@ -2258,6 +2418,10 @@ class ObjectBrowser extends React.Component {
         ];
     }
 
+    /**
+     * @private
+     * @param {string} id 
+     */
     readHistory(id) {
         /*interface GetHistoryOptions {
             instance?: string;
@@ -2315,6 +2479,13 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {string} id
+     * @param {any} item
+     * @param {Record<string, any>} classes
+     * @returns {JSX.Element | null}
+     */
     renderColumnValue(id, item, classes) {
         if (!item.data.obj || !this.states) {
             return null;
@@ -2364,6 +2535,10 @@ class ObjectBrowser extends React.Component {
         </Tooltip>;
     }
 
+    /**
+     * @private
+     * @returns {JSX.Element | null}
+     */
     renderEnumDialog() {
         if (this.state.enumDialog) {
 
@@ -2429,6 +2604,10 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {boolean} [isSave]
+     */
     onColumnsEditCustomDialogClose(isSave) {
         if (isSave) {
             let value = this.customColumnDialog.value;
@@ -2454,6 +2633,9 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     */
     renderColumnsEditCustomDialog() {
         if (this.state.columnsEditCustomDialog) {
             if (!this.customColumnDialog) {
@@ -2520,6 +2702,11 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {any} obj
+     * @param {any} it
+     */
     getCustomValue(obj, it) {
         if (obj && obj._id && obj._id.startsWith(it.adapter + '.') && it.path.length > 1) {
             const p = it.path;
@@ -2547,6 +2734,12 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {any} obj
+     * @param {any} it
+     * @param {any} value
+     */
     setCustomValue(obj, it, value) {
         if (obj && obj._id && obj._id.startsWith(it.adapter + '.') && it.path.length > 1) {
             const p = it.path;
@@ -2580,6 +2773,13 @@ class ObjectBrowser extends React.Component {
         return false;
     }
 
+    /**
+     * Renders a custom value.
+     * @param {any} obj
+     * @param {any} it
+     * @param {any} item
+     * @returns {JSX.Element | null}
+     */
     renderCustomValue(obj, it, item) {
         let text = this.getCustomValue(obj, it);
         if (text !== null && text !== undefined) {
@@ -2596,6 +2796,14 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * Renders a leaf.
+     * @param {any} item
+     * @param {boolean} isExpanded
+     * @param {Record<string, any>} classes
+     * @param {{ count: number; }} counter
+     * @returns {JSX.Element}
+     */
     renderLeaf(item, isExpanded, classes, counter) {
         const id = item.data.id;
         counter.count++;
@@ -2728,6 +2936,14 @@ class ObjectBrowser extends React.Component {
         </Grid>;
     }
 
+    /**
+     * Renders an item.
+     * @param {any} root
+     * @param {boolean} isExpanded
+     * @param {Record<string, any>} classes
+     * @param {{ count: any; }} [counter]
+     * @returns {JSX.Element[]}
+     */
     renderItem(root, isExpanded, classes, counter) {
         const items = [];
         counter = counter || {count: 0};
@@ -2779,6 +2995,13 @@ class ObjectBrowser extends React.Component {
         return items;
     }
 
+    /**
+     * @private
+     * @param {boolean} [columnsAuto]
+     * @param {string[]} [columns]
+     * @param {any} [columnsForAdmin]
+     * @param {Record<string, number>} [columnsWidths]
+     */
     calculateColumnsVisibility(columnsAuto, columns, columnsForAdmin, columnsWidths) {
         columnsWidths   = columnsWidths   || this.state.columnsWidths;
         columnsForAdmin = columnsForAdmin || this.state.columnsForAdmin;
@@ -2883,6 +3106,10 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @returns {JSX.Element}
+     */
     renderHeader() {
         const classes = this.props.classes;
 
@@ -2899,12 +3126,19 @@ class ObjectBrowser extends React.Component {
         </div>;
     }
 
+    /**
+     * @private
+     * @returns {JSX.Element}
+     */
     renderToast() {
         return <Snackbar open={ !!this.state.toast } autoHideDuration={ 3000 } onClick={ () => this.setState({ toast: '' }) } onClose={ () => this.setState({ toast: '' }) }>
             <Alert color="info" severity="success" >{ this.state.toast }</Alert>
         </Snackbar>;
     }
 
+    /**
+     * @private
+     */
     componentDidUpdate() {
         if (this.tableRef.current) {
             const scrollBarWidth = this.tableRef.current.offsetWidth - this.tableRef.current.clientWidth;
@@ -2920,6 +3154,10 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @returns {JSX.Element | null}
+     */
     renderCustomDialog() {
         if (this.state.customDialog && this.props.objectCustomDialog) {
             const ObjectCustomDialog = this.props.objectCustomDialog;
@@ -2944,11 +3182,19 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    /**
+     * @private
+     * @param {Partial<ioBroker.State>} valAck
+     */
     onUpdate(valAck) {
         this.props.socket.setState(this.edit.id, {val: valAck.val, ack: valAck.ack, q: valAck.q || 0})
             .catch(e => this.showError('Cannot write value: ' + e));
     }
 
+    /**
+     * @private
+     * @returns {JSX.Element | null}
+     */
     renderEditObjectDialog() {
         if (!this.state.editObjectDialog || !this.props.objectBrowserEditObject) {
             return null;
@@ -2970,6 +3216,10 @@ class ObjectBrowser extends React.Component {
         />
     }
 
+    /**
+     * @private
+     * @returns {JSX.Element | null}
+     */
     renderEditValueDialog() {
         if (!this.state.updateOpened || !this.props.objectBrowserValue) {
             return null;
@@ -2992,6 +3242,10 @@ class ObjectBrowser extends React.Component {
         />;
     }
 
+    /**
+     * @private
+     * @returns {JSX.Element}
+     */
     render() {
         this.recordStates = [];
         this.unsubscribeTimer && clearTimeout(this.unsubscribeTimer);

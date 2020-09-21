@@ -54,4 +54,6 @@ declare module "@iobroker/adapter-react/types" {
         /** Don't load all objects on start-up. */
         doNotLoadAllObjects?: boolean;
     }
+
+    export type Width = ('xs' | 'sm' | 'md' | 'lg' | 'xl');
 }

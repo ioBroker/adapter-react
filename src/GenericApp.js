@@ -182,7 +182,7 @@ class GenericApp extends Router {
 
     /**
      * Gets the width depending on the window inner width.
-     * @returns {('xs' | 'sm' | 'md' | 'lg' | 'xl')}
+     * @returns {import('@iobroker/adapter-react/types').Width}
      */
     static getWidth() {
         /**
