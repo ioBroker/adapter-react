@@ -1,3 +1,5 @@
+/// <reference path="./types.d.ts" />
+
 import React from 'react';
 import Connection, {PROGRESS} from './Connection';
 
@@ -34,6 +36,10 @@ const styles = {
 
 
 class GenericApp extends Router {
+    /**
+     * @param {import('@iobroker/adapter-react/types').GenericAppProps} props
+     * @param {import('@iobroker/adapter-react/types').GenericAppSettings | undefined} settings
+     */
     constructor(props, settings) {
         super(props);
 
@@ -147,16 +153,25 @@ class GenericApp extends Router {
         });
     }
 
+    /**
+     * Called immediately after a component is mounted. Setting state here will trigger re-rendering.
+     */
     componentDidMount() {
         window.addEventListener('resize', this.onResize, true);
         super.componentDidMount();
     }
 
+    /**
+     * Called immediately before a component is destroyed.
+     */
     componentWillUnmount() {
         window.removeEventListener('resize', this.onResize, true);
         super.componentWillUnmount();
     }
 
+    /**
+     * @private
+     */
     onResize = () => {
         this.resizeTimer && clearTimeout(this.resizeTimer);
         this.resizeTimer = setTimeout(() => {
@@ -165,6 +180,10 @@ class GenericApp extends Router {
         }, 200)
     };
 
+    /**
+     * Gets the width depending on the window inner width.
+     * @returns {('xs' | 'sm' | 'md' | 'lg' | 'xl')}
+     */
     static getWidth() {
         /**
          * innerWidth |xs      sm      md      lg      xl
@@ -189,7 +208,7 @@ class GenericApp extends Router {
     /**
      * Get a theme
      * @param {string} name Theme name
-     * @returns {Theme}
+     * @returns {import('@material-ui/core/styles').Theme}
      */
     createTheme(name = '') {
         return theme(Utils.getThemeName(name));
@@ -197,7 +216,7 @@ class GenericApp extends Router {
 
     /**
      * Get the theme name
-     * @param {Theme} theme Theme
+     * @param {import('@material-ui/core/styles').Theme} theme Theme
      * @returns {string} Theme name
      */
     getThemeName(theme) {
@@ -206,7 +225,7 @@ class GenericApp extends Router {
 
     /**
      * Get the theme type
-     * @param {Theme} theme Theme
+     * @param {import('@material-ui/core/styles').Theme} theme Theme
      * @returns {string} Theme type
      */
     getThemeType(theme) {
@@ -234,6 +253,10 @@ class GenericApp extends Router {
         });
     }
 
+    /**
+     * Gets the system configuration.
+     * @returns {Promise<ioBroker.OtherObject>}
+     */
     getSystemConfig() {
         if (this.socket.objects && this.socket.objects['system.config']) {
             return Promise.resolve(this.socket.objects['system.config']);
@@ -242,10 +265,18 @@ class GenericApp extends Router {
         }
     }
 
+    /**
+     * Gets called when the socket.io connection is ready.
+     * You can overload this function to execute own commands.
+     */
     onConnectionReady() {
-        // you can overload this function to execute own commands
     }
 
+    /**
+     * Encrypts a string.
+     * @param {string} value
+     * @returns {string}
+     */
     encrypt(value) {
         let result = '';
         for (let i = 0; i < value.length; i++) {
@@ -254,6 +285,11 @@ class GenericApp extends Router {
         return result;
     }
 
+    /**
+     * Decrypts a string.
+     * @param {string} value
+     * @returns {string}
+     */
     decrypt(value) {
         let result = '';
         for (let i = 0; i < value.length; i++) {
@@ -262,6 +298,10 @@ class GenericApp extends Router {
         return result;
     }
 
+    /**
+     * Gets called when the navigation hash changes.
+     * You may override this if needed.
+     */
     onHashChanged() {
         const location = Router.getLocation();
         if (location.tab !== this.state.selectedTab) {
@@ -269,11 +309,21 @@ class GenericApp extends Router {
         }
     }
 
+    /**
+     * Selects the given tab.
+     * @param {string} tab
+     * @param {number} [index]
+     */
     selectTab(tab, index) {
         window.localStorage[this.adapterName + '-adapter'] = tab;
         this.setState({selectedTab: tab, selectedTabNum: index})
     }
 
+    /**
+     * Gets called before the settings are saved.
+     * You may override this if needed.
+     * @param {any} settings 
+     */
     onPrepareSave(settings) {
         // here you can encode values
         this.encryptedFields && this.encryptedFields.forEach(attr => {
@@ -283,6 +333,11 @@ class GenericApp extends Router {
         });
     }
 
+    /**
+     * Gets called after the settings are loaded.
+     * You may override this if needed.
+     * @param {any} settings 
+     */
     onPrepareLoad(settings) {
         // here you can encode values
         this.encryptedFields && this.encryptedFields.forEach(attr => {
@@ -292,6 +347,10 @@ class GenericApp extends Router {
         });
     }
 
+    /**
+     * Gets the extendable instances.
+     * @returns {Promise<any[]>}
+     */
     getExtendableInstances() {
         return new Promise(resolve => {
             this.socket.socket.emit('getObjectView', 'system', 'instance', null, (err, doc) => {
@@ -304,6 +363,10 @@ class GenericApp extends Router {
         });
     }
 
+    /**
+     * Gets the IP addresses of the given host.
+     * @param {string} host
+     */
     getIpAddresses(host) {
         return new Promise((resolve, reject) => {
             this.socket.socket.emit('getHostByIp', host || this.common.host, (ip, _host) => {
@@ -328,6 +391,10 @@ class GenericApp extends Router {
         });
     }
 
+    /**
+     * Saves the settings to the server.
+     * @param {boolean} isClose True if the user is closing the dialog.
+     */
     onSave(isClose) {
         let oldObj;
         if (this.state.isConfigurationError) {
@@ -364,6 +431,10 @@ class GenericApp extends Router {
             });
     }
 
+    /**
+     * Renders the toast.
+     * @returns {JSX.Element | null} The JSX element.
+     */
     renderToast() {
         if (!this.state.toast) return null;
         return (
@@ -393,6 +464,10 @@ class GenericApp extends Router {
             />);
     }
 
+    /**
+     * Closes the dialog.
+     * @private
+     */
     static onClose() {
         if (typeof window.parent !== 'undefined' && window.parent) {
             try {
@@ -407,28 +482,48 @@ class GenericApp extends Router {
         }
     }
 
+    /**
+     * Renders the error dialog.
+     * @returns {JSX.Element | null} The JSX element.
+     */
     renderError() {
         if (!this.state.errorText) return null;
         return (<DialogError text={this.state.errorText} onClose={() => this.setState({errorText: ''})}/>);
     }
 
+    /**
+     * Checks if the configuration has changed.
+     * @param {any} [native] the new state
+     */
     getIsChanged(native) {
         native = native || this.state.native;
         return JSON.stringify(native) !== JSON.stringify(this.savedNative);
     }
 
+    /**
+     * Gets called when loading the configuration.
+     * @param {any} newNative The new configuration object.
+     */
     onLoadConfig(newNative) {
         if (JSON.stringify(newNative) !== JSON.stringify(this.state.native)) {
             this.setState({native: newNative, changed: this.getIsChanged(newNative)})
         }
     }
 
+    /**
+     * Sets the configuration error.
+     * @param {string} errorText
+     */
     setConfigurationError(errorText) {
         if (this.state.isConfigurationError !== errorText) {
             this.setState({isConfigurationError: errorText});
         }
     }
 
+    /**
+     * Renders the save and close buttons.
+     * @returns {JSX.Element | undefined} The JSX element.
+     */
     renderSaveCloseButtons() {
         if (!this.state.bottomButtons) {
             return;
@@ -468,6 +563,13 @@ class GenericApp extends Router {
             </Toolbar>)
     }
 
+    /**
+     * @private
+     * @param {any} obj 
+     * @param {any} attrs 
+     * @param {any} value 
+     * @returns {boolean | undefined}
+     */
     _updateNativeValue(obj, attrs, value) {
         if (typeof attrs !== 'object') {
             attrs = attrs.split('.');
@@ -495,6 +597,12 @@ class GenericApp extends Router {
         }
     }
 
+    /**
+     * Update the native value
+     * @param {string} attr The attribute name with dots as delimiter. 
+     * @param {any} value The new value.
+     * @param {(() => void)} [cb] Callback which will be called upon completion.
+     */
     updateNativeValue(attr, value, cb) {
         const native = JSON.parse(JSON.stringify(this.state.native));
         if (this._updateNativeValue(native, attr, value)) {
@@ -503,14 +611,26 @@ class GenericApp extends Router {
         }
     }
 
+    /**
+     * Set the error text to be shown.
+     * @param {string} text
+     */
     showError(text) {
         this.setState({errorText: text});
     }
 
+    /**
+     * Sets the toast to be shown.
+     * @param {string} toast
+     */
     showToast(toast) {
         this.setState({toast});
     }
 
+    /**
+     * Renders this component.
+     * @returns {JSX.Element} The JSX element.
+     */
     render() {
         if (!this.state.loaded) {
             return <Loader theme={this.state.themeType}/>;

@@ -7,9 +7,9 @@ declare module "@iobroker/adapter-react/types" {
         /** Automatically subscribe to logging. */
         autoSubscribeLog?: boolean;
         /** The protocol to use for the socket.io connection. */
-        protocol: string;
+        protocol?: string;
         /** The host name to use for the socket.io connection. */
-        host: string;
+        host?: string;
         /** The port to use for the socket.io connection. */
         port?: string | number;
         /** The socket.io connection timeout. */
@@ -36,4 +36,22 @@ declare module "@iobroker/adapter-react/types" {
     }
     
     export type ObjectChangeHandler = (id: string, obj: ioBroker.Object | null | undefined, oldObj: OldObject) => void | Promise<void>;
+
+    export interface GenericAppProps {
+        /** The name of the adapter. */
+        adapterName?: string;
+        /** Should the bottom buttons be shown (default: true). */
+        bottomButtons?: boolean;
+        /** Additional translations. */
+        translations?: { [lang in ioBroker.Languages]?: Record<string, string>; };
+        /** Fields that should be encrypted/decrypted. */
+        encryptedFields?: string[];
+        /** Socket.io configuration. */
+        socket?: ConnectionProps;
+    }
+
+    export interface GenericAppSettings extends GenericAppProps {
+        /** Don't load all objects on start-up. */
+        doNotLoadAllObjects?: boolean;
+    }
 }

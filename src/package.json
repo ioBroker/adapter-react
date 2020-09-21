@@ -6,6 +6,7 @@
     "name": "bluefox",
     "email": "dogafox@gmail.com"
   },
+  "types": "index.d.ts",
   "scripts": {},
   "repository": {
     "type": "git",
