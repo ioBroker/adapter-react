@@ -1140,7 +1140,7 @@ function prepareSparkData(values, from) {
 }
 
 /**
- * @type {import('@iobroker/adapter-react/types/components').ObjectBrowserFilter}
+ * @type {import('./types').ObjectBrowserFilter}
  */
 const DEFAULT_FILTER = {
     id:     '',
@@ -1307,7 +1307,7 @@ const SCREEN_WIDTHS = {
 
 class ObjectBrowser extends React.Component {
     /**
-     * @param {import('@iobroker/adapter-react/types/components').ObjectBrowserProps} props
+     * @param {import('./types').ObjectBrowserProps} props
      */
     constructor(props) {
         super(props);
@@ -1575,7 +1575,7 @@ class ObjectBrowser extends React.Component {
 
     /**
      * @private
-     * @param {import('@iobroker/adapter-react/types/components').ObjectBrowserProps} props
+     * @param {import('./types').ObjectBrowserProps} props
      * @param {any} state
      */
     static getDerivedStateFromProps(props, state) {
@@ -1987,7 +1987,7 @@ class ObjectBrowser extends React.Component {
     /**
      * @param {string} id
      * @param {ioBroker.Object} obj
-     * @param {import('@iobroker/adapter-react/types').OldObject} oldObj
+     * @param {import('./types').OldObject} oldObj
      */
     onObjectChange = (id, obj, oldObj) => {
         console.log('> objectChange ' + id);

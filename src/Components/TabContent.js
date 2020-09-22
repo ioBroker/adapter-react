@@ -35,6 +35,7 @@ class TabContent extends Component {
 }
 
 TabContent.propTypes = {
+    fooBar: PropTypes.bool,
     overflow: PropTypes.string
 };
 

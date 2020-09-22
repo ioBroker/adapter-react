@@ -23,7 +23,7 @@ const NOT_CONNECTED    = 'notConnectedError';
 
 class Connection {
     /**
-     * @param {import('@iobroker/adapter-react/types').ConnectionProps} props
+     * @param {import('./types').ConnectionProps} props
      */
     constructor(props) {
         props = props || { protocol: window.location.protocol, host: window.location.hostname };
@@ -53,7 +53,7 @@ class Connection {
         /** @type {Record<string, { reg: RegExp; cbs: ioBroker.StateChangeHandler[]}>} */
         this.statesSubscribes = {}; // subscribe for states
         
-        /** @type {Record<string, { reg: RegExp; cbs: import('@iobroker/adapter-react/types').ObjectChangeHandler[]}>} */
+        /** @type {Record<string, { reg: RegExp; cbs: import('./types').ObjectChangeHandler[]}>} */
         this.objectsSubscribes = {}; // subscribe for objects
         this.onProgress = this.props.onProgress || function () {};
         this.onError = this.props.onError || function (err) {console.error(err);};
@@ -402,7 +402,7 @@ class Connection {
     /**
      * Subscribe to changes of the given object.
      * @param {string} id The ioBroker object ID.
-     * @param {import('@iobroker/adapter-react/types').ObjectChangeHandler} cb The callback.
+     * @param {import('./types').ObjectChangeHandler} cb The callback.
      * @returns {Promise<void>}
      */
     subscribeObject(id, cb) {
@@ -427,7 +427,7 @@ class Connection {
      *//**
      * Unsubscribes the given callback from changes of the given object.
      * @param {string} id The ioBroker object ID.
-     * @param {import('@iobroker/adapter-react/types').ObjectChangeHandler} cb The callback.
+     * @param {import('./types').ObjectChangeHandler} cb The callback.
      * @returns {Promise<void>}
      */
     unsubscribeObject(id, cb) {
@@ -459,7 +459,7 @@ class Connection {
             return;
         }
 
-        /** @type {import("@iobroker/adapter-react/types").OldObject} */
+        /** @type {import("./types").OldObject} */
         let oldObj;
 
         let changed = false;

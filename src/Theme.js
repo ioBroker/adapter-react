@@ -83,7 +83,7 @@ function getElevations(color, overlay) {
 /**
  * The theme creation factory function.
  * @param {string} type
- * @returns {import('@iobroker/adapter-react/types').Theme}
+ * @returns {import('./types').Theme}
  */
 export default type => {
     let theme;
