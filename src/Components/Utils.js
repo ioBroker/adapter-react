@@ -16,6 +16,11 @@ class Utils {
     static dateFormat = ['DD', 'MM'];
     static FORBIDDEN_CHARS = /[\][*,;'"`<>\\?]/g;
 
+    /**
+     * Capitalize words.
+     * @param {string | undefined} name
+     * @returns {string}
+     */
     static CapitalWords(name) {
         return (name || '').split(/[\s_]/)
             .filter(item => item)
@@ -23,6 +28,15 @@ class Utils {
             .join(' ');
     }
 
+    /**
+     * Get the name of the object by id from the name or description.
+     * @param {Record<string, ioBroker.Object>} objects
+     * @param {string} id
+     * @param {{ name: any; } | null} settings
+     * @param {{ language?: ioBroker.Languages; }} options
+     * @param {boolean} [isDesc] Set to true to get the description.
+     * @returns {string}
+     */
     static getObjectName(objects, id, settings, options, isDesc) {
         let item = objects[id];
         let text = id;
@@ -59,6 +73,14 @@ class Utils {
         return text.trim();
     }
 
+    /**
+     * Get the name of the object from the name or description.
+     * @param {ioBroker.PartialObject} obj
+     * @param {{ name: any; }} settings
+     * @param {{ language?: ioBroker.Languages; }} options
+     * @param {boolean} [isDesc] Set to true to get the description.
+     * @returns {string}
+     */
     static getObjectNameFromObj(obj, settings, options, isDesc) {
         let item = obj;
         let text = obj._id;
@@ -89,6 +111,12 @@ class Utils {
         return text.trim();
     }
 
+    /**
+     * @param {ioBroker.PartialObject | ioBroker.ObjectCommon} obj
+     * @param {string} forEnumId
+     * @param {{ user: string; }} options
+     * @returns {string | null}
+     */
     static getSettingsOrder(obj, forEnumId, options) {
         if (obj && obj.hasOwnProperty('common')) {
             obj = obj.common;
@@ -112,6 +140,11 @@ class Utils {
         return null;
     }
 
+    /**
+     * @param {ioBroker.PartialObject | ioBroker.ObjectCommon} obj
+     * @param {string} forEnumId
+     * @param {{ user: string; }} options
+     */
     static getSettingsCustomURLs(obj, forEnumId, options) {
         if (obj && obj.hasOwnProperty('common')) {
             obj = obj.common;
@@ -135,6 +168,12 @@ class Utils {
         return null;
     }
 
+    /**
+     * Reorder the array items in list between source and dest.
+     * @param {Iterable<any> | ArrayLike<any>} list
+     * @param {number} source
+     * @param {number} dest
+     */
     static reorder(list, source, dest) {
         const result = Array.from(list);
         const [removed] = result.splice(source, 1);
@@ -142,6 +181,11 @@ class Utils {
         return result;
     };
 
+    /**
+     * @param {any} obj
+     * @param {{ id: any; user: any; name: any; icon: any; color: any; language: ioBroker.Languages; }} options
+     * @param {boolean} [defaultEnabling]
+     */
     static getSettings(obj, options, defaultEnabling) {
         let settings;
         const id = (obj && obj._id) || (options && options.id);
@@ -196,6 +240,11 @@ class Utils {
         return settings;
     }
 
+    /**
+     * @param {any} obj
+     * @param {any} settings
+     * @param {{ user: any; language: ioBroker.Languages; }} options
+     */
     static setSettings(obj, settings, options) {
         if (obj) {
             obj.common = obj.common || {};
@@ -229,6 +278,12 @@ class Utils {
         }
     }
 
+    /**
+     * Get the icon for the given settings.
+     * @param {{ icon: string | undefined; name: string | undefined; }} settings
+     * @param {any} style
+     * @returns {JSX.Element | null}
+     */
     static getIcon(settings, style) {
         if (settings && settings.icon) {
             if (settings.icon.startsWith('data:image')) {
@@ -240,6 +295,12 @@ class Utils {
         return null;
     }
 
+    /**
+     * Get the icon for the given object.
+     * @param {string} id
+     * @param {{ common: { icon: any; }; }} obj
+     * @returns {string | null}
+     */
     static getObjectIcon(id, obj) {
         if (obj && obj.common && obj.common.icon) {
             let icon = obj.common.icon;
@@ -268,6 +329,11 @@ class Utils {
         }
     }
 
+    /**
+     * Splits CamelCase into words.
+     * @param {string | undefined} text
+     * @returns {string}
+     */
     static splitCamelCase(text) {
         if (false && text !== text.toUpperCase()) {
             const words = text.split(/\s+/);
@@ -306,7 +372,13 @@ class Utils {
         }
     }
 
-    // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+    /**
+     * Check if the given color is bright.
+     * https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+     * @param {string | null | undefined} color
+     * @param {boolean} [defaultValue]
+     * @returns {boolean}
+     */
     static isUseBright(color, defaultValue) {
         if (color === null || color === undefined || color === '') {
             return defaultValue === undefined ? true : defaultValue;
@@ -343,6 +415,10 @@ class Utils {
         return (r * 0.299 + g * 0.587 + b * 0.114) <= 186;
     };
 
+    /**
+     * Get the time string in the format 00:00.
+     * @param {string | number} seconds
+     */
     static getTimeString(seconds) {
         seconds = parseFloat(seconds);
         if (isNaN(seconds)) {
@@ -361,6 +437,11 @@ class Utils {
         }
     }
 
+    /**
+     * Gets the wind direction with the given angle (degrees).
+     * @param {number} angle in degrees.
+     * @returns {string | undefined}
+     */
     static getWindDirection(angle) {
         if (angle >= 0 && angle < 11.25) {
             return 'N'
@@ -399,6 +480,10 @@ class Utils {
         }
     }
 
+    /**
+     * Pad the given number with a zero if its not 2 digits long.
+     * @param {string | number} num
+     */
     static padding(num) {
         if (typeof num === 'string') {
             if (num.length < 2) {
@@ -413,6 +498,10 @@ class Utils {
         }
     }
 
+    /**
+     * Sets the date format.
+     * @param {string} format
+     */
     static setDataFormat(format) {
         if (format) {
             Utils.dateFormat = format.toUpperCase().split(/[.-/]/);
@@ -420,6 +509,11 @@ class Utils {
         }
     }
 
+    /**
+     * Converts the date to a string.
+     * @param {string | number | Date} now
+     * @returns {string}
+     */
     static date2string(now) {
         if (typeof now === 'string') {
             now = now.trim();
@@ -468,6 +562,11 @@ class Utils {
         return date;
     }
 
+    /**
+     * Render a text as a link.
+     * @param {string} text
+     * @returns {string | JSX.Element[]}
+     */
     static renderTextWithA(text) {
         let m = text.match(/<a [^<]+<\/a>/);
         if (m) {
@@ -494,6 +593,13 @@ class Utils {
         }
     }
 
+    /**
+     * Get the smart name of the given state.
+     * @param {Record<string, ioBroker.StateObject> | ioBroker.StateObject} states
+     * @param {string} id
+     * @param {string} instanceId
+     * @param {boolean} [noCommon]
+     */
     static getSmartName(states, id, instanceId, noCommon) {
         if (!id) {
             if (!noCommon) {
@@ -529,6 +635,12 @@ class Utils {
         }
     }
 
+    /**
+     * Get the smart name from a state.
+     * @param {ioBroker.StateObject} obj
+     * @param {string} instanceId
+     * @param {boolean} [noCommon]
+     */
     static getSmartNameFromObj(obj, instanceId, noCommon) {
         if (!noCommon) {
             if (!obj.common) {
@@ -553,6 +665,12 @@ class Utils {
         }
     }
 
+    /**
+     * Enable smart name for a state.
+     * @param {ioBroker.StateObject} obj
+     * @param {string} instanceId
+     * @param {boolean} [noCommon]
+     */
     static enableSmartName(obj, instanceId, noCommon) {
         if (noCommon) {
             obj.common.custom = obj.common.custom || {};
@@ -563,16 +681,31 @@ class Utils {
         }
     }
 
+    /**
+     * Completely remove smart name from a state.
+     * @param {ioBroker.StateObject} obj
+     * @param {string | number} instanceId
+     * @param {boolean} [noCommon]
+     */
     static removeSmartName(obj, instanceId, noCommon) {
         if (noCommon) {
             if (obj.common && obj.common.custom && obj.common.custom[instanceId]) {
                 delete obj.common.custom[instanceId];
             }
         } else {
-            obj.common.smartName = null;
+            obj.common.smartName = undefined;
         }
     }
 
+    /**
+     * Update the smartname of a state.
+     * @param {ioBroker.StateObject} obj
+     * @param {string} newSmartName
+     * @param {string | undefined} byON
+     * @param {string | undefined} smartType
+     * @param {string} instanceId
+     * @param {boolean} [noCommon]
+     */
     static updateSmartName(obj, newSmartName, byON, smartType, instanceId, noCommon) {
         const language = I18n.getLanguage();
 
@@ -689,6 +822,12 @@ class Utils {
         }
     }
 
+    /**
+     * Disable the smart name of a state.
+     * @param {ioBroker.StateObject} obj
+     * @param {string} instanceId
+     * @param {boolean} [noCommon]
+     */
     static disableSmartName(obj, instanceId, noCommon) {
         if (noCommon) {
             obj.common.custom = obj.common.custom || {};
@@ -699,6 +838,11 @@ class Utils {
         }
     }
 
+    /**
+     * Copy text to the clipboard.
+     * @param {string} text
+     * @param {Event} [e]
+     */
     static copyToClipboard(text, e) {
         const el = window.document.createElement('textarea');
         el.value = text;
@@ -712,6 +856,12 @@ class Utils {
     }
 
     // Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+    /**
+     * Invert the given color
+     * @param {string} hex Color in the format '#rrggbb' or '#rgb' (or without hash)
+     * @param {boolean} [bw] Set to black or white.
+     * @returns {string}
+     */
     static invertColor(hex, bw) {
         if (hex.indexOf('#') === 0) {
             hex = hex.slice(1);
@@ -744,6 +894,11 @@ class Utils {
     // https://github.com/lukeed/clsx/blob/master/src/index.js
     // License
     // MIT © Luke Edwards
+    /**
+     * @private
+     * @param {any} mix
+     * @returns {string}
+     */
     static _toVal(mix) {
         let k, y, str='';
 
@@ -775,6 +930,10 @@ class Utils {
     // https://github.com/lukeed/clsx/blob/master/src/index.js
     // License
     // MIT © Luke Edwards
+    /**
+     * Convert any object to a string with its values.
+     * @returns {string}
+     */
     static clsx () {
         let i=0, tmp, x, str='';
         while (i < arguments.length) {
@@ -788,21 +947,40 @@ class Utils {
         return str;
     }
 
+    /**
+     * Get the current theme name (either from local storage or the browser settings).
+     * @param {string} [themeName]
+     * @returns {string | null}
+     */
     static getThemeName(themeName = '') {
         return themeName ? themeName : window.localStorage && window.localStorage.getItem('App.themeName') ?
             window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored';
     }
 
+    /**
+     * Get the type of theme.
+     * @param {string} [themeName]
+     * @returns {'dark' | 'light'}
+     */
     static getThemeType(themeName = '') {
         themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
         return themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light';
     }
 
+    /**
+     * Set the theme name and theme type.
+     * @param {string} themeName
+     */
     static setThemeName(themeName) {
         window.localStorage.setItem('App.themeName', themeName);
         window.localStorage.setItem('App.theme', themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light');
     }
 
+    /**
+     * Toggle the theme name between 'dark' and 'colored'.
+     * @param {string | null} themeName
+     * @returns {string} the new theme name.
+     */
     static toggleTheme(themeName) {
         themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
 
@@ -815,8 +993,14 @@ class Utils {
         return newThemeName;
     }
 
+    /**
+     * Parse a query string into its parts.
+     * @param {string} query
+     * @returns {Record<string, string | boolean | number>}
+     */
     static parseQuery(query) {
         query = (query || '').toString().replace(/^\?/, '');
+        /** @type {Record<string, string | boolean | number>} */
         const result = {};
         query.split('&').forEach(part => {
             part = part.trim();
