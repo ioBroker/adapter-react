@@ -1,4 +1,6 @@
 declare module "@iobroker/adapter-react/types" {
+    import {Theme as MuiTheme} from "@material-ui/core/styles";
+
     export interface ConnectionProps {
         /** The socket name. */
         name?: string;
@@ -56,4 +58,8 @@ declare module "@iobroker/adapter-react/types" {
     }
 
     export type Width = ('xs' | 'sm' | 'md' | 'lg' | 'xl');
+
+    export interface Theme extends MuiTheme {
+        name: string;
+    }
 }

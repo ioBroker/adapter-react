@@ -1,5 +1,3 @@
-/// <reference path="./types.d.ts" />
-
 /**
  * Copyright 2020, bluefox <dogafox@gmail.com>
  *

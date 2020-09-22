@@ -1,6 +1,3 @@
-/**
- * @param {string} type
- */
 import { createMuiTheme } from '@material-ui/core/styles';
 
 import orange from '@material-ui/core/colors/orange';
@@ -68,9 +65,10 @@ function getElevation(color, overlayColor, elevation) {
  * Get all 24 elevations of the given color and overlay.
  * @param {string} color color in the format '#rrggbb' or '#rgb'
  * @param {string} overlay overlay color in the format '#rrggbb' or '#rgb'
- * @returns {Record<string, {backgroundColor: string}>}
+ * @returns {import('@material-ui/core/styles/withStyles').CSSProperties}
  */
 function getElevations(color, overlay) {
+    /** @type {import('@material-ui/core/styles/withStyles').CSSProperties} */
     const elevations = {};
 
     for(let i = 1; i <= 24; i++) {
@@ -85,7 +83,7 @@ function getElevations(color, overlay) {
 /**
  * The theme creation factory function.
  * @param {string} type
- * @returns {import('@material-ui/core/styles').Theme}
+ * @returns {import('@iobroker/adapter-react/types').Theme}
  */
 export default type => {
     let theme;

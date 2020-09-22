@@ -23,8 +23,8 @@ gulp.task('copy', () => Promise.all([
     gulp.src(['src/Components/*.css']).pipe(gulp.dest('dist/Components')),
     gulp.src(['src/Components/assets/*.*']).pipe(gulp.dest('dist/Components/assets')),
     new Promise(resolve => {
-        const package_ = require('./package');
-        const packageSrc = require('./src/package');
+        const package_ = require('./package.json');
+        const packageSrc = require('./src/package.json');
         packageSrc.version = package_.version;
         !fs.existsSync(__dirname + '/dist') && fs.mkdirSync(__dirname + '/dist');
         fs.writeFileSync(__dirname + '/dist/package.json', JSON.stringify(packageSrc, null, 2));
@@ -35,7 +35,7 @@ gulp.task('copy', () => Promise.all([
 const tsProject = typescript.createProject('tsconfig.build.json');
 
 gulp.task('typedefs', () => {
-    return gulp.src('src/**/*.js', '!src/gulpfile.js')
+    return gulp.src(['src/**/*.js', '!src/gulpfile.js'])
         .pipe(tsProject())
         .dts
         .pipe(gulp.dest('dist'));
