@@ -52,28 +52,20 @@ class I18n {
     /**
      * Translate the given string to the selected language.
      * @param {string} word The (key) word to look up the string.
-     * @param {string} [arg1] Optional argument which will replace the first occurence of %s
-     * @param {string} [arg2] Optional argument which will replace the second occurence of %s
-     * @param {string} [arg3] Optional argument which will replace the thrid occurence of %s
+     * @param {string[]} args Optional arguments which will replace the first (second, third, ...) occurence of %s
      */
-    static t(word, arg1, arg2, arg3) {
-        if (I18n.translations[I18n.lang]) {
-            const w = I18n.translations[I18n.lang][word];
+    static t(word, ...args) {
+        const translation = I18n.translations[I18n.lang];
+        if (translation) {
+            const w = translation[word];
             if (w) {
                 word = w;
             } else {
                 console.log(`Translate: ${word}`);
             }
         }
-        if (arg1 !== undefined) {
-            word = word.replace('%s', arg1);
-            if (arg2 !== undefined) {
-                word = word.replace('%s', arg2);
-                if (arg3 !== undefined) {
-                    word = word.replace('%s', arg3);
-
-                }
-            }
+        for (const arg of args) {
+            word = word.replace('%s', arg);
         }
         return word;
     }

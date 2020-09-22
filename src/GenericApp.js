@@ -1,5 +1,3 @@
-/// <reference path="./types.d.ts" />
-
 import React from 'react';
 import Connection, {PROGRESS} from './Connection';
 
@@ -83,16 +81,16 @@ class GenericApp extends Router {
 
         // init translations
         const translations = {
-            'en': require('./i18n/en'),
-            'de': require('./i18n/de'),
-            'ru': require('./i18n/ru'),
-            'pt': require('./i18n/pt'),
-            'nl': require('./i18n/nl'),
-            'fr': require('./i18n/fr'),
-            'it': require('./i18n/it'),
-            'es': require('./i18n/es'),
-            'pl': require('./i18n/pl'),
-            'zh-cn': require('./i18n/zh-cn'),
+            'en': require('./i18n/en.json'),
+            'de': require('./i18n/de.json'),
+            'ru': require('./i18n/ru.json'),
+            'pt': require('./i18n/pt.json'),
+            'nl': require('./i18n/nl.json'),
+            'fr': require('./i18n/fr.json'),
+            'it': require('./i18n/it.json'),
+            'es': require('./i18n/es.json'),
+            'pl': require('./i18n/pl.json'),
+            'zh-cn': require('./i18n/zh-cn.json'),
         };
 
         // merge together
@@ -208,7 +206,7 @@ class GenericApp extends Router {
     /**
      * Get a theme
      * @param {string} name Theme name
-     * @returns {import('@material-ui/core/styles').Theme}
+     * @returns {import('@iobroker/adapter-react/types').Theme}
      */
     createTheme(name = '') {
         return theme(Utils.getThemeName(name));
@@ -216,7 +214,7 @@ class GenericApp extends Router {
 
     /**
      * Get the theme name
-     * @param {import('@material-ui/core/styles').Theme} theme Theme
+     * @param {import('@iobroker/adapter-react/types').Theme} theme Theme
      * @returns {string} Theme name
      */
     getThemeName(theme) {
@@ -225,7 +223,7 @@ class GenericApp extends Router {
 
     /**
      * Get the theme type
-     * @param {import('@material-ui/core/styles').Theme} theme Theme
+     * @param {import('@iobroker/adapter-react/types').Theme} theme Theme
      * @returns {string} Theme type
      */
     getThemeType(theme) {
@@ -261,7 +259,8 @@ class GenericApp extends Router {
         if (this.socket.objects && this.socket.objects['system.config']) {
             return Promise.resolve(this.socket.objects['system.config']);
         } else {
-            return this.socket.getObject('system.config')
+            // @ts-expect-error we have no definition for config objects
+            return this.socket.getObject('system.config');
         }
     }
 
@@ -322,7 +321,7 @@ class GenericApp extends Router {
     /**
      * Gets called before the settings are saved.
      * You may override this if needed.
-     * @param {any} settings 
+     * @param {Record<string, any>} settings 
      */
     onPrepareSave(settings) {
         // here you can encode values
@@ -336,7 +335,7 @@ class GenericApp extends Router {
     /**
      * Gets called after the settings are loaded.
      * You may override this if needed.
-     * @param {any} settings 
+     * @param {Record<string, any>} settings 
      */
     onPrepareLoad(settings) {
         // here you can encode values
@@ -353,7 +352,7 @@ class GenericApp extends Router {
      */
     getExtendableInstances() {
         return new Promise(resolve => {
-            this.socket.socket.emit('getObjectView', 'system', 'instance', null, (err, doc) => {
+            this.socket._socket.emit('getObjectView', 'system', 'instance', null, (err, doc) => {
                 if (err) {
                     resolve([]);
                 } else {
@@ -369,7 +368,7 @@ class GenericApp extends Router {
      */
     getIpAddresses(host) {
         return new Promise((resolve, reject) => {
-            this.socket.socket.emit('getHostByIp', host || this.common.host, (ip, _host) => {
+            this.socket._socket.emit('getHostByIp', host || this.common.host, (ip, _host) => {
                 const IPs4 = [{name: '[IPv4] 0.0.0.0 - ' + I18n.t('ra_Listen on all IPs'), address: '0.0.0.0', family: 'ipv4'}];
                 const IPs6 = [{name: '[IPv6] ::',      address: '::',      family: 'ipv6'}];
                 if (_host) {
@@ -493,7 +492,7 @@ class GenericApp extends Router {
 
     /**
      * Checks if the configuration has changed.
-     * @param {any} [native] the new state
+     * @param {Record<string, any>} [native] the new state
      */
     getIsChanged(native) {
         native = native || this.state.native;
@@ -502,7 +501,7 @@ class GenericApp extends Router {
 
     /**
      * Gets called when loading the configuration.
-     * @param {any} newNative The new configuration object.
+     * @param {Record<string, any>} newNative The new configuration object.
      */
     onLoadConfig(newNative) {
         if (JSON.stringify(newNative) !== JSON.stringify(this.state.native)) {
@@ -565,7 +564,7 @@ class GenericApp extends Router {
 
     /**
      * @private
-     * @param {any} obj 
+     * @param {Record<string, any>} obj 
      * @param {any} attrs 
      * @param {any} value 
      * @returns {boolean | undefined}
