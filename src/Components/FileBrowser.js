@@ -50,20 +50,32 @@ import NoImage from '../assets/no_icon.svg';
 const ROW_HEIGHT = 32;
 const BUTTON_WIDTH = 32;
 
-const TILE_HEIGHT = 96;
+const TILE_HEIGHT = 120;
 const TILE_WIDTH = 64;
 
 const styles = theme => ({
-    filesDiv: {
+    root: {
         width: '100%',
+        overflow: 'hidden',
+        height: '100%',
+        position: 'relative',
+    },
+    filesDiv: {
+        width: 'calc(100% - ' + theme.spacing(2) + 'px)',
         overflowX: 'hidden',
         overflowY: 'auto',
+        padding: theme.spacing(1),
     },
     filesDivTable: {
-        height: 'calc(100% - ' + (theme.mixins.toolbar.minHeight + theme.spacing(1)) + 'px)',
+        height: 'calc(100% - ' + (48 + theme.spacing(1)) + 'px)',
     },
     filesDivTile: {
-        height: 'calc(100% - ' + (theme.mixins.toolbar.minHeight * 2 + theme.spacing(1)) + 'px)',
+        height: 'calc(100% - ' + (48 * 2 + theme.spacing(1)) + 'px)',
+        display: 'flex',
+        alignContent: 'flex-start',
+        alignItems: 'stretch',
+        flexWrap: 'wrap',
+        flex: '0 0 ' + TILE_WIDTH + 'px',
     },
 
     itemTile: {
@@ -76,6 +88,7 @@ const styles = theme => ({
         textAlign: 'center',
         opacity: 0.1,
         transition: 'opacity 1s',
+        margin: 4,
         '&:hover': {
             background: theme.palette.secondary.light,
             color: Utils.invertColor(theme.palette.secondary.main, true),
@@ -90,13 +103,14 @@ const styles = theme => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         fontSize: 12,
-        textAlign: 'center'
+        textAlign: 'center',
+        wordBreak: 'break-all',
     },
     itemFolderIconTile: {
         width: '100%',
-        height: 'calc(100% - 32px)',
+        height: TILE_HEIGHT - 32 - 16 - 8, // name + size
         display: 'block',
-        paddingLeft: 4,
+        paddingLeft: 8,
         color: theme.palette.secondary.main || '#fbff7d',
     },
     itemFolderIconBack: {
@@ -114,7 +128,7 @@ const styles = theme => ({
     },
     itemImageTile: {
         width: 'calc(100% - 8px)',
-        height: 'calc(100% - 56px)',
+        height: TILE_HEIGHT - 32 - 16 - 8, // name + size
         margin: 4,
         display: 'block',
         textAlign: 'center',
@@ -122,7 +136,7 @@ const styles = theme => ({
     },
     itemIconTile: {
         width: '100%',
-        height: 'calc(100% - 32px)',
+        height: TILE_HEIGHT - 32 - 16 - 8, // name + size
         display: 'block',
         objectFit: 'contain',
     },
@@ -136,7 +150,7 @@ const styles = theme => ({
         userSelect: 'none',
         cursor: 'pointer',
         height: ROW_HEIGHT,
-        width: '100%',
+        display: 'inline-flex',
         lineHeight: ROW_HEIGHT + 'px',
         '&:hover': {
             background: theme.palette.secondary.light,
@@ -145,10 +159,10 @@ const styles = theme => ({
     },
     itemNameTable: {
         display: 'inline-block',
-        width: 'calc(100% - 214px)', // 30 + 60 + 60 + BUTTON_WIDTH + BUTTON_WIDTH
         paddingLeft: 10,
         fontSize: '1rem',
         verticalAlign: 'top',
+        flexGrow: 1,
     },
     itemNameFolderTable: {
         fontWeight: 'bold',
@@ -187,6 +201,7 @@ const styles = theme => ({
     },
     itemFolderIconTable: {
         marginTop: 1,
+        marginLeft: theme.spacing(1),
         display: 'inline-block',
         width: 30,
         height: 30,
@@ -242,6 +257,7 @@ const styles = theme => ({
         width: 'calc(100% - 40px)',
         height: 'calc(100% - 40px)',
         position: 'relative',
+        color: theme.palette.type === 'dark' ? '#222' : '#CCC'
     },
     uploadCenterIcon: {
         width: '25%',
@@ -249,7 +265,7 @@ const styles = theme => ({
     },
     uploadCenterText: {
         fontSize: 24,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     uploadCloseButton: {
         zIndex: 2,
@@ -270,8 +286,10 @@ const styles = theme => ({
     },
     pathDiv: {
         display: 'flex',
-        width: '100%',
-        textOverflow: 'hidden',
+        width: 'calc(100% - ' + theme.spacing(2) + 'px)',
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        textOverflow: 'clip',
         overflow: 'hidden',
         whiteSpace: 'nowrap'
     },
@@ -288,7 +306,9 @@ const styles = theme => ({
         paddingRight: 4,
         paddingBottom: 4,
         cursor: 'pointer',
-        background: theme.palette.type === 'dark' ? '#333' : '#CCC',
+        '&:hover': {
+            background: theme.palette.type === 'dark' ? '#333' : '#CCC',
+        },
     },
     pathDivBreadcrumbSlash: {
         paddingLeft: 4,
@@ -414,9 +434,9 @@ class FileBrowser extends React.Component {
         return this.browseFolder('/')
             .then(folders => {
                 return this.state.viewType === TABLE ?
-                     this.browseFolders([...this.state.expanded], folders)
-                     :
-                     (this.state.currentDir && this.state.currentDir !== '/' ? this.browseFolder(this.state.currentDir, folders) : Promise.resolve(folders))
+                    this.browseFolders([...this.state.expanded], folders)
+                    :
+                    (this.state.currentDir && this.state.currentDir !== '/' ? this.browseFolder(this.state.currentDir, folders) : Promise.resolve(folders))
             })
             .then(folders => this.setState({folders}, () => {
                 if (this.state.viewType === TABLE && !this.findItem(this.state.selected)) {
@@ -525,7 +545,7 @@ class FileBrowser extends React.Component {
                     if (!_checkEmpty) {
                         return Promise.all(_folders.filter(item => item.folder).map(item =>
                             this.browseFolder(item.id, _newFolders, true).catch(error => {})))
-                        .then(() => _newFolders)
+                            .then(() => _newFolders)
                     } else {
                         return _newFolders;
                     }
@@ -635,10 +655,10 @@ class FileBrowser extends React.Component {
             return null;
         }
         const Icon = expanded ? IconOpen : IconClosed;
-        const padding = this.state.viewType === TABLE ? (item.level * this.levelPadding) || 5 : 0;
+        const padding = this.state.viewType === TABLE ? item.level * this.levelPadding : 0;
         return <div key={ item.id }
                     id={ item.id }
-                    style={{ paddingLeft: padding }}
+                    style={this.state.viewType === TABLE ? { marginLeft: padding, width: 'calc(100% - ' + padding + 'px' } : {}}
                     onClick={e => this.state.viewType === TABLE ? this.select(item.id, e) : this.changeFolder(e, item.id) }
                     onDoubleClick={e => this.state.viewType === TABLE && this.toggleFolder(item, e) }
                     title={ item.title && typeof item.title === 'object' ? item.title[this.props.lang] : item.title || null}
@@ -651,12 +671,10 @@ class FileBrowser extends React.Component {
                     )}>
             <Icon className={ this.props.classes['itemFolderIcon' + this.state.viewType] } onClick={this.state.viewType === TABLE ? e => this.toggleFolder(item, e) : undefined}/>
 
-            <div
-                className={ Utils.clsx(this.props.classes['itemName' + this.state.viewType], this.props.classes['itemNameFolder' + this.state.viewType])}
-                style={this.state.viewType === TABLE ? {width: 'calc(100% - ' + (214 + padding) + 'px)'} : {}}
+            <div className={ Utils.clsx(this.props.classes['itemName' + this.state.viewType], this.props.classes['itemNameFolder' + this.state.viewType])}
             >{ item.name === USER_DATA ? this.props.t('ra_User files') : item.name }</div>
 
-            { this.state.viewType === TABLE ? <div className={ this.props.classes['itemSize' + this.state.viewType]}>{ this.state.folders[item.id] ? this.state.folders[item.id].length : '' }</div> : null }
+            { <div className={ this.props.classes['itemSize' + this.state.viewType]}>{ this.state.viewType === TABLE && this.state.folders[item.id] ? this.state.folders[item.id].length : '' }</div> }
 
             { this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}
 
@@ -675,7 +693,10 @@ class FileBrowser extends React.Component {
                             className={this.props.classes['itemDeleteButton' + this.state.viewType]}
                 >
                     <DeleteIcon fontSize="small" />
-                </IconButton> : null }
+                </IconButton>
+                :
+                (this.state.viewType === TABLE && this.props.allowDelete ? <div className={this.props.classes['itemDeleteButton' + this.state.viewType]} /> : null )
+            }
         </div>;
     }
 
@@ -699,7 +720,7 @@ class FileBrowser extends React.Component {
     }
 
     formatSize(size) {
-        return <div className={this.props.classes['itemSize' + this.state.viewType]}>{ size ? Utils.formatBytes(size) : '' }</div>;
+        return <div className={this.props.classes['itemSize' + this.state.viewType]}>{ size || size === 0 ? Utils.formatBytes(size) : '' }</div>;
     }
 
     formatAcl(acl) {
@@ -737,7 +758,7 @@ class FileBrowser extends React.Component {
     }
 
     renderFile(item) {
-        const padding = this.state.viewType === TABLE ? (item.level * this.levelPadding) || 5 : 0;
+        const padding = this.state.viewType === TABLE ? item.level * this.levelPadding : 0;
         const ext = Utils.getFileExtension(item.name);
 
         return <div
@@ -754,7 +775,7 @@ class FileBrowser extends React.Component {
                 }
             }}
             onClick={e => this.select(item.id, e) }
-            style={{ paddingLeft: padding }}
+            style={this.state.viewType === TABLE ? { marginLeft: padding, width: 'calc(100% - '  + padding + 'px)'} : {}}
             className={ Utils.clsx(
                 'browserItem',
                 this.props.classes['item' + this.state.viewType],
@@ -770,7 +791,7 @@ class FileBrowser extends React.Component {
                 />
                 :
                 this.getFileIcon(ext)}
-            <div className={this.props.classes['itemName' + this.state.viewType]} style={this.state.viewType === TABLE ? {width: 'calc(100% - ' + (214 + padding) + 'px)'} : {}}>{ item.name }</div>
+            <div className={this.props.classes['itemName' + this.state.viewType]}>{ item.name }</div>
             {this.formatSize(item.size)}
             {this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}
 
@@ -778,25 +799,35 @@ class FileBrowser extends React.Component {
                 download
                 href={this.imagePrefix + item.id}
                 className={this.props.classes['itemDownloadButton' + this.state.viewType]}
-                onClick={e => {
-                    e.stopPropagation();
-                }}
+                onClick={e => e.stopPropagation()}
             ><DownloadIcon/></IconButton> : null }
 
-            { this.state.viewType === TABLE && this.props.allowDelete && (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/')) ?
+            {   this.state.viewType === TABLE &&
+                this.props.allowDelete &&
+                item.id !== 'vis.0/' &&
+                item.id !== USER_DATA &&
+                (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/'))
+            ?
                 <IconButton aria-label="delete"
-                    onClick={e => {
-                        e.stopPropagation();
-                        if (this.suppressDeleteConfirm > Date.now()) {
-                            this.deleteItem(item.id);
-                        } else {
-                            this.setState({deleteItem: item.id});
-                        }
-                    }}
-                    className={this.props.classes['itemDeleteButton' + this.state.viewType]}
+                            onClick={e => {
+                                e.stopPropagation();
+                                if (this.suppressDeleteConfirm > Date.now()) {
+                                    this.deleteItem(item.id);
+                                } else {
+                                    this.setState({deleteItem: item.id});
+                                }
+                            }}
+                            className={this.props.classes['itemDeleteButton' + this.state.viewType]}
                 >
-                <DeleteIcon fontSize="small" />
-            </IconButton> : null}
+                    <DeleteIcon fontSize="small" />
+                </IconButton>
+                :
+                (this.state.viewType === TABLE && this.props.allowDelete ?
+                    <div className={this.props.classes['itemDeleteButton' + this.state.viewType]}/>
+                        :
+                    null
+                )
+            }
         </div>;
     }
 
@@ -888,9 +919,17 @@ class FileBrowser extends React.Component {
                 onClick={() => {
                     const viewType = this.state.viewType === TABLE ? TILE : TABLE;
                     window.localStorage.setItem('files.viewType', viewType);
-                    this.setState({viewType});
+                    let currentDir = this.state.selected;
+                    if (isFile(currentDir)) {
+                        currentDir = getParentDir(currentDir)
+                    }
+                    this.setState({viewType, currentDir}, () => {
+                        if (this.state.viewType === TABLE) {
+                            this.scrollToSelected();
+                        }
+                    });
                 }}
-            >{this.state.viewType === TABLE ? <IconList/> : <IconTile/>}</IconButton> : null }
+            >{this.state.viewType !== TABLE ? <IconList/> : <IconTile/>}</IconButton> : null }
             <IconButton
                 edge="start"
                 title={this.props.t('ra_Hide empty folders')}
@@ -949,39 +988,39 @@ class FileBrowser extends React.Component {
             }
 
             return <TextInputDialog key="inputDialog"
-                applyText={this.props.t('ra_Create')}
-                cancelText={this.props.t('ra_Cancel')}
-                titleText={this.props.t('ra_Create new folder in %s', this.state.selected)}
-                promptText={this.props.t('ra_If no file will be created in the folder, it will disappear after the browser closed')}
-                labelText={this.props.t('ra_Folder name')}
-                verify={text => this.state.folders[parentFolder].find(item => item.name === text) ? '' : this.props.t('ra_Duplicate name')}
-                onClose={name => {
-                    if (name) {
-                        const folders = {};
-                        Object.keys(this.state.folders).forEach(folder => folders[folder] = this.state.folders[folder]);
-                        const parent = this.findItem(parentFolder);
-                        folders[parentFolder].push({
-                            id: parentFolder + '/' + name,
-                            level: parent.level + 1,
-                            name,
-                            folder: true,
-                            temp: true,
-                        });
+                                    applyText={this.props.t('ra_Create')}
+                                    cancelText={this.props.t('ra_Cancel')}
+                                    titleText={this.props.t('ra_Create new folder in %s', this.state.selected)}
+                                    promptText={this.props.t('ra_If no file will be created in the folder, it will disappear after the browser closed')}
+                                    labelText={this.props.t('ra_Folder name')}
+                                    verify={text => this.state.folders[parentFolder].find(item => item.name === text) ? '' : this.props.t('ra_Duplicate name')}
+                                    onClose={name => {
+                                        if (name) {
+                                            const folders = {};
+                                            Object.keys(this.state.folders).forEach(folder => folders[folder] = this.state.folders[folder]);
+                                            const parent = this.findItem(parentFolder);
+                                            folders[parentFolder].push({
+                                                id: parentFolder + '/' + name,
+                                                level: parent.level + 1,
+                                                name,
+                                                folder: true,
+                                                temp: true,
+                                            });
 
-                        folders[parentFolder].sort(sortFolders);
+                                            folders[parentFolder].sort(sortFolders);
 
-                        folders[parentFolder + '/' + name] = [];
-                        const expanded = [...this.state.expanded];
-                        if (!expanded.includes(parentFolder)) {
-                            expanded.push(parentFolder);
-                            expanded.sort();
-                        }
-                        this.setState({addFolder: false, folders, expanded});
-                    } else {
-                        this.setState({addFolder: false});
-                    }
-                }}
-                replace={text => text.replace(/[^-_\w\d]/, '_')}
+                                            folders[parentFolder + '/' + name] = [];
+                                            const expanded = [...this.state.expanded];
+                                            if (!expanded.includes(parentFolder)) {
+                                                expanded.push(parentFolder);
+                                                expanded.sort();
+                                            }
+                                            this.setState({addFolder: false, folders, expanded});
+                                        } else {
+                                            this.setState({addFolder: false});
+                                        }
+                                    }}
+                                    replace={text => text.replace(/[^-_\w\d]/, '_')}
             />;
         } else {
             return null;
@@ -1064,7 +1103,7 @@ class FileBrowser extends React.Component {
                                         }
                                     });
                             };
-                            reader.readAsArrayBuffer(file)
+                            reader.readAsArrayBuffer(file);
                         });
                     }}
                 >
@@ -1225,26 +1264,28 @@ class FileBrowser extends React.Component {
 
     render() {
         if (!this.props.ready) {
-            return <LinearProgress />;
+            return <LinearProgress key={this.props.key ? this.props.key + '_c' : 'c'} />;
         }
 
-        return [
-            this.props.showToolbar ? this.renderToolbar() : null,
-            this.state.viewType === TILE ? this.renderPath() : null,
+        return <div key={this.props.key} style={this.props.style} className={Utils.clsx(this.props.classes.root, this.props.className)}>
+            { this.props.showToolbar ? this.renderToolbar() : null }
+            { this.state.viewType === TILE ? this.renderPath() : null }
             <div key="items" className={Utils.clsx(this.props.classes.filesDiv, this.props.classes['filesDiv' + this.state.viewType])}>
                 { this.state.viewType === TABLE ? this.renderItems('/') : this.renderItems(this.state.currentDir || '/') }
-            </div>,
-            this.props.allowUpload ? this.renderInputDialog() : null,
-            this.props.allowUpload ? this.renderUpload() : null,
-            this.props.allowDelete ? this.renderDeleteDialog() : null,
-            this.props.allowView   ? this.renderViewDialog() : null,
-            this.renderError(),
-        ];
+            </div>
+            { this.props.allowUpload ? this.renderInputDialog()  : null }
+            { this.props.allowUpload ? this.renderUpload()       : null }
+            { this.props.allowDelete ? this.renderDeleteDialog() : null }
+            { this.props.allowView   ? this.renderViewDialog()   : null }
+            { this.renderError() }
+        </div>;
     }
 }
 
 FileBrowser.propTypes = {
     key: PropTypes.string,
+    style: PropTypes.object,
+    className: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string,
     socket: PropTypes.object,

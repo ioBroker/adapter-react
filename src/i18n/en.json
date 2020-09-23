@@ -75,5 +75,12 @@
   "ra_Toggle expert mode": "Toggle expert mode",
   "ra_Toggle view mode": "Toggle view mode",
   "re_Root": "Root",
-  "re_Back to %s": "Back to %s"
+  "re_Back to %s": "Back to %s",
+  "ra_Place your files here or click here to open the browse dialog": "Place your files here or click here to open the browse dialog",
+  "ra_If no file will be created in the folder, it will disappear after the browser closed": "If no file will be created in the folder, it will disappear after the browser closed",
+  "ra_Folder name": "Folder name",
+  "ra_Create new folder in %s": "Create new folder in %s",
+  "ra_Duplicate name": "Duplicate name",
+  "ra_Invalid parent folder!": "Invalid parent folder!",
+  "ra_Drop file here": "Drop file here"
 }

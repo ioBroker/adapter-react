@@ -61,5 +61,12 @@
   "ra_Toggle expert mode": "Basculer en mode expert",
   "ra_Toggle view mode": "Basculer le mode d'affichage",
   "re_Root": "Racine",
-  "re_Back to %s": "Retour à %s"
+  "re_Back to %s": "Retour à %s",
+  "ra_Place your files here or click here to open the browse dialog": "Placez vos fichiers ici ou cliquez ici pour ouvrir la boîte de dialogue de navigation",
+  "ra_If no file will be created in the folder, it will disappear after the browser closed": "Si aucun fichier ne sera créé dans le dossier, il disparaîtra après la fermeture du navigateur",
+  "ra_Folder name": "Nom de dossier",
+  "ra_Create new folder in %s": "Créer un nouveau dossier dans %s",
+  "ra_Duplicate name": "Nom en double",
+  "ra_Invalid parent folder!": "Dossier parent non valide!",
+  "ra_Drop file here": "Déposer le fichier ici"
 }

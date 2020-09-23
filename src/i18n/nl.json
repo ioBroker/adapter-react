@@ -61,5 +61,12 @@
   "ra_Toggle expert mode": "Schakel tussen expertmodus",
   "ra_Toggle view mode": "Schakelen tussen weergavemodus",
   "re_Root": "Wortel",
-  "re_Back to %s": "Terug naar %s"
+  "re_Back to %s": "Terug naar %s",
+  "ra_Place your files here or click here to open the browse dialog": "Plaats uw bestanden hier of klik hier om het bladervenster te openen",
+  "ra_If no file will be created in the folder, it will disappear after the browser closed": "Als er geen bestand in de map wordt gemaakt, verdwijnt het nadat de browser is gesloten",
+  "ra_Folder name": "Naam van de map",
+  "ra_Create new folder in %s": "Maak een nieuwe map in %s",
+  "ra_Duplicate name": "Dubbele naam",
+  "ra_Invalid parent folder!": "Ongeldige bovenliggende map!",
+  "ra_Drop file here": "Zet het bestand hier neer"
 }
