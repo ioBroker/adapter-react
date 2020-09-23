@@ -48,5 +48,17 @@
   "ra_buttons": "纽扣",
   "ra_Configure visible columns": "配置可见列",
   "ra_Cannot update attribute, because not found in the object": "无法更新属性，因为在对象中找不到",
-  "ra_Edit object field": "编辑对象字段"
+  "ra_Edit object field": "编辑对象字段",
+  "ra_Hide empty folders": "隐藏空文件夹",
+  "ra_Reload files": "重新载入文件",
+  "ra_Create folder": "创建文件夹",
+  "ra_Upload file": "上传文件",
+  "ra_User files": "用户档案",
+  "ra_Confirm deletion of %s": "确认删除%s",
+  "ra_Delete (no confirm for 5 mins)": "删除（5分钟内未确认）",
+  "ra_Delete": "删除",
+  "ra_Toggle expert mode": "切换专家模式",
+  "ra_Toggle view mode": "切换检视模式",
+  "re_Root": "根",
+  "re_Back to %s": "返回%s"
 }

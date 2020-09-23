@@ -49,5 +49,17 @@
   "ra_buttons": "guziki",
   "ra_Configure visible columns": "Skonfiguruj widoczne kolumny",
   "ra_Cannot update attribute, because not found in the object": "Nie można zaktualizować atrybutu, ponieważ nie znaleziono go w obiekcie",
-  "ra_Edit object field": "Edytuj pole obiektu"
+  "ra_Edit object field": "Edytuj pole obiektu",
+  "ra_Hide empty folders": "Ukryj puste foldery",
+  "ra_Reload files": "Załaduj ponownie pliki",
+  "ra_Create folder": "Utwórz folder",
+  "ra_Upload file": "Przesyłanie pliku",
+  "ra_User files": "Pliki użytkownika",
+  "ra_Confirm deletion of %s": "Potwierdź usunięcie %s",
+  "ra_Delete (no confirm for 5 mins)": "Usuń (bez potwierdzenia przez 5 minut)",
+  "ra_Delete": "Usunąć",
+  "ra_Toggle expert mode": "Przełącz tryb eksperta",
+  "ra_Toggle view mode": "Przełącz tryb widoku",
+  "re_Root": "Korzeń",
+  "re_Back to %s": "Powrót do %s"
 }

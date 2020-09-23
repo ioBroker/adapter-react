@@ -49,5 +49,17 @@
   "ra_buttons": "Boutons",
   "ra_Configure visible columns": "Configurer les colonnes visibles",
   "ra_Cannot update attribute, because not found in the object": "Impossible de mettre à jour l'attribut, car il est introuvable dans l'objet",
-  "ra_Edit object field": "Modifier le champ d'objet"
+  "ra_Edit object field": "Modifier le champ d'objet",
+  "ra_Hide empty folders": "Masquer les dossiers vides",
+  "ra_Reload files": "Recharger les fichiers",
+  "ra_Create folder": "Créer le dossier",
+  "ra_Upload file": "Téléverser un fichier",
+  "ra_User files": "Fichiers utilisateurs",
+  "ra_Confirm deletion of %s": "Confirmer la suppression de %s",
+  "ra_Delete (no confirm for 5 mins)": "Supprimer (pas de confirmation pendant 5 minutes)",
+  "ra_Delete": "Supprimer",
+  "ra_Toggle expert mode": "Basculer en mode expert",
+  "ra_Toggle view mode": "Basculer le mode d'affichage",
+  "re_Root": "Racine",
+  "re_Back to %s": "Retour à %s"
 }

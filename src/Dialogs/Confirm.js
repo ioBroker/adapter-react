@@ -27,33 +27,33 @@ class DialogConfirm extends Component {
     };
 
     render() {
-        return (
-            <Dialog
-                disableBackdropClick
-                disableEscapeKeyDown
-                open={true}
-                maxWidth="md"
-                fullWidth={true}
-                onClose={() => this.handleCancel()}
-                aria-labelledby="confirmation-dialog-title"
-                aria-describedby="confirmation-dialog-description"
-            >
-                <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('ra_Are you sure?')}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="confirmation-dialog-description">
-                        {this.props.text}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{this.props.ok || I18n.t('ra_Ok')}</Button>
-                    <Button onClick={() => this.handleCancel()}>{this.props.cancel || I18n.t('ra_Cancel')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog
+            key={this.props.key}
+            disableBackdropClick
+            disableEscapeKeyDown
+            open={true}
+            maxWidth="md"
+            fullWidth={true}
+            onClose={() => this.handleCancel()}
+            aria-labelledby="confirmation-dialog-title"
+            aria-describedby="confirmation-dialog-description"
+        >
+            <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('ra_Are you sure?')}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="confirmation-dialog-description">
+                    {this.props.text}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => this.handleOk()} color="primary" autoFocus>{this.props.ok || I18n.t('ra_Ok')}</Button>
+                <Button onClick={() => this.handleCancel()}>{this.props.cancel || I18n.t('ra_Cancel')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 
 DialogConfirm.propTypes = {
+    key: PropTypes.string,
     onClose: PropTypes.func,
     title: PropTypes.string,
     text: PropTypes.string,

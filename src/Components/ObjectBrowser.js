@@ -3018,37 +3018,36 @@ class ObjectBrowser extends React.Component {
         }, 200);
 
         if (!this.state.loaded) {
-            return <CircularProgress/>;
+            return <CircularProgress key={this.props.key + '_c'}/>;
         } else {
             const classes = this.props.classes;
             const items = this.renderItem(this.root, undefined, classes);
 
-            return (
-                <TabContainer>
-                    <TabHeader>
-                        { this.getToolbar() }
-                    </TabHeader>
-                    <TabContent>
-                        { this.renderHeader() }
-                        <div className={ this.props.classes.tableDiv } ref={ this.tableRef }>
-                            { items }
-                        </div>
-                    </TabContent>
-                    { this.renderToast() }
-                    { this.renderColumnsEditCustomDialog() }
-                    { this.renderColumnsSelectorDialog() }
-                    { this.renderCustomDialog() }
-                    { this.renderEditValueDialog() }
-                    { this.renderEditObjectDialog() }
-                    { this.renderEnumDialog() }
-                    { this.renderErrorDialog() }
-                </TabContainer>
-            );
+            return <TabContainer key={this.props.key}>
+                <TabHeader>
+                    { this.getToolbar() }
+                </TabHeader>
+                <TabContent>
+                    { this.renderHeader() }
+                    <div className={ this.props.classes.tableDiv } ref={ this.tableRef }>
+                        { items }
+                    </div>
+                </TabContent>
+                { this.renderToast() }
+                { this.renderColumnsEditCustomDialog() }
+                { this.renderColumnsSelectorDialog() }
+                { this.renderCustomDialog() }
+                { this.renderEditValueDialog() }
+                { this.renderEditObjectDialog() }
+                { this.renderEnumDialog() }
+                { this.renderErrorDialog() }
+            </TabContainer>;
         }
     }
 }
 
 ObjectBrowser.propTypes = {
+    key: PropTypes.string,
     classes: PropTypes.object,
     defaultFilters: PropTypes.object,
     selected: PropTypes.oneOfType([

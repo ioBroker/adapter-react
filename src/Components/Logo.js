@@ -94,7 +94,7 @@ class Logo extends Component {
     }
 
     render() {
-        return (<div>
+        return <div key={this.props.key}>
             {this.props.common.icon && (<img src={this.props.common.icon} className={this.props.classes.logo} alt="logo"/>)}
             {this.props.common.readme &&
                 (<Fab size="small" color="primary" aria-label="Help" className={this.props.classes.buttons} onClick={() => {
@@ -103,11 +103,12 @@ class Logo extends Component {
                 }}><IconHelp /></Fab>)}
             <Fab size="small" color="primary" aria-label="Load config" className={this.props.classes.buttons} title={I18n.t('Load configuration from file')} onClick={() => this.upload()}><IconUpload /></Fab>
             <Fab size="small" color="primary" aria-label="Save config" className={this.props.classes.buttons} title={I18n.t('Save configuration to file')} onClick={() => this.download()}><IconDownload /></Fab>
-        </div>);
+        </div>;
     }
 }
 
 Logo.propTypes = {
+    key: PropTypes.string,
     common: PropTypes.object.isRequired,
     native: PropTypes.object.isRequired,
     instance: PropTypes.number.isRequired,

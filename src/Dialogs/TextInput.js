@@ -25,7 +25,7 @@ class TextInput extends React.Component {
         }
     }
     render() {
-        return <Dialog open={true} onClose={() => this.props.onClose(null)} aria-labelledby="form-dialog-title">
+        return <Dialog key={this.props.key} open={true} onClose={() => this.props.onClose(null)} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title">{this.props.titleText}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
@@ -65,6 +65,7 @@ class TextInput extends React.Component {
 }
 
 TextInput.propTypes = {
+    key: PropTypes.string,
     onClose: PropTypes.func.isRequired,
     titleText: PropTypes.string.isRequired,
     promptText: PropTypes.string,

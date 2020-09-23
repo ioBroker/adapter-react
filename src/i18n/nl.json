@@ -49,5 +49,17 @@
   "ra_buttons": "Toetsen",
   "ra_Configure visible columns": "Configureer zichtbare kolommen",
   "ra_Cannot update attribute, because not found in the object": "Kan kenmerk niet bijwerken, omdat het niet in het object is gevonden",
-  "ra_Edit object field": "Bewerk objectveld"
+  "ra_Edit object field": "Bewerk objectveld",
+  "ra_Hide empty folders": "Verberg lege mappen",
+  "ra_Reload files": "Laad bestanden opnieuw",
+  "ra_Create folder": "Map aanmaken",
+  "ra_Upload file": "Upload bestand",
+  "ra_User files": "Gebruikersbestanden",
+  "ra_Confirm deletion of %s": "Bevestig het verwijderen van %s",
+  "ra_Delete (no confirm for 5 mins)": "Verwijderen (geen bevestiging gedurende 5 minuten)",
+  "ra_Delete": "Verwijderen",
+  "ra_Toggle expert mode": "Schakel tussen expertmodus",
+  "ra_Toggle view mode": "Schakelen tussen weergavemodus",
+  "re_Root": "Wortel",
+  "re_Back to %s": "Terug naar %s"
 }

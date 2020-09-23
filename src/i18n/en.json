@@ -63,5 +63,17 @@
   "ra_buttons": "Buttons",
   "ra_Configure visible columns": "Configure visible columns",
   "ra_Cannot update attribute, because not found in the object": "Cannot update attribute, because not found in the object",
-  "ra_Edit object field": "Edit object field"
+  "ra_Edit object field": "Edit object field",
+  "ra_Hide empty folders": "Hide empty folders",
+  "ra_Reload files": "Reload files",
+  "ra_Create folder": "Create folder",
+  "ra_Upload file": "Upload file",
+  "ra_User files": "User files",
+  "ra_Confirm deletion of %s": "Confirm deletion of %s",
+  "ra_Delete (no confirm for 5 mins)": "Delete (no confirm for 5 mins)",
+  "ra_Delete": "Delete",
+  "ra_Toggle expert mode": "Toggle expert mode",
+  "ra_Toggle view mode": "Toggle view mode",
+  "re_Root": "Root",
+  "re_Back to %s": "Back to %s"
 }

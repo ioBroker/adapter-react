@@ -712,7 +712,7 @@ class Utils {
     }
 
     static getFileExtension(fileName) {
-        const pos = fileName.lastIndexOf('.');
+        const pos = (fileName || '').lastIndexOf('.');
         if (pos !== -1) {
             return fileName.substring(pos + 1).toLowerCase();
         } else {

@@ -87,6 +87,7 @@ class Image extends React.Component {
             svg.remove();
 
             return <svg
+                key={this.props.key}
                 className={this.props.className}
                 style={this.state.color ? {color: this.state.color} : {}}
                 {...svgProps}
@@ -110,6 +111,7 @@ class Image extends React.Component {
             return this.svg;
         } else if (this.state.src) {
             return <img
+                key={this.props.key}
                 className={this.props.className}
                 src={this.state.imgError ? IconNoIcon : (this.props.imagePrefix || '') + this.state.src || IconNoIcon}
                 alt=""
@@ -122,6 +124,7 @@ class Image extends React.Component {
 }
 
 Image.propTypes = {
+    key: PropTypes.string,
     color: PropTypes.string,
     src: PropTypes.string,
     className: PropTypes.string,

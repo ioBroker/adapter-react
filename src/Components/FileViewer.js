@@ -107,6 +107,7 @@ class FileViewer extends React.Component {
 
     render() {
         return <Dialog
+            key={this.props.key}
             className={ this.props.classes.dialog }
             open={ this.props.href }
             onClose={ () => this.props.onClose() }
@@ -134,6 +135,7 @@ class FileViewer extends React.Component {
 }
 
 FileViewer.propTypes = {
+    key: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string,
     expertMode: PropTypes.bool,

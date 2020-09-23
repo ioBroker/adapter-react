@@ -51,5 +51,17 @@
   "ra_buttons": "Кнопки",
   "ra_Configure visible columns": "Настроить видимые столбцы",
   "ra_Cannot update attribute, because not found in the object": "Невозможно обновить атрибут, потому что он не найден в объекте",
-  "ra_Edit object field": "Поле редактирования объекта"
+  "ra_Edit object field": "Поле редактирования объекта",
+  "ra_Hide empty folders": "Скрыть пустые папки",
+  "ra_Reload files": "Обновить",
+  "ra_Create folder": "Создать папку",
+  "ra_Upload file": "Загрузить файл",
+  "ra_User files": "Файлы пользователя",
+  "ra_Confirm deletion of %s": "Подтвердите удаление %s",
+  "ra_Delete (no confirm for 5 mins)": "Удалить (без подтверждения в течение 5 минут)",
+  "ra_Delete": "Удалить",
+  "ra_Toggle expert mode": "Переключить экспертный режим",
+  "ra_Toggle view mode": "Переключить режим просмотра",
+  "re_Root": "Начало",
+  "re_Back to %s": "Вернуться к %s"
 }
