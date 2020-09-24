@@ -35,8 +35,8 @@ const styles = {
 
 class GenericApp extends Router {
     /**
-     * @param {import('@iobroker/adapter-react/types').GenericAppProps} props
-     * @param {import('@iobroker/adapter-react/types').GenericAppSettings | undefined} settings
+     * @param {import('./types').GenericAppProps} props
+     * @param {import('./types').GenericAppSettings | undefined} settings
      */
     constructor(props, settings) {
         super(props);
@@ -180,7 +180,7 @@ class GenericApp extends Router {
 
     /**
      * Gets the width depending on the window inner width.
-     * @returns {import('@iobroker/adapter-react/types').Width}
+     * @returns {import('./types').Width}
      */
     static getWidth() {
         /**
@@ -206,7 +206,7 @@ class GenericApp extends Router {
     /**
      * Get a theme
      * @param {string} name Theme name
-     * @returns {import('@iobroker/adapter-react/types').Theme}
+     * @returns {import('./types').Theme}
      */
     createTheme(name = '') {
         return theme(Utils.getThemeName(name));
@@ -214,7 +214,7 @@ class GenericApp extends Router {
 
     /**
      * Get the theme name
-     * @param {import('@iobroker/adapter-react/types').Theme} theme Theme
+     * @param {import('./types').Theme} theme Theme
      * @returns {string} Theme name
      */
     getThemeName(theme) {
@@ -223,7 +223,7 @@ class GenericApp extends Router {
 
     /**
      * Get the theme type
-     * @param {import('@iobroker/adapter-react/types').Theme} theme Theme
+     * @param {import('./types').Theme} theme Theme
      * @returns {string} Theme type
      */
     getThemeType(theme) {
@@ -259,7 +259,7 @@ class GenericApp extends Router {
         if (this.socket.objects && this.socket.objects['system.config']) {
             return Promise.resolve(this.socket.objects['system.config']);
         } else {
-            // @ts-expect-error we have no definition for config objects
+            // @ts-ignore
             return this.socket.getObject('system.config');
         }
     }

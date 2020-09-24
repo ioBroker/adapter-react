@@ -21,6 +21,13 @@ const styles = {
     }
 };
 
+/**
+ * @typedef {object} TabContainerProps
+ * @property {number} [elevation] Whatever this is, this is a comment
+ * @property {string} [overflow]
+ * 
+ * @extends {Component<TabContainerProps>}
+ */
 class TabContainer extends Component {
 
     render() {
