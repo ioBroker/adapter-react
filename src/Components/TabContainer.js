@@ -23,8 +23,9 @@ const styles = {
 
 /**
  * @typedef {object} TabContainerProps
- * @property {number} [elevation] Whatever this is, this is a comment
- * @property {string} [overflow]
+ * @property {number} [elevation] The elevation of the tab container.
+ * @property {string} [overflow] Set to 'visible' show the overflow.
+ * @property {{ [key in keyof styles]: string}} classes The styling class names.
  * 
  * @extends {Component<TabContainerProps>}
  */

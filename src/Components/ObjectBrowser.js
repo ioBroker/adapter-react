@@ -1140,7 +1140,7 @@ function prepareSparkData(values, from) {
 }
 
 /**
- * @type {import('./types').ObjectBrowserFilter}
+ * @type {import('./types').ObjectBrowserTableFilter}
  */
 const DEFAULT_FILTER = {
     id:     '',
@@ -1305,6 +1305,9 @@ const SCREEN_WIDTHS = {
     },
 };
 
+/**
+ * @extends {React.Component<import('./types').ObjectBrowserProps>}
+ */
 class ObjectBrowser extends React.Component {
     /**
      * @param {import('./types').ObjectBrowserProps} props
@@ -1590,14 +1593,14 @@ class ObjectBrowser extends React.Component {
     }
 
     /**
-     * @private
+     * Called when component is mounted.
      */
     componentDidMount() {
         this.props.socket.subscribeObject('*', this.onObjectChange);
     }
 
     /**
-     * @private
+     * Called when component is unmounted.
      */
     componentWillUnmount() {
         this.props.socket.unsubscribeObject('*', this.onObjectChange);
@@ -3136,7 +3139,7 @@ class ObjectBrowser extends React.Component {
     }
 
     /**
-     * @private
+     * Called when component is updated.
      */
     componentDidUpdate() {
         if (this.tableRef.current) {
@@ -3242,7 +3245,7 @@ class ObjectBrowser extends React.Component {
     }
 
     /**
-     * @private
+     * The rendering method of this component.
      * @returns {JSX.Element}
      */
     render() {

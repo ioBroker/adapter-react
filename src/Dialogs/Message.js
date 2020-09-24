@@ -17,6 +17,14 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import I18n from '../i18n';
 
+/**
+ * @typedef {object} DialogMessageProps
+ * @property {string} [title] The dialog title; default: Message (translated)
+ * @property {string} text The dialog text.
+ * @property {() => void} [onClose] Close handler.
+ * 
+ * @extends {Component<DialogMessageProps>}
+ */
 class DialogMessage extends Component {
 
     handleOk() {

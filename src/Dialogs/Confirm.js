@@ -17,6 +17,16 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import I18n from '../i18n';
 
+/**
+ * @typedef {object} DialogConfirmProps
+ * @property {string} [title] The dialog title; default: Are you sure? (translated)
+ * @property {string} text The dialog text.
+ * @property {string} [ok] The ok button text; default: OK (translated)
+ * @property {string} [cancel] The cancel button text; default: Cancel (translated)
+ * @property {(ok: boolean) => void} [onClose] Close handler.
+ * 
+ * @extends {React.Component<DialogConfirmProps>}
+ */
 class DialogConfirm extends Component {
     handleOk() {
         this.props.onClose && this.props.onClose(true);

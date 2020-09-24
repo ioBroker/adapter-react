@@ -21,6 +21,17 @@ const styles = theme => ({
     }
 });
 
+/**
+ * @typedef {object} LogoProps
+ * @property {any} common Adapter common configuration from io-package.json
+ * @property {any} native Adapter native data from io-package.json
+ * @property {number} instance Adapter instance number.
+ * @property {(contents: any) => void} [onLoad]
+ * @property {(error: string) => void} [onError]
+ * @property {{ buttons: string, logo: string }} classes The styling class names.
+ * 
+ * @extends {Component<LogoProps>}
+ */
 class Logo extends Component {
 
     static generateFile(filename, obj) {

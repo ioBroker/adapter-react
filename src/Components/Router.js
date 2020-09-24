@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
 
+/**
+ * @extends {Component<{}>}
+ */
 class Router extends Component {
     /**
-     * @param {any} props
+     * @param {{}} props The React properties of this component.
      */
     constructor(props) {
         super(props);

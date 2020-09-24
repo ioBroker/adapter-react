@@ -17,6 +17,13 @@ const styles = {
     }
 };
 
+/**
+ * @typedef {object} TabContentProps
+ * @property {string} [overflow]
+ * @property {{ [key in keyof styles]: string}} classes The styling class names.
+ * 
+ * @extends {Component<TabContentProps>}
+ */
 class TabContent extends Component {
 
     render() {
@@ -35,7 +42,6 @@ class TabContent extends Component {
 }
 
 TabContent.propTypes = {
-    fooBar: PropTypes.bool,
     overflow: PropTypes.string
 };
 

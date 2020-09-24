@@ -17,6 +17,7 @@ import Dialog from '@material-ui/core/Dialog';
 
 import I18n from '../i18n';
 import ObjectBrowser from '../Components/ObjectBrowser';
+import Connection from '../Connection';
 
 const styles = theme => ({
     headerID: {
@@ -32,7 +33,35 @@ const styles = theme => ({
     }
 });
 
+/**
+ * @typedef {object} SelectIDProps
+ * @property {string} [dialogName] The internal name of the dialog; default: "default"
+ * @property {string} [title] The dialog title; default: Please select object ID... (translated)
+ * @property {boolean} [multiSelect] Set to true to allow the selection of multiple IDs.
+ * @property {boolean} [foldersFirst] Show folders before any leaves.
+ * @property {string} [prefix] Prefix (default: '.')
+ * @property {boolean} [showExpertButton] Show the expert button?
+ * @property {import('../Components/types').ObjectBrowserColumn[]} [columns] Columns to display; default: 'name', 'type', 'role', 'room', 'func', 'val'
+ * @property {import('../Components/types').ObjectBrowserType[]} [types] Object types to show; default: 'state' only
+ * @property {ioBroker.Languages} lang The language.
+ * @property {Connection} socket The socket connection.
+ * @property {boolean} [notEditable] Can't objects be edited? (default: true)
+ * @property {string} [themeName] Theme name.
+ * @property {string} [themeType] Theme type.
+ * @property {import('../Components/types').ObjectBrowserCustomFilter} [customFilter] Custom filter.
+ * @property {string | string[]} [selected] The selected IDs.
+ * @property {string} [ok] The ok button text; default: OK (translated)
+ * @property {string} [cancel] The cancel button text; default: Cancel (translated)
+ * @property {() => void} onClose Close handler that is always called when the dialog is closed.
+ * @property {(selected: string | string[] | undefined, name: string) => void} onOk Handler that is called when the user presses OK.
+ * @property {{headerID: string; dialog: string; content: string}} classes The styling class names.
+ * 
+ * @extends {Component<SelectIDProps>}
+ */
 class SelectID extends Component {
+    /**
+     * @param {SelectIDProps} props
+     */
     constructor(props) {
         super(props);
         this.dialogName = this.props.dialogName || 'default';
