@@ -53,6 +53,11 @@ class Connection {
 
         this._promises = {};
         this.startSocket();
+        this._isWeb = null;
+    }
+
+    static isWeb() {
+        return window.socketUrl !== undefined;
     }
 
     startSocket() {

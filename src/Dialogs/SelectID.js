@@ -103,7 +103,7 @@ class SelectID extends Component {
             <DialogContent className={this.props.classes.content}>
                 <ObjectBrowser
                     foldersFirst={ this.props.foldersFirst }
-                    prefix={ this.props.prefix }
+                    imagePrefix={ this.props.imagePrefix || this.props.prefix } // prefix is for back compatibility
                     defaultFilters={ this.filters }
                     showExpertButton={ this.props.showExpertButton !== undefined ? this.props.showExpertButton : true }
                     style={ {width: '100%', height: '100%'} }
@@ -159,7 +159,7 @@ SelectID.propTypes = {
     statesOnly: PropTypes.bool,
     socket: PropTypes.object.isRequired,
     cancel: PropTypes.string,
-    prefix: PropTypes.string,
+    imagePrefix: PropTypes.string,
     ok: PropTypes.string,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
