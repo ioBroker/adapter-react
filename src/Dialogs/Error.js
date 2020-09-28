@@ -41,7 +41,8 @@ class DialogError extends Component {
     };
 
     render() {
-        return (<Dialog
+        return <Dialog
+                key={this.props.key}
                 open={true}
                 maxWidth="sm"
                 fullWidth={true}
@@ -60,11 +61,12 @@ class DialogError extends Component {
                 <DialogActions>
                     <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('ra_Ok')}</Button>
                 </DialogActions>
-            </Dialog>);
+            </Dialog>;
     }
 }
 
 DialogError.propTypes = {
+    key: PropTypes.string,
     onClose: PropTypes.func,
     title: PropTypes.string,
     text: PropTypes.string,

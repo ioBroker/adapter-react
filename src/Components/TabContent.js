@@ -30,18 +30,18 @@ class TabContent extends Component {
 
         const { classes } = this.props;
 
-        return (
-            <Grid
-                item
-                className={ Utils.clsx(classes.root, {[classes.overflowAuto]: this.props.overflow === 'auto'}) }
-            >
-                { this.props.children }
-            </Grid>
-        );
+        return <Grid
+            key={this.props.key}
+            item
+            className={ Utils.clsx(classes.root, {[classes.overflowAuto]: this.props.overflow === 'auto'}) }
+        >
+            { this.props.children }
+        </Grid>;
     }
 }
 
 TabContent.propTypes = {
+    key: PropTypes.string,
     overflow: PropTypes.string
 };
 

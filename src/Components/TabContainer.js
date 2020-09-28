@@ -35,25 +35,25 @@ class TabContainer extends Component {
 
         const { classes } = this.props;
 
-        return (
-            <Paper
-                elevation={ !isNaN(this.props.elevation) ? this.props.elevation : 1 }
-                className={ Utils.clsx(classes.root, {[classes.overflowHidden]: this.props.overflow !== 'visible'}) }
+        return <Paper
+            key={this.props.key}
+            elevation={ !isNaN(this.props.elevation) ? this.props.elevation : 1 }
+            className={ Utils.clsx(classes.root, {[classes.overflowHidden]: this.props.overflow !== 'visible'}) }
+        >
+            <Grid
+                container
+                direction="column"
+                wrap="nowrap"
+                className={ classes.container }
             >
-                <Grid
-                    container
-                    direction="column"
-                    wrap="nowrap"
-                    className={ classes.container }
-                >
-                    { this.props.children }
-                </Grid>
-            </Paper>
-        );
+                { this.props.children }
+            </Grid>
+        </Paper>;
     }
 }
 
 TabContainer.propTypes = {
+    key: PropTypes.string,
     elevation: PropTypes.number,
     overflow: PropTypes.string
 };

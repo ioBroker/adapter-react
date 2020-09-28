@@ -855,6 +855,32 @@ class Utils {
         e && e.preventDefault();
     }
 
+    static getFileExtension(fileName) {
+        const pos = (fileName || '').lastIndexOf('.');
+        if (pos !== -1) {
+            return fileName.substring(pos + 1).toLowerCase();
+        } else {
+            return null;
+        }
+    }
+
+    static formatBytes(bytes) {
+        if (Math.abs(bytes) < 1024) {
+            return bytes + ' B';
+        }
+
+        const units = ['KB','MB','GB'];
+        //const units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+        let u = -1;
+
+        do {
+            bytes /= 1024;
+            ++u;
+        } while (Math.abs(bytes) >= 1024 && u < units.length - 1);
+
+        return bytes.toFixed(1) + ' ' + units[u];
+    }
+
     // Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
     /**
      * Invert the given color

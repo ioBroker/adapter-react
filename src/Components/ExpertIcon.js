@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * @typedef {object} ExpertIconProps
@@ -10,7 +11,7 @@ import React from 'react';
  */
 class ExpertIcon extends React.Component {
     render() {
-        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 384.754 384.754" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+        return <svg key={this.props.key} onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 384.754 384.754" width={this.props.width || 20} height={this.props.height || this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
             <path fill="currentColor" d="M214.86,374.508c0,4.971-4.029,9-9,9h-65.01c-4.971,0-9.223-3.57-9.223-8.541V288.87c0-4.971,4.252-9.361,9.223-9.361 h99.585c4.971,0,9,4.029,9,9s-4.029,9-9,9h-90.808v68h56.232C210.83,365.508,214.86,369.538,214.86,374.508z M136.65,115.508h10 c4.971,0,9-4.029,9-9s-4.029-9-9-9h-10c-4.971,0-9,4.029-9,9S131.679,115.508,136.65,115.508z M180.947,115.508h10 c4.97,0,9-4.029,9-9s-4.029-9-9-9h-10c-4.971,0-9,4.029-9,9S175.976,115.508,180.947,115.508z M152.056,142.508c0,4.971,4.029,9,9,9 h5c4.971,0,9-4.029,9-9s-4.029-9-9-9h-5C156.086,133.508,152.056,137.538,152.056,142.508z M127.875,220.987
 c6.952,11.05,21.072,18.33,36.689,18.33c15.619,0,29.74-7.282,36.691-18.332c12.326,0.961,24.51,6.008,33.264,13.909
 c3.69,3.329,9.381,3.038,12.712-0.651c3.33-3.69,3.038-9.536-0.651-12.866c-12.984-11.718-31.526-18.868-49.6-18.868h-1.237
@@ -45,5 +46,13 @@ c0.159-0.326,0.299-0.66,0.417-1.001C344.392,259.102,344.538,257.825,344.428,256.
         </svg>;
     }
 }
+
+ExpertIcon.propTypes = {
+    key: PropTypes.string,
+    onClick: PropTypes.func,
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    className: PropTypes.string
+};
 
 export default ExpertIcon;

@@ -32,30 +32,30 @@ class DialogMessage extends Component {
     };
 
     render() {
-        return (
-            <Dialog
-                open={true}
-                maxWidth="sm"
-                fullWidth={true}
-                onClose={() => this.handleOk()}
-                aria-labelledby="message-dialog-title"
-                aria-describedby="message-dialog-description"
-            >
-                <DialogTitle id="message-dialog-title">{this.props.title || I18n.t('ra_Message')}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="message-dialog-description">
-                        {this.props.text}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('ra_Close')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog
+            key={this.props.key}
+            open={true}
+            maxWidth="sm"
+            fullWidth={true}
+            onClose={() => this.handleOk()}
+            aria-labelledby="message-dialog-title"
+            aria-describedby="message-dialog-description"
+        >
+            <DialogTitle id="message-dialog-title">{this.props.title || I18n.t('ra_Message')}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="message-dialog-description">
+                    {this.props.text}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('ra_Close')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 
 DialogMessage.propTypes = {
+    key: PropTypes.string,
     onClose: PropTypes.func,
     title: PropTypes.string,
     text: PropTypes.string,

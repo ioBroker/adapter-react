@@ -118,60 +118,60 @@ class SelectID extends Component {
             title = this.props.title || I18n.t('ra_Please select object ID...');
         }
 
-        return (
-            <Dialog
-                disableBackdropClick
-                maxWidth={false}
-                disableEscapeKeyDown
-                classes={{paper: this.props.classes.dialog}}
-                fullWidth={true}
-                open={true}
-                aria-labelledby="selectid-dialog-title"
-            >
-                <DialogTitle id="selectid-dialog-title">{ title }</DialogTitle>
-                <DialogContent className={this.props.classes.content}>
-                    <ObjectBrowser
-                        foldersFirst={ this.props.foldersFirst }
-                        prefix={ this.props.prefix }
-                        defaultFilters={ this.filters }
-                        showExpertButton={ this.props.showExpertButton !== undefined ? this.props.showExpertButton : true }
-                        style={ {width: '100%', height: '100%'} }
-                        columns={ this.props.columns || ['name', 'type', 'role', 'room', 'func', 'val'] }
-                        types={ this.props.types || ['state'] }
-                        t={ I18n.t }
-                        lang={ this.props.lang || I18n.getLanguage() }
-                        socket={ this.props.socket }
-                        selected={ this.state.selected }
-                        multiSelect={ this.props.multiSelect }
-                        notEditable={ this.props.notEditable === undefined ? true : this.props.notEditable }
-                        name={ this.state.name }
-                        themeName={ this.props.themeName }
-                        themeType={ this.props.themeType }
-                        customFilter={ this.props.customFilter }
-                        onFilterChanged={ filterConfig => {
-                            this.filters = filterConfig;
-                            window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
-                        } }
-                        onSelect={ (selected, name, isDouble) => {
-                            if (JSON.stringify(selected) !== JSON.stringify(this.state.selected)) {
-                                this.setState({selected, name}, () =>
-                                    isDouble && this.handleOk());
-                            } else if (isDouble) {
-                                this.handleOk();
-                            }
-                        } }
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={ () => this.handleOk() } disabled={ !this.state.selected.length } color="primary">{ this.props.ok || I18n.t('ra_Ok') }</Button>
-                    <Button onClick={ () => this.handleCancel() }>{ this.props.cancel || I18n.t('ra_Cancel') }</Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog
+            key={this.props.key}
+            disableBackdropClick
+            maxWidth={false}
+            disableEscapeKeyDown
+            classes={{paper: this.props.classes.dialog}}
+            fullWidth={true}
+            open={true}
+            aria-labelledby="selectid-dialog-title"
+        >
+            <DialogTitle id="selectid-dialog-title">{ title }</DialogTitle>
+            <DialogContent className={this.props.classes.content}>
+                <ObjectBrowser
+                    foldersFirst={ this.props.foldersFirst }
+                    imagePrefix={ this.props.imagePrefix || this.props.prefix } // prefix is for back compatibility
+                    defaultFilters={ this.filters }
+                    showExpertButton={ this.props.showExpertButton !== undefined ? this.props.showExpertButton : true }
+                    style={ {width: '100%', height: '100%'} }
+                    columns={ this.props.columns || ['name', 'type', 'role', 'room', 'func', 'val'] }
+                    types={ this.props.types || ['state'] }
+                    t={ I18n.t }
+                    lang={ this.props.lang || I18n.getLanguage() }
+                    socket={ this.props.socket }
+                    selected={ this.state.selected }
+                    multiSelect={ this.props.multiSelect }
+                    notEditable={ this.props.notEditable === undefined ? true : this.props.notEditable }
+                    name={ this.state.name }
+                    themeName={ this.props.themeName }
+                    themeType={ this.props.themeType }
+                    customFilter={ this.props.customFilter }
+                    onFilterChanged={ filterConfig => {
+                        this.filters = filterConfig;
+                        window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
+                    } }
+                    onSelect={ (selected, name, isDouble) => {
+                        if (JSON.stringify(selected) !== JSON.stringify(this.state.selected)) {
+                            this.setState({selected, name}, () =>
+                                isDouble && this.handleOk());
+                        } else if (isDouble) {
+                            this.handleOk();
+                        }
+                    } }
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={ () => this.handleOk() } disabled={ !this.state.selected.length } color="primary">{ this.props.ok || I18n.t('ra_Ok') }</Button>
+                <Button onClick={ () => this.handleCancel() }>{ this.props.cancel || I18n.t('ra_Cancel') }</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 
 SelectID.propTypes = {
+    key: PropTypes.string,
     classes: PropTypes.object,
     onClose: PropTypes.func,
     dialogName: PropTypes.string,
@@ -188,7 +188,7 @@ SelectID.propTypes = {
     statesOnly: PropTypes.bool,
     socket: PropTypes.object.isRequired,
     cancel: PropTypes.string,
-    prefix: PropTypes.string,
+    imagePrefix: PropTypes.string,
     ok: PropTypes.string,
     themeName: PropTypes.string,
     themeType: PropTypes.string,

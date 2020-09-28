@@ -580,7 +580,7 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
     return visible;
 }
 
-function getSystemIcon(objects, id, k, prefix) {
+function getSystemIcon(objects, id, k, imagePrefix) {
     let icon;
 
     // system or design have special icons
@@ -607,7 +607,7 @@ function getSystemIcon(objects, id, k, prefix) {
     } else if (k < 2) {
         // detect "cloud.0"
         if (objects['system.adapter.' + id]) {
-            icon = getSelectIdIcon(objects, 'system.adapter.' + id, prefix);
+            icon = getSelectIdIcon(objects, 'system.adapter.' + id, imagePrefix);
         }
     }
 
@@ -616,7 +616,7 @@ function getSystemIcon(objects, id, k, prefix) {
 
 function buildTree(objects, options) {
     options = options || {};
-    const prefix = options.prefix || '.';
+    const imagePrefix = options.imagePrefix || '.';
 
     const ids = Object.keys(objects);
 
@@ -705,7 +705,7 @@ function buildTree(objects, options) {
                                     id:     curPath,
                                     obj:    objects[curPath],
                                     level:  k,
-                                    icon:   getSystemIcon(objects, curPath, k, prefix),
+                                    icon:   getSystemIcon(objects, curPath, k, imagePrefix),
                                     generated: true,
                                 }
                             };
@@ -726,7 +726,7 @@ function buildTree(objects, options) {
                         title:  getName(obj && obj.common && obj.common.name, options.lang),
                         obj,
                         parent: croot,
-                        icon:   getSelectIdIcon(objects, id, prefix) || getSystemIcon(objects, id, 0, prefix),
+                        icon:   getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
                         id,
                         hasCustoms: obj.common && obj.common.custom && Object.keys(obj.common.custom).length,
                         level:  parts.length - 1,
@@ -1046,8 +1046,8 @@ function formatValue(id, state, obj, texts) {
     };
 }
 
-function getSelectIdIcon(objects, id, prefix) {
-    prefix = prefix || '.';//http://localhost:8081';
+function getSelectIdIcon(objects, id, imagePrefix) {
+    imagePrefix = imagePrefix || '.';//http://localhost:8081';
     let src = '';
     const _id_ = 'system.adapter.' + id;
     const aIcon = id && objects[_id_] && objects[_id_].common && objects[_id_].common.icon;
@@ -1055,7 +1055,7 @@ function getSelectIdIcon(objects, id, prefix) {
         // if not BASE64
         if (!aIcon.startsWith('data:image/')) {
             if (aIcon.includes('.')) {
-                src = prefix + '/adapter/' + objects[_id_].common.name + '/' + aIcon;
+                src = imagePrefix + '/adapter/' + objects[_id_].common.name + '/' + aIcon;
             } else {
                 return null; //'<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
             }
@@ -1072,7 +1072,7 @@ function getSelectIdIcon(objects, id, prefix) {
                     if (cIcon.includes('.')) {
                         let instance;
                         if (objects[id].type === 'instance' || objects[id].type === 'adapter') {
-                            src = prefix + '/adapter/' + common.name + '/' + cIcon;
+                            src = imagePrefix + '/adapter/' + common.name + '/' + cIcon;
                         } else if (id && id.startsWith('system.adapter.')) {
                             instance = id.split('.', 3);
                             if (cIcon[0] === '/') {
@@ -1080,7 +1080,7 @@ function getSelectIdIcon(objects, id, prefix) {
                             } else {
                                 instance[2] += '/' + cIcon;
                             }
-                            src = prefix + '/adapter/' + instance[2];
+                            src = imagePrefix + '/adapter/' + instance[2];
                         } else {
                             instance = id.split('.', 2);
                             if (cIcon[0] === '/') {
@@ -1088,7 +1088,7 @@ function getSelectIdIcon(objects, id, prefix) {
                             } else {
                                 instance[0] += '/' + cIcon;
                             }
-                            src = prefix + '/adapter/' + instance[0];
+                            src = imagePrefix + '/adapter/' + instance[0];
                         }
                     } else {
                         return null;
@@ -1403,7 +1403,7 @@ class ObjectBrowser extends React.Component {
             columnsWidths = {};
         }
 
-        this.prefix = this.props.prefix || '.';
+        this.imagePrefix = this.props.imagePrefix || '.';
         let foldersFirst = window.localStorage.getItem((this.props.key || 'App') + '.foldersFirst');
         if (foldersFirst === 'false') {
             foldersFirst = false;
@@ -2552,7 +2552,7 @@ class ObjectBrowser extends React.Component {
                 ({
                     name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop(), this.props.lang),
                     value: id,
-                    icon: getSelectIdIcon(this.objects, id, this.prefix)
+                    icon: getSelectIdIcon(this.objects, id, this.imagePrefix)
                 }));
 
             enums.forEach(item => {
@@ -3274,37 +3274,36 @@ class ObjectBrowser extends React.Component {
         }, 200);
 
         if (!this.state.loaded) {
-            return <CircularProgress/>;
+            return <CircularProgress key={this.props.key + '_c'}/>;
         } else {
             const classes = this.props.classes;
             const items = this.renderItem(this.root, undefined, classes);
 
-            return (
-                <TabContainer>
-                    <TabHeader>
-                        { this.getToolbar() }
-                    </TabHeader>
-                    <TabContent>
-                        { this.renderHeader() }
-                        <div className={ this.props.classes.tableDiv } ref={ this.tableRef }>
-                            { items }
-                        </div>
-                    </TabContent>
-                    { this.renderToast() }
-                    { this.renderColumnsEditCustomDialog() }
-                    { this.renderColumnsSelectorDialog() }
-                    { this.renderCustomDialog() }
-                    { this.renderEditValueDialog() }
-                    { this.renderEditObjectDialog() }
-                    { this.renderEnumDialog() }
-                    { this.renderErrorDialog() }
-                </TabContainer>
-            );
+            return <TabContainer key={this.props.key}>
+                <TabHeader>
+                    { this.getToolbar() }
+                </TabHeader>
+                <TabContent>
+                    { this.renderHeader() }
+                    <div className={ this.props.classes.tableDiv } ref={ this.tableRef }>
+                        { items }
+                    </div>
+                </TabContent>
+                { this.renderToast() }
+                { this.renderColumnsEditCustomDialog() }
+                { this.renderColumnsSelectorDialog() }
+                { this.renderCustomDialog() }
+                { this.renderEditValueDialog() }
+                { this.renderEditObjectDialog() }
+                { this.renderEnumDialog() }
+                { this.renderErrorDialog() }
+            </TabContainer>;
         }
     }
 }
 
 ObjectBrowser.propTypes = {
+    key: PropTypes.string,
     classes: PropTypes.object,
     defaultFilters: PropTypes.object,
     selected: PropTypes.oneOfType([
@@ -3316,7 +3315,7 @@ ObjectBrowser.propTypes = {
     socket: PropTypes.object,
     showExpertButton: PropTypes.bool,
     expertMode: PropTypes.bool,
-    prefix: PropTypes.string,
+    imagePrefix: PropTypes.string,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
     t: PropTypes.func,

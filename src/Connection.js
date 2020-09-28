@@ -70,6 +70,11 @@ class Connection {
         /** @type {Record<string, Promise<any>>} */
         this._promises = {};
         this.startSocket();
+        this._isWeb = null;
+    }
+
+    static isWeb() {
+        return window.socketUrl !== undefined;
     }
 
     /** 
