@@ -17,7 +17,6 @@ import Dialog from '@material-ui/core/Dialog';
 
 import I18n from '../i18n';
 import ObjectBrowser from '../Components/ObjectBrowser';
-import Connection from '../Connection';
 
 const styles = theme => ({
     headerID: {
@@ -45,7 +44,7 @@ const styles = theme => ({
  * @property {import('../Components/types').ObjectBrowserColumn[]} [columns] Columns to display; default: 'name', 'type', 'role', 'room', 'func', 'val'
  * @property {import('../Components/types').ObjectBrowserType[]} [types] Object types to show; default: 'state' only
  * @property {ioBroker.Languages} lang The language.
- * @property {Connection} socket The socket connection.
+ * @property {import('../Connection').default} socket The socket connection.
  * @property {boolean} [notEditable] Can't objects be edited? (default: true)
  * @property {string} [themeName] Theme name.
  * @property {string} [themeType] Theme type.

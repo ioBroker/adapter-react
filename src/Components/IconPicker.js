@@ -25,7 +25,6 @@ import FileBrowser from './FileBrowser';
 
 import IconLampTable from '../assets/lamp_table.svg';
 import IconLampCeiling from '../assets/lamp_ceiling.svg';
-import Connection from '../Connection';
 
 const ICONS = [
     {icon: IconLampTable,   color: '#FFFFFF', name: 'Table lamp'},
@@ -104,7 +103,7 @@ const PRESET_PREFIX = 'preset:';
  * @property {string} [label] The label.
  * @property {boolean} [disabled] Set to true to disable the icon picker.
  * @property {(icon: string) => void} onChange The icon change callback.
- * @property {Connection} socket The socket connection.
+ * @property {import('../Connection')} socket The socket connection.
  * @property {string} [imagePrefix] The image prefix (default: './files/')
  * @property {React.CSSProperties} [style] Additional styling for this component.
  * @property {string} [className] The CSS class name.
