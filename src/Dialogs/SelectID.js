@@ -199,4 +199,6 @@ SelectID.propTypes = {
     columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
 };
 
-export default withStyles(styles)(SelectID);
+/** @type {typeof SelectID} */
+const _export = withStyles(styles)(SelectID);
+export default _export;

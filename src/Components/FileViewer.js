@@ -157,4 +157,6 @@ FileViewer.propTypes = {
     href: PropTypes.string.isRequired
 };
 
-export default withWidth()(withStyles(styles)(FileViewer));
+/** @type {typeof FileViewer} */
+const _export = withWidth()(withStyles(styles)(FileViewer));
+export default _export;

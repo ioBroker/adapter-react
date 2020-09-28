@@ -3341,4 +3341,6 @@ ObjectBrowser.propTypes = {
     columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
 };
 
-export default withWidth()(withStyles(styles)(ObjectBrowser));
+/** @type {typeof ObjectBrowser} */
+const _export = withWidth()(withStyles(styles)(ObjectBrowser));
+export default _export;

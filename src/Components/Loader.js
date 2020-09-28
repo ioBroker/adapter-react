@@ -58,5 +58,6 @@ Loader.propTypes = {
     themeType: PropTypes.string
 };
 
-export default withStyles(styles)(Loader);
-
+/** @type {typeof Loader} */
+const _export = withStyles(styles)(Loader);
+export default _export;

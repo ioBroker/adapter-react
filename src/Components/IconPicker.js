@@ -341,4 +341,6 @@ IconPicker.propTypes = {
     imagePrefix: PropTypes.string,
 };
 
-export default withStyles(styles)(IconPicker);
+/** @type {typeof IconPicker} */
+const _export = withStyles(styles)(IconPicker);
+export default _export;

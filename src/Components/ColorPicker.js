@@ -223,4 +223,6 @@ ColorPicker.propTypes = {
     openAbove: PropTypes.bool,
 };
 
-export default withStyles(styles)(ColorPicker);
+/** @type {typeof ColorPicker} */
+const _export = withStyles(styles)(ColorPicker);
+export default _export;

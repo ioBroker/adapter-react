@@ -74,4 +74,6 @@ DialogError.propTypes = {
     icon: PropTypes.object
 };
 
-export default withStyles(styles)(DialogError);
+/** @type {typeof DialogError} */
+const _export = withStyles(styles)(DialogError);
+export default _export;

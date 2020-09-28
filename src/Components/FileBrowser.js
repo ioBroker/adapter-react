@@ -1315,4 +1315,6 @@ FileBrowser.propTypes = {
     onSelect: PropTypes.func, // function (id, isDoubleClick)
 };
 
-export default withWidth()(withStyles(styles)(FileBrowser));
+/** @type {typeof FileBrowser} */
+const _export = withWidth()(withStyles(styles)(FileBrowser));
+export default _export;

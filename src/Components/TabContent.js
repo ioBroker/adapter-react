@@ -46,4 +46,6 @@ TabContent.propTypes = {
     overflow: PropTypes.string
 };
 
-export default withStyles(styles)(TabContent);
+/** @type {typeof TabContent} */
+const _export = withStyles(styles)(TabContent);
+export default _export;

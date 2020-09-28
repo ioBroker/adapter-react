@@ -97,4 +97,6 @@ TextInput.propTypes = {
     input: PropTypes.string,
 };
 
-export default withWidth()(withStyles(styles)(TextInput));
+/** @type {typeof TextInput} */
+const _export = withWidth()(withStyles(styles)(TextInput));
+export default _export;

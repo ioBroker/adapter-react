@@ -128,4 +128,6 @@ Logo.propTypes = {
     onLoad: PropTypes.func,
 };
 
-export default withStyles(styles)(Logo);
+/** @type {typeof Logo} */
+const _export = withStyles(styles)(Logo);
+export default _export;
