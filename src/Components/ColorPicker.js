@@ -60,7 +60,31 @@ const styles = theme => ({
     }
 });
 
+/**
+ * @typedef {object} Rgb
+ * @property {number} r The red component of the color (0-255).
+ * @property {number} g The green component of the color (0-255).
+ * @property {number} b The blue component of the color (0-255).
+ * @property {number} a The alpha component of the color (0-255).
+ * 
+ * @typedef {string | Rgb | { rgb: Rgb }} Color Definition of a color.
+ * 
+ * @typedef {object} ColorPickerProps
+ * @property {string} [key] The key to identify this component.
+ * @property {boolean} [disabled] Set to true to disable the color picker.
+ * @property {Color} [color] The selected color.
+ * @property {(rgba: string) => void} [onChange] The color change callback.
+ * @property {string} [name] The name.
+ * @property {React.CSSProperties} [style] Additional styling for this component.
+ * @property {string} [className] The CSS class name.
+ * @property {boolean} [openAbove] Open the color picker above the field?
+ * 
+ * @extends {React.Component<ColorPickerProps>}
+ */
 class ColorPicker extends React.Component {
+    /**
+     * @param {Readonly<ColorPickerProps>} props
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -69,6 +93,11 @@ class ColorPicker extends React.Component {
         };
     }
 
+    /**
+     * Get the state derived from the given properties and state.
+     * @param {{ color: Color; }} props
+     * @param {{ color: Color; }} state
+     */
     static getDerivedStateFromProps(props, state) {
         const pColor = ColorPicker.getColor(props.color);
         const sColor = ColorPicker.getColor(state.color);
@@ -79,14 +108,26 @@ class ColorPicker extends React.Component {
         }
     }
 
+    /**
+     * @private
+     */
     handleClick = () => {
         this.setState({displayColorPicker: !this.state.displayColorPicker});
     };
 
+    /**
+     * @private
+     */
     handleClose = () => {
         this.setState({displayColorPicker: false});
     };
 
+    /**
+     * Convert the given color to hex ('#rrggbb') or rgba ('rgba(r,g,b,a)') format.
+     * @param {Color} [color]
+     * @param {boolean} [isHex] The returning string should be in hex format
+     * @returns {string} the hex or rgba representation of the given color.
+     */
     static getColor(color, isHex) {
         if (color && typeof color === 'object') {
             if (color.rgb) {
@@ -107,6 +148,11 @@ class ColorPicker extends React.Component {
         }
     }
 
+    /**
+     * Convert rgb() or rgba() format to hex format #rrggbb.
+     * @param {string} rgb 
+     * @returns {string}
+     */
     static rgb2hex(rgb){
         const m = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
 
@@ -116,6 +162,9 @@ class ColorPicker extends React.Component {
             parseInt(m[3],10).toString(16).padStart(2, '0') : rgb;
     }
 
+    /**
+     * @private
+     */
     handleChange = color => {
         this.setState({color});
         this.props.onChange && this.props.onChange(ColorPicker.getColor(color));

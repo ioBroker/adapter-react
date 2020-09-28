@@ -15,7 +15,26 @@ const styles = {
 
 };
 
+/**
+ * @typedef {object} TextInputProps
+ * @property {string} [key] The key to identify this component.
+ * @property {(text: string | null) => void} onClose The dialog close callback.
+ * @property {string} titleText The title text.
+ * @property {string} [promptText] Prompt text (default: empty).
+ * @property {string} [labelText] Label text (default: empty).
+ * @property {string} cancelText The text of the cancel button.
+ * @property {string} applyText The text of the apply button.
+ * @property {(text: string) => string} [verify] The verification callback. Return a non-empty string if there was an error.
+ * @property {(text: string) => string} [rule] The text replacement callback.
+ * @property {'text' | 'number' | 'password' | 'email'} [type] The type of the textbox (default: text).
+ * @property {string} [input] The input when opening the dialog.
+ * 
+ * @extends {React.Component<TextInputProps>}
+ */
 class TextInput extends React.Component {
+    /**
+     * @param {Readonly<TextInputProps>} props
+     */
     constructor(props) {
         super(props);
 

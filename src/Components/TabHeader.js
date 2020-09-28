@@ -3,6 +3,12 @@ import PropTypes from "prop-types";
 
 import Grid from '@material-ui/core/Grid';
 
+/**
+ * @typedef {object} TabHeaderProps
+ * @property {string} [key] The key to identify this component.
+ * 
+ * @extends {Component<TabHeaderProps>}
+ */
 class TabHeader extends Component {
 
     render() {

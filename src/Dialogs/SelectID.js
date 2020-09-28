@@ -35,11 +35,12 @@ const styles = theme => ({
 
 /**
  * @typedef {object} SelectIDProps
+ * @property {string} [key] The key to identify this component.
  * @property {string} [dialogName] The internal name of the dialog; default: "default"
  * @property {string} [title] The dialog title; default: Please select object ID... (translated)
  * @property {boolean} [multiSelect] Set to true to allow the selection of multiple IDs.
  * @property {boolean} [foldersFirst] Show folders before any leaves.
- * @property {string} [prefix] Prefix (default: '.')
+ * @property {string} [imagePrefix] Prefix (default: '.')
  * @property {boolean} [showExpertButton] Show the expert button?
  * @property {import('../Components/types').ObjectBrowserColumn[]} [columns] Columns to display; default: 'name', 'type', 'role', 'room', 'func', 'val'
  * @property {import('../Components/types').ObjectBrowserType[]} [types] Object types to show; default: 'state' only

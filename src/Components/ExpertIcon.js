@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 
 /**
  * @typedef {object} ExpertIconProps
+ * @property {string} [key] The key to identify this component.
  * @property {number} [width] The width in pixels of the icon.
+ * @property {number} [height] The height in pixels of the icon.
  * @property {(e: React.MouseEvent) => void} [onClick] Click handler.
  * @property {string} [className] The class name for the SVG element.
  * 

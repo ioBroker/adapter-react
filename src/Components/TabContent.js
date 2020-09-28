@@ -19,6 +19,7 @@ const styles = {
 
 /**
  * @typedef {object} TabContentProps
+ * @property {string} [key] The key to identify this component.
  * @property {string} [overflow]
  * @property {{ [key in keyof styles]: string}} classes The styling class names.
  * 

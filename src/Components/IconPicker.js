@@ -25,6 +25,7 @@ import FileBrowser from './FileBrowser';
 
 import IconLampTable from '../assets/lamp_table.svg';
 import IconLampCeiling from '../assets/lamp_ceiling.svg';
+import Connection from '../Connection';
 
 const ICONS = [
     {icon: IconLampTable,   color: '#FFFFFF', name: 'Table lamp'},
@@ -95,7 +96,25 @@ const styles = theme => ({
 
 const PRESET_PREFIX = 'preset:';
 
+/**
+ * @typedef {object} IconPickerProps
+ * @property {string} [key] The key to identify this component.
+ * @property {string} [color] The color.
+ * @property {string} [value] The value.
+ * @property {string} [label] The label.
+ * @property {boolean} [disabled] Set to true to disable the icon picker.
+ * @property {(icon: string) => void} onChange The icon change callback.
+ * @property {Connection} socket The socket connection.
+ * @property {string} [imagePrefix] The image prefix (default: './files/')
+ * @property {React.CSSProperties} [style] Additional styling for this component.
+ * @property {string} [className] The CSS class name.
+ * 
+ * @extends {React.Component<IconPickerProps>}
+ */
 class IconPicker extends React.Component {
+    /**
+     * @param {Readonly<IconPickerProps>} props
+     */
     constructor(props) {
         super(props);
         this.state = {

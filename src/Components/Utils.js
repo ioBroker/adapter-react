@@ -855,6 +855,11 @@ class Utils {
         e && e.preventDefault();
     }
 
+    /**
+     * Gets the extension of a file name.
+     * @param {string | null} [fileName] the file name.
+     * @returns {string | null} The extension in lower case.
+     */
     static getFileExtension(fileName) {
         const pos = (fileName || '').lastIndexOf('.');
         if (pos !== -1) {
@@ -864,6 +869,12 @@ class Utils {
         }
     }
 
+    /**
+     * Format number of bytes as a string with B, KB, MB or GB.
+     * The base for all calculations is 1024.
+     * @param {number} bytes The number of bytes.
+     * @returns {string} The formatted string (e.g. '723.5 KB')
+     */
     static formatBytes(bytes) {
         if (Math.abs(bytes) < 1024) {
             return bytes + ' B';

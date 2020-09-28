@@ -370,7 +370,13 @@ class IconOpen extends React.Component {
 const TABLE = 'Table';
 const TILE = 'Tile';
 
+/**
+ * @extends {React.Component<import('./types').FileBrowserProps>}
+ */
 class FileBrowser extends React.Component {
+    /**
+     * @param {Readonly<import("./types").FileBrowserProps>} props
+     */
     constructor(props) {
         super(props);
         let expanded = window.localStorage.getItem('files.expanded') || '[]';

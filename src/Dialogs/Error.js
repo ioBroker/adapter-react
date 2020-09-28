@@ -28,6 +28,7 @@ const styles = theme => ({
 
 /**
  * @typedef {object} DialogErrorProps
+ * @property {string} [key] The key to identify this component.
  * @property {string} [title] The dialog title; default: Error (translated)
  * @property {string} text The dialog text.
  * @property {() => void} [onClose] Close handler.

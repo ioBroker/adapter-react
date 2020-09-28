@@ -19,6 +19,7 @@ import I18n from '../i18n';
 
 /**
  * @typedef {object} DialogConfirmProps
+ * @property {string} [key] The key to identify this component.
  * @property {string} [title] The dialog title; default: Are you sure? (translated)
  * @property {string} text The dialog text.
  * @property {string} [ok] The ok button text; default: OK (translated)

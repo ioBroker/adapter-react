@@ -73,6 +73,10 @@ class Connection {
         this._isWeb = null;
     }
 
+    /**
+     * Checks if this connection is running in a web browser.
+     * @returns {boolean} True if running in a web browser.
+     */
     static isWeb() {
         return window.socketUrl !== undefined;
     }

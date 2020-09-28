@@ -23,6 +23,7 @@ const styles = theme => ({
 
 /**
  * @typedef {object} LogoProps
+ * @property {string} [key] The key to identify this component.
  * @property {any} common Adapter common configuration from io-package.json
  * @property {any} native Adapter native data from io-package.json
  * @property {number} instance Adapter instance number.
