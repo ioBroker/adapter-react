@@ -1245,7 +1245,7 @@ class FileBrowser extends React.Component {
                     <div key={this.state.selected + '_' + i} className={this.props.classes.pathDivBreadcrumbDir} onClick={e => this.changeFolder(e, path || '/')}>
                         {part || this.props.t('re_Root')}
                     </div>,
-                    <span key={this.state.selected + '_s_' + i} className={this.props.classes.pathDivBreadcrumbSlash}>></span>];
+                    <span key={this.state.selected + '_s_' + i} className={this.props.classes.pathDivBreadcrumbSlash}></span>];
             } else {
                 return <div key={this.state.selected + '_' + i} className={this.props.classes.pathDivBreadcrumbFile} onClick={() => this.setState({pathFocus: true})}>{part}</div>;
             }
