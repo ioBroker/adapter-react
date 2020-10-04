@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2019 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2020 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -18,6 +18,7 @@ gulp.task('copy', () => Promise.all([
     gulp.src(['src/vendor/*.*']).pipe(gulp.dest('dist/vendor')),
     gulp.src(['src/assets/*.*']).pipe(gulp.dest('dist/assets')),
     gulp.src(['README.md']).pipe(gulp.dest('dist')),
+    gulp.src(['LICENSE']).pipe(gulp.dest('dist')),
     gulp.src(['src/*.css']).pipe(gulp.dest('dist')),
     gulp.src(['src/Components/*.css']).pipe(gulp.dest('dist/Components')),
     gulp.src(['src/Components/*.css']).pipe(gulp.dest('dist/Components')),
@@ -26,8 +27,8 @@ gulp.task('copy', () => Promise.all([
         const package_ = require('./package.json');
         const packageSrc = require('./src/package.json');
         packageSrc.version = package_.version;
-        !fs.existsSync(__dirname + '/dist') && fs.mkdirSync(__dirname + '/dist');
-        fs.writeFileSync(__dirname + '/dist/package.json', JSON.stringify(packageSrc, null, 2));
+        !fs.existsSync(`${__dirname}/dist`) && fs.mkdirSync(`${__dirname}/dist`);
+        fs.writeFileSync(`${__dirname}/dist/package.json`, JSON.stringify(packageSrc, null, 2));
         resolve();
     })
 ]));
