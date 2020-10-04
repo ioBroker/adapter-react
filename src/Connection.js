@@ -74,8 +74,8 @@ class Connection {
     }
 
     /**
-     * Checks if this connection is running in a web browser.
-     * @returns {boolean} True if running in a web browser.
+     * Checks if this connection is running in a web adapter and not in an admin.
+     * @returns {boolean} True if running in a web adapter or in a socketio adapter.
      */
     static isWeb() {
         return window.socketUrl !== undefined;
