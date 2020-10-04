@@ -486,8 +486,11 @@ class GenericApp extends Router {
      * @returns {JSX.Element | null} The JSX element.
      */
     renderError() {
-        if (!this.state.errorText) return null;
-        return (<DialogError text={this.state.errorText} onClose={() => this.setState({errorText: ''})}/>);
+        if (!this.state.errorText) {
+            return null;
+        } else {            
+            return <DialogError text={this.state.errorText} onClose={() => this.setState({errorText: ''})}/>;
+        }
     }
 
     /**
