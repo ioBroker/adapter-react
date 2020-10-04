@@ -52,7 +52,7 @@ class Connection {
 
         /** @type {Record<string, { reg: RegExp; cbs: ioBroker.StateChangeHandler[]}>} */
         this.statesSubscribes = {}; // subscribe for states
-        
+
         /** @type {Record<string, { reg: RegExp; cbs: import('./types').ObjectChangeHandler[]}>} */
         this.objectsSubscribes = {}; // subscribe for objects
         this.onProgress = this.props.onProgress || function () {};
@@ -70,7 +70,6 @@ class Connection {
         /** @type {Record<string, Promise<any>>} */
         this._promises = {};
         this.startSocket();
-        this._isWeb = null;
     }
 
     /**
@@ -81,7 +80,7 @@ class Connection {
         return window.socketUrl !== undefined;
     }
 
-    /** 
+    /**
      * Starts the socket.io connection.
      * @returns {void}
      */
@@ -1116,7 +1115,7 @@ class Connection {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
-        
+
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
@@ -1132,7 +1131,7 @@ class Connection {
     getLogsFiles() {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
-        }       
+        }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
