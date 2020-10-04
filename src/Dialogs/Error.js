@@ -26,6 +26,16 @@ const styles = theme => ({
     }
 });
 
+/**
+ * @typedef {object} DialogErrorProps
+ * @property {string} [key] The key to identify this component.
+ * @property {string} [title] The dialog title; default: Error (translated)
+ * @property {string} text The dialog text.
+ * @property {() => void} [onClose] Close handler.
+ * @property {{titleBackground: string; titleColor: string}} classes The styling class names.
+ * 
+ * @extends {Component<DialogErrorProps>}
+ */
 class DialogError extends Component {
     handleOk() {
         this.props.onClose && this.props.onClose();
@@ -64,4 +74,6 @@ DialogError.propTypes = {
     icon: PropTypes.object
 };
 
-export default withStyles(styles)(DialogError);
+/** @type {typeof DialogError} */
+const _export = withStyles(styles)(DialogError);
+export default _export;

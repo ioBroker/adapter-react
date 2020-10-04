@@ -13,7 +13,19 @@ const styles = theme => ({
 
 });
 
+/**
+ * @typedef {object} LoaderProps
+ * @property {string} [key] The key to identify this component.
+ * @property {number} [size] The size in pixels of this loader.
+ * @property {string} [themeType] The chosen theme type.
+ * @property {string} [theme] The chosen theme.
+ * 
+ * @extends {React.Component<LoaderProps>}
+ */
 class Loader extends React.Component {
+    /**
+     * @param {LoaderProps} props
+     */
     constructor(props) {
         super(props);
         this.size = this.props.size || 234;
@@ -46,5 +58,6 @@ Loader.propTypes = {
     themeType: PropTypes.string
 };
 
-export default withStyles(styles)(Loader);
-
+/** @type {typeof Loader} */
+const _export = withStyles(styles)(Loader);
+export default _export;

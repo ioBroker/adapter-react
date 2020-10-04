@@ -1,6 +1,12 @@
 import React, {Component} from 'react';
 
+/**
+ * @extends {Component<{}>}
+ */
 class Router extends Component {
+    /**
+     * @param {{}} props The React properties of this component.
+     */
     constructor(props) {
         super(props);
         this.onHashChangedBound = this.onHashChanged.bind(this);
@@ -18,6 +24,10 @@ class Router extends Component {
         // override this function
     }
 
+    /**
+     * Gets the location object.
+     * @returns {{ tab: string; dialog: string; id: string; arg: string; }}
+     */
     static getLocation() {
         let hash = window.location.hash;
         hash = hash.replace(/^#/, '');
@@ -26,6 +36,13 @@ class Router extends Component {
         return {tab: parts[0] || '', dialog: parts[1] || '', id: parts[2] || '', arg: parts[3] || ''};
     }
 
+    /**
+     * Navigate to a new location. Any parameters that are not set will be taken from the current location.
+     * @param {string | undefined} [tab]
+     * @param {string | undefined} [dialog]
+     * @param {string | undefined} [id]
+     * @param {string | undefined} [arg]
+     */
     static doNavigate(tab, dialog, id, arg) {
         let hash = '';
         const location = Router.getLocation();

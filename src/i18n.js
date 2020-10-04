@@ -1,46 +1,71 @@
-/**
+/***
  * Copyright 2018-2019 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
- **/
+ ***/
 
+ /**
+  * Translation string management.
+  */
 class I18n {
+    /**
+     * List of all languages with their translations.
+     * @type {{ [lang in ioBroker.Languages]?: Record<string, string>; }}
+     */
     static translations = {};
 
+    /**
+     * The currently displayed language.
+     * @type {ioBroker.Languages}
+     */
     static lang = window.sysLang || 'en';
 
+    /**
+     * Set the language to display.
+     * @param {ioBroker.Languages} lang
+     */
     static setLanguage(lang) {
         if (lang) {
             I18n.lang = lang;
         }
     }
+
+    /**
+     * Sets all translations (in all languages).
+     * @param {{ [lang in ioBroker.Languages]?: Record<string, string>; }} translations
+     */
     static setTranslations(translations) {
         if (translations) {
             I18n.translations = translations;
         }
     }
+
+    /**
+     * Get the currently chosen language.
+     * @returns {ioBroker.Languages} The current language.
+     */
     static getLanguage() {
         return I18n.lang;
     }
-    static t(word, arg1, arg2, arg3) {
-        if (I18n.translations[I18n.lang]) {
-            const w = I18n.translations[I18n.lang][word];
+
+    /**
+     * Translate the given string to the selected language.
+     * @param {string} word The (key) word to look up the string.
+     * @param {string[]} args Optional arguments which will replace the first (second, third, ...) occurence of %s
+     */
+    static t(word, ...args) {
+        const translation = I18n.translations[I18n.lang];
+        if (translation) {
+            const w = translation[word];
             if (w) {
                 word = w;
             } else {
                 console.log(`Translate: ${word}`);
             }
         }
-        if (arg1 !== undefined) {
-            word = word.replace('%s', arg1);
-            if (arg2 !== undefined) {
-                word = word.replace('%s', arg2);
-                if (arg3 !== undefined) {
-                    word = word.replace('%s', arg3);
-
-                }
-            }
+        for (const arg of args) {
+            word = word.replace('%s', arg);
         }
         return word;
     }

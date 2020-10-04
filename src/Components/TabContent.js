@@ -17,6 +17,14 @@ const styles = {
     }
 };
 
+/**
+ * @typedef {object} TabContentProps
+ * @property {string} [key] The key to identify this component.
+ * @property {string} [overflow]
+ * @property {{ [key in keyof styles]: string}} classes The styling class names.
+ * 
+ * @extends {Component<TabContentProps>}
+ */
 class TabContent extends Component {
 
     render() {
@@ -38,4 +46,6 @@ TabContent.propTypes = {
     overflow: PropTypes.string
 };
 
-export default withStyles(styles)(TabContent);
+/** @type {typeof TabContent} */
+const _export = withStyles(styles)(TabContent);
+export default _export;

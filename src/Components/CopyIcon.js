@@ -1,6 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+/**
+ * @typedef {object} IconCopyProps
+ * @property {string} [key] The key to identify this component.
+ * @property {number} [width] The width in pixels of the icon.
+ * @property {number} [height] The height in pixels of the icon.
+ * @property {(e: React.MouseEvent) => void} [onClick] Click handler.
+ * @property {string} [className] The class name for the SVG element.
+ * 
+ * @extends {React.Component<IconCopyProps>}
+ */
 class IconCopy extends React.Component {
     render() {
         return <svg key={this.props.key} onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.height || this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>

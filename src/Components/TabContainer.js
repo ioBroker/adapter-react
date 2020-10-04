@@ -21,6 +21,15 @@ const styles = {
     }
 };
 
+/**
+ * @typedef {object} TabContainerProps
+ * @property {string} [key] The key to identify this component.
+ * @property {number} [elevation] The elevation of the tab container.
+ * @property {string} [overflow] Set to 'visible' show the overflow.
+ * @property {{ [key in keyof styles]: string}} classes The styling class names.
+ * 
+ * @extends {Component<TabContainerProps>}
+ */
 class TabContainer extends Component {
 
     render() {
@@ -50,4 +59,6 @@ TabContainer.propTypes = {
     overflow: PropTypes.string
 };
 
-export default withStyles(styles)(TabContainer);
+/** @type {typeof TabContainer} */
+const _export = withStyles(styles)(TabContainer);
+export default _export;

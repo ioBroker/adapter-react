@@ -52,7 +52,21 @@ function getFileExtension(fileName) {
     }
 }
 
+/**
+ * @typedef {object} FileViewerProps
+ * @property {string} [key] The key to identify this component.
+ * @property {import('../types').Translator} t Translation function
+ * @property {ioBroker.Languages} [lang] The selected language.
+ * @property {boolean} [expertMode] Is expert mode enabled? (default: false)
+ * @property {() => void} onClose Callback when the viewer is closed.
+ * @property {string} href The URL to the file to be displayed.
+ * 
+ * @extends {React.Component<FileViewerProps>}
+ */
 class FileViewer extends React.Component {
+    /**
+     * @param {Readonly<FileViewerProps>} props
+     */
     constructor(props) {
         super(props);
 
@@ -143,4 +157,6 @@ FileViewer.propTypes = {
     href: PropTypes.string.isRequired
 };
 
-export default withWidth()(withStyles(styles)(FileViewer));
+/** @type {typeof FileViewer} */
+const _export = withWidth()(withStyles(styles)(FileViewer));
+export default _export;

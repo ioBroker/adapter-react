@@ -370,7 +370,13 @@ class IconOpen extends React.Component {
 const TABLE = 'Table';
 const TILE = 'Tile';
 
+/**
+ * @extends {React.Component<import('./types').FileBrowserProps>}
+ */
 class FileBrowser extends React.Component {
+    /**
+     * @param {Readonly<import("./types").FileBrowserProps>} props
+     */
     constructor(props) {
         super(props);
         let expanded = window.localStorage.getItem('files.expanded') || '[]';
@@ -1239,7 +1245,7 @@ class FileBrowser extends React.Component {
                     <div key={this.state.selected + '_' + i} className={this.props.classes.pathDivBreadcrumbDir} onClick={e => this.changeFolder(e, path || '/')}>
                         {part || this.props.t('re_Root')}
                     </div>,
-                    <span key={this.state.selected + '_s_' + i} className={this.props.classes.pathDivBreadcrumbSlash}>></span>];
+                    <span key={this.state.selected + '_s_' + i} className={this.props.classes.pathDivBreadcrumbSlash}></span>];
             } else {
                 return <div key={this.state.selected + '_' + i} className={this.props.classes.pathDivBreadcrumbFile} onClick={() => this.setState({pathFocus: true})}>{part}</div>;
             }
@@ -1309,4 +1315,6 @@ FileBrowser.propTypes = {
     onSelect: PropTypes.func, // function (id, isDoubleClick)
 };
 
-export default withWidth()(withStyles(styles)(FileBrowser));
+/** @type {typeof FileBrowser} */
+const _export = withWidth()(withStyles(styles)(FileBrowser));
+export default _export;

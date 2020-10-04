@@ -34,6 +34,17 @@ function serializeAttrs(map) {
     return ret;
 }
 
+/**
+ * @typedef {object} ImageProps
+ * @property {string} [key] The key to identify this component.
+ * @property {string} [color] The color.
+ * @property {string} [src] The source of the image.
+ * @property {string} [imagePrefix] The image prefix (default: './files/')
+ * @property {string} [className] The CSS class name.
+ * @property {boolean} [showError] Show image errors (or just show no image)?
+ * 
+ * @extends {React.Component<ImageProps>}
+ */
 class Image extends React.Component {
     constructor(props) {
         super(props);

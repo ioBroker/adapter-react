@@ -4,6 +4,11 @@ import orange from '@material-ui/core/colors/orange';
 
 const step = (16 - 5) / 23 / 100;
 
+/**
+ * Convert hex color in the format '#rrggbb' or '#rgb' to an RGB object.
+ * @param {string} hex
+ * @returns {{r: number, g: number, b: number}}
+ */
 function toInt(hex) {
 
     const rgb = {
@@ -30,10 +35,21 @@ function toInt(hex) {
     return rgb;
 }
 
+/**
+ * Convert an RGB object to a hex color string in the format '#rrggbb'.
+ * @param {{r: number, g: number, b: number}} int
+ * @returns {string}
+ */
 function toHex(int) {
     return '#' + Math.round(int.r).toString(16) + Math.round(int.g).toString(16) + Math.round(int.b).toString(16);
 }
 
+/**
+ * @param {string} color color in the format '#rrggbb' or '#rgb'
+ * @param {string} overlayColor overlay color in the format '#rrggbb' or '#rgb'
+ * @param {number} elevation elevation as an integer starting with 1
+ * @returns {string} the hex color string in the format '#rrggbb'
+ */
 function getElevation(color, overlayColor, elevation) {
     const rgb = toInt(color);
     const overlay = toInt(overlayColor);
@@ -45,7 +61,14 @@ function getElevation(color, overlayColor, elevation) {
     return toHex(rgb);
 }
 
+/**
+ * Get all 24 elevations of the given color and overlay.
+ * @param {string} color color in the format '#rrggbb' or '#rgb'
+ * @param {string} overlay overlay color in the format '#rrggbb' or '#rgb'
+ * @returns {import('@material-ui/core/styles/withStyles').CSSProperties}
+ */
 function getElevations(color, overlay) {
+    /** @type {import('@material-ui/core/styles/withStyles').CSSProperties} */
     const elevations = {};
 
     for(let i = 1; i <= 24; i++) {
@@ -57,6 +80,11 @@ function getElevations(color, overlay) {
     return elevations;
 }
 
+/**
+ * The theme creation factory function.
+ * @param {string} type
+ * @returns {import('./types').Theme}
+ */
 export default type => {
     let theme;
     if (type === 'dark') {
