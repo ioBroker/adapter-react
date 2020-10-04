@@ -1107,12 +1107,16 @@ class Connection {
     }
 
     /**
-     * Get the logs from a host.
+     * Get the logs from a host (only for admin connection).
      * @param {string} host
      * @param {number} [linesNumber]
      * @returns {Promise<string[]>}
      */
     getLogs(host, linesNumber) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
@@ -1122,10 +1126,13 @@ class Connection {
     }
 
     /**
-     * Get the log files.
+     * Get the log files (only for admin connection).
      * @returns {Promise<string[]>}
      */
     getLogsFiles() {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }       
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
@@ -1135,11 +1142,14 @@ class Connection {
     }
 
     /**
-     * Delete the logs from a host.
+     * Delete the logs from a host (only for admin connection).
      * @param {string} host
      * @returns {Promise<void>}
      */
     delLogs(host) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
