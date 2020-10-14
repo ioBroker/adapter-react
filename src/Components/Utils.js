@@ -987,7 +987,7 @@ class Utils {
     /**
      * Get the current theme name (either from local storage or the browser settings).
      * @param {string} [themeName]
-     * @returns {string | null}
+     * @returns {string}
      */
     static getThemeName(themeName = '') {
         return themeName ? themeName : window.localStorage && window.localStorage.getItem('App.themeName') ?
