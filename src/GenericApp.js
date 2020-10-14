@@ -33,6 +33,9 @@ const styles = {
 };
 
 
+/**
+ * @extends {Router<import('./types').GenericAppProps, import('./types').GenericAppState>}
+ */
 class GenericApp extends Router {
     /**
      * @param {import('./types').GenericAppProps} props
