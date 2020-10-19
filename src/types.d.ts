@@ -58,6 +58,23 @@ export interface GenericAppSettings extends GenericAppProps {
     doNotLoadAllObjects?: boolean;
 }
 
+export interface GenericAppState {
+    selectedTab: string;
+    selectedTabNum: number;
+    native: {};
+    errorText: string;
+    changed: boolean;
+    connected: boolean;
+    loaded: boolean;
+    isConfigurationError: string;
+    toast: string;
+    theme: Theme;
+    themeName: string;
+    themeType: string;
+    bottomButtons: boolean;
+    width: Width;
+}
+
 export type Width = ('xs' | 'sm' | 'md' | 'lg' | 'xl');
 
 export interface Theme extends MuiTheme {

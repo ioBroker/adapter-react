@@ -111,7 +111,7 @@ export interface ObjectBrowserProps {
     /** Custom object editor React component to use */
     objectBrowserEditObject?: any;
     /** Router */
-    router?: Router;
+    router?: Router<{}, {}>;
     /** Object types to show */
     types?: ObjectBrowserType[];
     /** Columns to display */
