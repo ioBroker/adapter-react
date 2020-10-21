@@ -61,7 +61,7 @@ export interface GenericAppSettings extends GenericAppProps {
 export interface GenericAppState {
     selectedTab: string;
     selectedTabNum: number;
-    native: {};
+    native: ioBroker.AdapterConfig;
     errorText: string;
     changed: boolean;
     connected: boolean;

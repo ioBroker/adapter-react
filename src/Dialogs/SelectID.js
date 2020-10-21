@@ -43,7 +43,7 @@ const styles = theme => ({
  * @property {boolean} [showExpertButton] Show the expert button?
  * @property {import('../Components/types').ObjectBrowserColumn[]} [columns] Columns to display; default: 'name', 'type', 'role', 'room', 'func', 'val'
  * @property {import('../Components/types').ObjectBrowserType[]} [types] Object types to show; default: 'state' only
- * @property {ioBroker.Languages} lang The language.
+ * @property {ioBroker.Languages} [lang] The language.
  * @property {import('../Connection').default} socket The socket connection.
  * @property {boolean} [notEditable] Can't objects be edited? (default: true)
  * @property {string} [themeName] Theme name.
