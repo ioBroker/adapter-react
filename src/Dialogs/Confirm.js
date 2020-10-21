@@ -5,7 +5,7 @@
  *
  **/
 
-import React, {Component} from 'react';
+import {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import Button from '@material-ui/core/Button';
@@ -26,7 +26,7 @@ import I18n from '../i18n';
  * @property {string} [cancel] The cancel button text; default: Cancel (translated)
  * @property {(ok: boolean) => void} [onClose] Close handler.
  * 
- * @extends {React.Component<DialogConfirmProps>}
+ * @extends {Component<DialogConfirmProps>}
  */
 class DialogConfirm extends Component {
     handleOk() {
