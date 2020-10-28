@@ -997,7 +997,7 @@ class Connection {
         this._promises['enums_' + (_enum || 'all')] = new Promise((resolve, reject) => {
             this._socket.emit('getObjectView', 'system', 'enum', {startkey: 'enum.' + (_enum || ''), endkey: 'enum.' + (_enum ? (_enum + '.') : '') + '\u9999'}, (err, res) => {
                 if (!err && res) {
-                    const _res   = {};
+                    const _res = {};
                     for (let i = 0; i < res.rows.length; i++) {
                         if (_enum && res.rows[i].id === 'enum.' + _enum) {
                             continue;

@@ -261,6 +261,11 @@ Usage: `
 #### ObjectBrowser.js
 
 ## Changelog
+### 1.4.1 (2020-10-20)
+* (UncleSamSwiss) Made Router generic
+* (UncleSamSwiss) Fixed getThemeName(), it will always return a string (never null).
+* (UncleSamSwiss) Fixed issue with Router DTS not properly extending React.Component<>
+
 ### 1.4.0 (2020-10-04)
 * (UncleSamSwiss) added a lot of JSDoc comments and fixed some errors
 

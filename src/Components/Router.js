@@ -1,11 +1,13 @@
-import React, {Component} from 'react';
+import {Component} from 'react';
 
 /**
- * @extends {Component<{}>}
+ * @template P Type of the properties object.
+ * @template S Type of the internal state object.
+ * @extends {Component<P, S>}
  */
 class Router extends Component {
     /**
-     * @param {{}} props The React properties of this component.
+     * @param {P} props The React properties of this component.
      */
     constructor(props) {
         super(props);
