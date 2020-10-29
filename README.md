@@ -261,6 +261,9 @@ Usage: `
 #### ObjectBrowser.js
 
 ## Changelog
+### 1.4.2 (2020-10-29)
+* (UncleSamSwiss) More JSDoc issues fixed 
+
 ### 1.4.1 (2020-10-20)
 * (UncleSamSwiss) Made Router generic
 * (UncleSamSwiss) Fixed getThemeName(), it will always return a string (never null).
