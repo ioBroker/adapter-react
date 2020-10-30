@@ -39,6 +39,7 @@ class Connection {
 
         // breaking change. Do not load all objects by default is true
         this.doNotLoadAllObjects = this.props.doNotLoadAllObjects === undefined ? true : this.props.doNotLoadAllObjects;
+        this.doNotLoadACL        = this.props.doNotLoadACL        === undefined ? true : this.props.doNotLoadACL;
 
         /** @type {Record<string, ioBroker.State>} */
         this.states = {};
@@ -281,47 +282,78 @@ class Connection {
      * Called internally.
      * @private
      */
+    _getUserPermissions(cb) {
+        if (this.doNotLoadACL) {
+            return cb && cb();
+        } else {
+            this._socket.emit('getUserPermissions', cb);
+        }
+    }
+    /**
+     * Called internally.
+     * @private
+     */
     onConnect() {
-        this._socket.emit('getUserPermissions', (err, acl) => {
-            if (this.loaded) {
-                return;
+        this._getUserPermissions((err, acl) => {
+            if (err) {
+                return this.onError('Cannot read user permissions: ' + err);
+            } else
+            if (!this.doNotLoadACL) {
+                if (this.loaded) {
+                    return;
+                }
+                this.loaded = true;
+                clearTimeout(this.loadTimer);
+                this.loadTimer = null;
+
+                this.onProgress(PROGRESS.CONNECTED);
+                this.firstConnect = false;
+
+                this.acl = acl;
             }
-            this.loaded = true;
-            clearTimeout(this.loadTimer);
-            this.loadTimer = null;
 
-            this.onProgress(PROGRESS.CONNECTED);
-            this.firstConnect = false;
-
-            this.acl = acl;
             // Read system configuration
-            this._socket.emit('getObject', 'system.config', (err, data) => {
-                this.systemConfig = data;
-                if (!err && this.systemConfig && this.systemConfig.common) {
-                    this.systemLang = this.systemConfig.common.language;
-                } else {
-                    this.systemLang = window.navigator.userLanguage || window.navigator.language;
+            return this.getSystemConfig()
+                .then(data => {
+                    if (this.doNotLoadACL) {
+                        if (this.loaded) {
+                            return;
+                        }
+                        this.loaded = true;
+                        clearTimeout(this.loadTimer);
+                        this.loadTimer = null;
 
-                    if (this.systemLang !== 'en' && this.systemLang !== 'de' && this.systemLang !== 'ru') {
-                        this.systemConfig.common.language = 'en';
-                        this.systemLang = 'en';
+                        this.onProgress(PROGRESS.CONNECTED);
+                        this.firstConnect = false;
                     }
-                }
 
-                this.props.onLanguage && this.props.onLanguage(this.systemLang);
+                    this.systemConfig = data;
+                    if (this.systemConfig && this.systemConfig.common) {
+                        this.systemLang = this.systemConfig.common.language;
+                    } else {
+                        this.systemLang = window.navigator.userLanguage || window.navigator.language;
 
-                if (!this.doNotLoadAllObjects) {
-                    this.getObjects()
-                        .then(() => {
-                            this.onProgress(PROGRESS.READY);
-                            this.props.onReady && this.props.onReady(this.objects);
-                        });
-                } else {
-                    this.objects = {'system.config': data};
-                    this.onProgress(PROGRESS.READY);
-                    this.props.onReady && this.props.onReady(this.objects);
-                }
-            });
+                        if (this.systemLang !== 'en' && this.systemLang !== 'de' && this.systemLang !== 'ru') {
+                            this.systemConfig.common.language = 'en';
+                            this.systemLang = 'en';
+                        }
+                    }
+
+                    this.props.onLanguage && this.props.onLanguage(this.systemLang);
+
+                    if (!this.doNotLoadAllObjects) {
+                        return this.getObjects()
+                            .then(() => {
+                                this.onProgress(PROGRESS.READY);
+                                this.props.onReady && this.props.onReady(this.objects);
+                            });
+                    } else {
+                        this.objects = {'system.config': data};
+                        this.onProgress(PROGRESS.READY);
+                        this.props.onReady && this.props.onReady(this.objects);
+                    }
+                })
+                .catch(e => this.onError('Cannot read system config: ' + e));
         });
     }
 

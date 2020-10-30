@@ -17,8 +17,10 @@ export interface ConnectionProps {
     port?: string | number;
     /** The socket.io connection timeout. */
     ioTimeout?: number;
-    /** Flag to indicate if all objects should be loaded or not. */
+    /** Flag to indicate if all objects should be loaded or not. Default true (not loaded) */
     doNotLoadAllObjects?: boolean;
+    /** Flag to indicate if AccessControlList for current user will be loaded or not. Default true (not loaded) */
+    doNotLoadACL?: boolean;
     /** Progress callback. */
     onProgress?: (progress: number) => void;
     /** Ready callback. */

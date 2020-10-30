@@ -261,6 +261,9 @@ Usage: `
 #### ObjectBrowser.js
 
 ## Changelog
+### 1.4.3 (2020-10-30)
+* (bluefox) Optimize loading
+
 ### 1.4.2 (2020-10-29)
 * (UncleSamSwiss) More JSDoc issues fixed 
 
