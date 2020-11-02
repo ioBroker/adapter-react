@@ -4,8 +4,8 @@
  * MIT License
  *
  **/
-
-import {Component} from 'react';
+// please do not delete React, as without it other projects could not be compiled: ReferenceError: React is not defined
+import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 
@@ -55,10 +55,10 @@ const styles = theme => ({
  * @property {() => void} onClose Close handler that is always called when the dialog is closed.
  * @property {(selected: string | string[] | undefined, name: string) => void} onOk Handler that is called when the user presses OK.
  * @property {{headerID: string; dialog: string; content: string}} classes The styling class names.
- * 
- * @extends {Component<SelectIDProps>}
+ *
+ * @extends {React.Component<SelectIDProps>}
  */
-class SelectID extends Component {
+class SelectID extends React.Component {
     /**
      * @param {SelectIDProps} props
      */

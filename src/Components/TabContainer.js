@@ -1,5 +1,5 @@
-import {Component} from 'react';
-
+// please do not delete React, as without it other projects could not be compiled: ReferenceError: React is not defined
+import React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import PropTypes from 'prop-types';
@@ -27,10 +27,10 @@ const styles = {
  * @property {number} [elevation] The elevation of the tab container.
  * @property {string} [overflow] Set to 'visible' show the overflow.
  * @property {{ [key in keyof styles]: string}} classes The styling class names.
- * 
- * @extends {Component<TabContainerProps>}
+ *
+ * @extends {React.Component<TabContainerProps>}
  */
-class TabContainer extends Component {
+class TabContainer extends React.Component {
 
     render() {
 

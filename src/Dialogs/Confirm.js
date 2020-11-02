@@ -5,7 +5,8 @@
  *
  **/
 
-import {Component} from 'react';
+// please do not delete React, as without it other projects could not be compiled: ReferenceError: React is not defined
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import Button from '@material-ui/core/Button';
@@ -25,10 +26,10 @@ import I18n from '../i18n';
  * @property {string} [ok] The ok button text; default: OK (translated)
  * @property {string} [cancel] The cancel button text; default: Cancel (translated)
  * @property {(ok: boolean) => void} [onClose] Close handler.
- * 
- * @extends {Component<DialogConfirmProps>}
+ *
+ * @extends {React.Component<DialogConfirmProps>}
  */
-class DialogConfirm extends Component {
+class DialogConfirm extends React.Component {
     handleOk() {
         this.props.onClose && this.props.onClose(true);
     };

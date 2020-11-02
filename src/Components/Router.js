@@ -1,11 +1,12 @@
-import {Component} from 'react';
+// please do not delete React, as without it other projects could not be compiled: ReferenceError: React is not defined
+import React from 'react';
 
 /**
  * @template P Type of the properties object.
  * @template S Type of the internal state object.
- * @extends {Component<P, S>}
+ * @extends {React.Component<P, S>}
  */
-class Router extends Component {
+class Router extends React.Component {
     /**
      * @param {P} props The React properties of this component.
      */

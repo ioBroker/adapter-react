@@ -1,4 +1,5 @@
-import {Component} from 'react';
+// please do not delete React, as without it other projects could not be compiled: ReferenceError: React is not defined
+import React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Fab from '@material-ui/core/Fab';
 import PropTypes from 'prop-types';
@@ -31,9 +32,9 @@ const styles = theme => ({
  * @property {(error: string) => void} [onError]
  * @property {{ buttons: string, logo: string }} classes The styling class names.
  *
- * @extends {Component<LogoProps>}
+ * @extends {React.Component<LogoProps>}
  */
-class Logo extends Component {
+class Logo extends React.Component {
 
     static generateFile(filename, obj) {
         const el = window.document.createElement('a');
