@@ -30,7 +30,7 @@ const styles = theme => ({
  * @property {(contents: any) => void} [onLoad]
  * @property {(error: string) => void} [onError]
  * @property {{ buttons: string, logo: string }} classes The styling class names.
- * 
+ *
  * @extends {Component<LogoProps>}
  */
 class Logo extends Component {
@@ -106,13 +106,13 @@ class Logo extends Component {
     }
 
     render() {
-        return <div key={this.props.key}>
-            {this.props.common.icon && (<img src={this.props.common.icon} className={this.props.classes.logo} alt="logo"/>)}
-            {this.props.common.readme &&
-                (<Fab size="small" color="primary" aria-label="Help" className={this.props.classes.buttons} onClick={() => {
+        return <div key={this.props.key} className={this.props.className} style={this.props.style}>
+            {this.props.common.icon ? <img src={this.props.common.icon} className={this.props.classes.logo} alt="logo"/> : null}
+            {this.props.common.readme ?
+                <Fab size="small" color="primary" aria-label="Help" className={this.props.classes.buttons} onClick={() => {
                     const win = window.open(this.props.common.readme, '_blank');
                     win.focus();
-                }}><IconHelp /></Fab>)}
+                }}><IconHelp /></Fab> : null}
             <Fab size="small" color="primary" aria-label="Load config" className={this.props.classes.buttons} title={I18n.t('Load configuration from file')} onClick={() => this.upload()}><IconUpload /></Fab>
             <Fab size="small" color="primary" aria-label="Save config" className={this.props.classes.buttons} title={I18n.t('Save configuration to file')} onClick={() => this.download()}><IconDownload /></Fab>
         </div>;
@@ -122,6 +122,8 @@ class Logo extends Component {
 Logo.propTypes = {
     key: PropTypes.string,
     common: PropTypes.object.isRequired,
+    className: PropTypes.string,
+    style: PropTypes.object,
     native: PropTypes.object.isRequired,
     instance: PropTypes.number.isRequired,
     onError: PropTypes.func,
