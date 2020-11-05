@@ -83,7 +83,7 @@ class Utils {
      */
     static getObjectNameFromObj(obj, settings, options, isDesc) {
         let item = obj;
-        let text = obj._id;
+        let text = (obj && obj._id) || '';
         const attr = isDesc ? 'desc' : 'name';
 
         options = options || {};
@@ -102,7 +102,7 @@ class Utils {
             if (typeof text === 'object') {
                 text = text[options.language] || text.en;
             }
-            text = (text || '').replace(/[_.]/g, ' ');
+            text = (text || '').toString().replace(/[_.]/g, ' ');
 
             if (text === text.toUpperCase()) {
                 text = text[0] + text.substring(1).toLowerCase();
@@ -224,7 +224,7 @@ class Utils {
         if (typeof settings.name === 'object') {
             settings.name = settings.name[options.language] || settings.name.en;
 
-            settings.name = (settings.name || '').replace(/_/g, ' ');
+            settings.name = (settings.name || '').toString().replace(/_/g, ' ');
 
             if (settings.name === settings.name.toUpperCase()) {
                 settings.name = settings.name[0] + settings.name.substring(1).toLowerCase();
@@ -233,7 +233,7 @@ class Utils {
         if (!settings.name && id) {
             let pos = id.lastIndexOf('.');
             settings.name = id.substring(pos + 1).replace(/[_.]/g, ' ');
-            settings.name = (settings.name || '').replace(/_/g, ' ');
+            settings.name = (settings.name || '').toString().replace(/_/g, ' ');
             settings.name = Utils.CapitalWords(settings.name);
         }
 
