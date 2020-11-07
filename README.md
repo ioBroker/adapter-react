@@ -261,6 +261,10 @@ Usage: `
 #### ObjectBrowser.js
 
 ## Changelog
+### 1.4.6 (2020-11-07)
+* (bluefox) Better icon processing
+* (bluefox) Added getParentId function
+
 ### 1.4.4 (2020-11-02)
 * (bluefox) Fix React warning
 

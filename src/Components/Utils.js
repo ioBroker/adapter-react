@@ -280,16 +280,20 @@ class Utils {
 
     /**
      * Get the icon for the given settings.
-     * @param {{ icon: string | undefined; name: string | undefined; }} settings
+     * @param {{ icon: string | undefined; name: string | undefined; prefix: string | undefined}} settings
      * @param {any} style
      * @returns {JSX.Element | null}
      */
     static getIcon(settings, style) {
         if (settings && settings.icon) {
+            // If UTF-8 icon
+            if (settings.icon.length <= 2) {
+                return <span style={style || {}}>{settings.icon}</span>;
+            } else
             if (settings.icon.startsWith('data:image')) {
-                return (<img alt={settings.name} src={settings.icon} style={style || {}}/>);
+                return <img alt={settings.name} src={settings.icon} style={style || {}}/>;
             } else { // may be later some changes for second type
-                return (<img alt={settings.name} src={settings.icon} style={style || {}}/>);
+                return <img alt={settings.name} src={(settings.prefix || '') + settings.icon} style={style || {}}/>;
             }
         }
         return null;
@@ -302,16 +306,26 @@ class Utils {
      * @returns {string | null}
      */
     static getObjectIcon(id, obj) {
+        // If id is Object
+        if (typeof id === 'object') {
+            obj = id;
+            id = obj._id;
+        }
+
         if (obj && obj.common && obj.common.icon) {
             let icon = obj.common.icon;
+            // If UTF-8 icon
+            if (typeof icon === 'string' && icon.length <= 2) {
+                return icon;
+            } else
             if (icon.startsWith('data:image')) {
                 return icon;
             } else {
                 const parts = id.split('.');
                 if (parts[0] === 'system') {
-                    icon = 'adapter/' + parts[2] + icon;
+                    icon = 'adapter/' + parts[2] + (icon.startsWith('/') ? '' : '/') + icon;
                 } else {
-                    icon = 'adapter/' + parts[0] + icon;
+                    icon = 'adapter/' + parts[0] + (icon.startsWith('/') ? '' : '/') + icon;
                 }
 
                 if (window.location.pathname.match(/adapter\/[^/]+\/[^/]+\.html/)) {
@@ -1061,6 +1075,21 @@ class Utils {
             }
         });
         return result;
+    }
+
+    /**
+     * Returns parent ID.
+     * @param {string} id
+     * @returns {string | null} parent ID or null if no parent
+     */
+    static getParentId(id) {
+        const p = (id || '').toString().split('.');
+        if (p.length > 1) {
+            p.pop();
+            return p.join('.');
+        } else {
+            return null;
+        }
     }
 }
 
