@@ -47,7 +47,7 @@ import TabContent from './TabContent';
 import TabHeader from './TabHeader';
 
 // Icons
-import IconExpert from '@material-ui/icons/Person';
+import IconExpert from './ExpertIcon';
 import IconEdit from '@material-ui/icons/Edit';
 import IconDelete from '@material-ui/icons/Delete';
 import IconConfig from '@material-ui/icons/Settings';
