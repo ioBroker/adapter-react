@@ -68,5 +68,6 @@
   "ra_Create new folder in %s": "Maak een nieuwe map in %s",
   "ra_Duplicate name": "Dubbele naam",
   "ra_Invalid parent folder!": "Ongeldige bovenliggende map!",
-  "ra_Drop file here": "Zet het bestand hier neer"
+  "ra_Drop file here": "Zet het bestand hier neer",
+  "Clear filter": "Filter wissen"
 }

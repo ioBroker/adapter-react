@@ -134,6 +134,7 @@ class SelectID extends React.Component {
                     foldersFirst={ this.props.foldersFirst }
                     imagePrefix={ this.props.imagePrefix || this.props.prefix } // prefix is for back compatibility
                     defaultFilters={ this.filters }
+                    dialogName={this.dialogName}
                     showExpertButton={ this.props.showExpertButton !== undefined ? this.props.showExpertButton : true }
                     style={ {width: '100%', height: '100%'} }
                     columns={ this.props.columns || ['name', 'type', 'role', 'room', 'func', 'val'] }
@@ -171,10 +172,9 @@ class SelectID extends React.Component {
 }
 
 SelectID.propTypes = {
-    key: PropTypes.string,
+    dialogName: PropTypes.string, // where to store settings in localStorage
     classes: PropTypes.object,
     onClose: PropTypes.func,
-    dialogName: PropTypes.string,
     notEditable: PropTypes.bool,
     onOk: PropTypes.func.isRequired,
     title: PropTypes.string,

@@ -68,5 +68,6 @@
   "ra_Create new folder in %s": "Crie uma nova pasta em %s",
   "ra_Duplicate name": "Nome duplicado",
   "ra_Invalid parent folder!": "Pasta pai inválida!",
-  "ra_Drop file here": "Solte o arquivo aqui"
+  "ra_Drop file here": "Solte o arquivo aqui",
+  "Clear filter": "Filtro limpo"
 }

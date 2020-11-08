@@ -150,6 +150,19 @@ const styles = theme => ({
         height: 38,
         whiteSpace: 'nowrap',
     },
+    buttonClearFilter: {
+        position: 'relative',
+        float: 'right',
+        padding: 0,
+    },
+    buttonClearFilterIcon: {
+        zIndex: 2,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        color: '#FF0000',
+        opacity: 0.7
+    },
 
     tableDiv: {
         paddingTop: 0,//theme.spacing(1),
@@ -380,6 +393,10 @@ const styles = theme => ({
 
     filteredOut: {
         opacity: 0.3
+    },
+    filterInput: {
+        marginTop: 0,
+        marginBottom: 0
     },
     selectIcon: {
         width: 16,
@@ -1179,7 +1196,6 @@ class IconDevice extends React.Component {
     render() {
         return <svg viewBox="0 0 320 320" width={ICON_SIZE} height={ICON_SIZE} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
             <g>
-                <title>Layer 1</title>
                 <rect rx="32" id="svg_1" height="272" width="267" y="25" x="25" strokeWidth="15" stroke="currentColor" fill="none"/>
                 <ellipse stroke="currentColor" ry="26" rx="26" id="svg_2" cy="252" cx="160" fillOpacity="null" strokeOpacity="null" strokeWidth="15" fill="#fff"/>
                 <line strokeLinecap="null" strokeLinejoin="null" id="svg_3" y2="201.94531" x2="159.5" y1="46.94531" x1="159.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="none"/>
@@ -1191,6 +1207,15 @@ class IconDevice extends React.Component {
                 <line strokeLinecap="null" strokeLinejoin="null" id="svg_9" y2="201.94531" x2="83.5" y1="46.94531" x1="83.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="none"/>
                 <rect height="27" width="50" y="79.7979" x="57.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="#fff"/>
             </g>
+        </svg>;
+    }
+}
+// Copyright Apache 2.0 https://raw.githubusercontent.com/material-icons/material-icons/master/svg/filter_alt/baseline.svg
+// https://github.com/material-icons/material-icons/blob/master/LICENSE
+class IconClearFilter extends React.Component {
+    render() {
+        return <svg viewBox="0 0 24 24" width={ICON_SIZE} height={ICON_SIZE} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+            <path fill="currentColor" stroke="currentColor" d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04c-.83 0-1.3.95-.79 1.61z"/>
         </svg>;
     }
 }
@@ -1315,7 +1340,7 @@ class ObjectBrowser extends React.Component {
     constructor(props) {
         super(props);
 
-        this.lastSelectedItems = window.localStorage.getItem((this.props.key || 'App') + '.objectSelected') || '[]';
+        this.lastSelectedItems = window.localStorage.getItem((props.dialogName || 'App') + '.objectSelected') || '[]';
         try {
             this.lastSelectedItems = JSON.parse(this.lastSelectedItems);
             if (typeof this.lastSelectedItems !== 'object') {
@@ -1326,7 +1351,7 @@ class ObjectBrowser extends React.Component {
 
         }
 
-        let expanded = window.localStorage.getItem((this.props.key || 'App') + '.objectExpanded') || '[]';
+        let expanded = window.localStorage.getItem((props.dialogName || 'App') + '.objectExpanded') || '[]';
         try {
             expanded = JSON.parse(expanded);
         } catch (e) {
@@ -1334,8 +1359,8 @@ class ObjectBrowser extends React.Component {
         }
 
         let filter =
-            this.props.defaultFilters ||
-            window.localStorage.getItem((this.props.key || 'App') + '.objectFilter') ||
+            props.defaultFilters ||
+            window.localStorage.getItem((props.dialogName || 'App') + '.objectFilter') ||
             Object.assign({}, DEFAULT_FILTER);
 
         if (typeof filter === 'string') {
@@ -1346,7 +1371,7 @@ class ObjectBrowser extends React.Component {
             }
         }
 
-        filter.expertMode = this.props.expertMode !== undefined ? this.props.expertMode : (window.localStorage.getItem('App.expertMode') === 'true');
+        filter.expertMode = props.expertMode !== undefined ? props.expertMode : (window.localStorage.getItem('App.expertMode') === 'true');
         this.tableRef  = React.createRef();
         this.filterRefs = {};
 
@@ -1363,10 +1388,10 @@ class ObjectBrowser extends React.Component {
         this.statesUpdateTimer = null;
         this.objectsUpdateTimer = null;
 
-        this.visibleCols = this.props.columns || SCREEN_WIDTHS[props.width].fields;
+        this.visibleCols = props.columns || SCREEN_WIDTHS[props.width].fields;
 
         // remove type column if only one type must be selected
-        if (this.props.types && this.props.types.length === 1) {
+        if (props.types && props.types.length === 1) {
             const pos = this.visibleCols.indexOf('type');
             pos !== -1 && this.visibleCols.splice(pos, 1);
         }
@@ -1383,34 +1408,34 @@ class ObjectBrowser extends React.Component {
             }
         }
 
-        let selected = (this.props.selected || '');
+        let selected = (props.selected || '');
         if (typeof selected !== 'object') {
             selected = [selected];
         }
         selected = selected.map(id => id.replace(/["']/g, '')).filter(id => id);
 
-        let columns = window.localStorage.getItem((this.props.key || 'App') + '.columns');
+        let columns = window.localStorage.getItem((props.dialogName || 'App') + '.columns');
         try {
             columns = columns ? JSON.parse(columns) : null;
         } catch (e) {
             columns = null;
         }
 
-        let columnsWidths = window.localStorage.getItem((this.props.key || 'App') + '.columnsWidths');
+        let columnsWidths = window.localStorage.getItem((props.dialogName || 'App') + '.columnsWidths');
         try {
             columnsWidths = columnsWidths ? JSON.parse(columnsWidths) : {};
         } catch (e) {
             columnsWidths = {};
         }
 
-        this.imagePrefix = this.props.imagePrefix || '.';
-        let foldersFirst = window.localStorage.getItem((this.props.key || 'App') + '.foldersFirst');
+        this.imagePrefix = props.imagePrefix || '.';
+        let foldersFirst = window.localStorage.getItem((props.dialogName || 'App') + '.foldersFirst');
         if (foldersFirst === 'false') {
             foldersFirst = false;
         } else if (foldersFirst === 'true') {
             foldersFirst = true;
         } else {
-            foldersFirst = this.props.foldersFirst === undefined ? true : this.props.foldersFirst;
+            foldersFirst = props.foldersFirst === undefined ? true : props.foldersFirst;
         }
 
         this.state = {
@@ -1418,11 +1443,12 @@ class ObjectBrowser extends React.Component {
             foldersFirst,
             selected,
             filter,
+            filterKey: 0,
             depth: 0,
             expandAllVisible: false,
             expanded,
             toast: '',
-            lang: this.props.lang,
+            lang: props.lang,
             scrollBarWidth: 16,
             hasSomeCustoms: false,
             customDialog,
@@ -1432,7 +1458,7 @@ class ObjectBrowser extends React.Component {
             columns,
             columnsForAdmin: null,
             columnsSelectorShow: false,
-            columnsAuto: window.localStorage.getItem((this.props.key || 'App') + '.columnsAuto') === 'false' ? false : true,
+            columnsAuto: window.localStorage.getItem((props.dialogName || 'App') + '.columnsAuto') === 'false' ? false : true,
             columnsWidths,
             columnsDialogTransparent: 100,
             columnsEditCustomDialog: null,
@@ -1442,35 +1468,35 @@ class ObjectBrowser extends React.Component {
         this.edit = {};
 
         this.texts = {
-            value:          this.props.t('ra_tooltip_value'),
-            ack:            this.props.t('ra_tooltip_ack'),
-            ts:             this.props.t('ra_tooltip_ts'),
-            lc:             this.props.t('ra_tooltip_lc'),
-            from:           this.props.t('ra_tooltip_from'),
-            user:           this.props.t('ra_tooltip_user'),
-            quality:        this.props.t('ra_tooltip_quality'),
-            editObject:     this.props.t('ra_tooltip_editObject'),
-            deleteObject:   this.props.t('ra_tooltip_deleteObject'),
-            customConfig:   this.props.t('ra_tooltip_customConfig'),
-            copyState:      this.props.t('ra_tooltip_copyState'),
-            editState:      this.props.t('ra_tooltip_editState'),
-            close:          this.props.t('ra_Close'),
-            filter_id:      this.props.t('ra_filter_id'),
-            filter_name:    this.props.t('ra_filter_name'),
-            filter_type:    this.props.t('ra_filter_type'),
-            filter_role:    this.props.t('ra_filter_role'),
-            filter_room:    this.props.t('ra_filter_room'),
-            filter_func:    this.props.t('ra_filter_func'),
-            filter_customs: this.props.t('ra_filter_customs'),
+            value:          props.t('ra_tooltip_value'),
+            ack:            props.t('ra_tooltip_ack'),
+            ts:             props.t('ra_tooltip_ts'),
+            lc:             props.t('ra_tooltip_lc'),
+            from:           props.t('ra_tooltip_from'),
+            user:           props.t('ra_tooltip_user'),
+            quality:        props.t('ra_tooltip_quality'),
+            editObject:     props.t('ra_tooltip_editObject'),
+            deleteObject:   props.t('ra_tooltip_deleteObject'),
+            customConfig:   props.t('ra_tooltip_customConfig'),
+            copyState:      props.t('ra_tooltip_copyState'),
+            editState:      props.t('ra_tooltip_editState'),
+            close:          props.t('ra_Close'),
+            filter_id:      props.t('ra_filter_id'),
+            filter_name:    props.t('ra_filter_name'),
+            filter_type:    props.t('ra_filter_type'),
+            filter_role:    props.t('ra_filter_role'),
+            filter_room:    props.t('ra_filter_room'),
+            filter_func:    props.t('ra_filter_func'),
+            filter_customs: props.t('ra_filter_customs'),
         };
 
         this.onStateChangeBound = this.onStateChange.bind(this);
 
         this.calculateColumnsVisibility();
 
-        this.props.socket.getObjects(true, true)
+        props.socket.getObjects(true, true)
             .then(objects => {
-                if (this.props.types) {
+                if (props.types) {
                     this.objects = {};
                     Object.keys(objects).forEach(id => {
                         const type = objects[id] && objects[id].type;
@@ -1481,7 +1507,7 @@ class ObjectBrowser extends React.Component {
                             type === 'folder'   ||
                             type === 'adapter'  ||
                             type === 'instance' ||
-                            this.props.types.includes(type))) {
+                            props.types.includes(type))) {
                             this.objects[id] = objects[id];
                         }
                     });
@@ -1497,7 +1523,7 @@ class ObjectBrowser extends React.Component {
                 let node = this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
 
                 // If selected ID is not visible, reset filter
-                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, this.props.customFilter)) {
+                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, props.customFilter)) {
                     // reset filter
                     this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
                         this.setState({ loaded: true }, () =>
@@ -1512,11 +1538,11 @@ class ObjectBrowser extends React.Component {
             });
 
         // read default history
-        this.props.socket.getSystemConfig()
+        props.socket.getSystemConfig()
             .then(config => {
                 this.defaultHistory = config && config.common && config.common.defaultHistory;
                 if (this.defaultHistory) {
-                    return this.props.socket.getState('system.adapter.' + this.defaultHistory + '.alive')
+                    return props.socket.getState('system.adapter.' + this.defaultHistory + '.alive')
                         .then(state => {
                             if (!state || !state.val) {
                                 this.defaultHistory = '';
@@ -1534,7 +1560,7 @@ class ObjectBrowser extends React.Component {
 
     /**
      * @private
-     * @param {ioBroker.EmptyCallback} cb 
+     * @param {ioBroker.EmptyCallback} cb
      */
     expandAllSelected(cb) {
         let expanded = [...this.state.expanded];
@@ -1552,7 +1578,7 @@ class ObjectBrowser extends React.Component {
         });
         if (changed) {
             expanded.sort();
-            window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify(expanded));
+            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectExpanded', JSON.stringify(expanded));
             this.setState({expanded}, cb)
         } else {
             cb && cb();
@@ -1566,12 +1592,12 @@ class ObjectBrowser extends React.Component {
     onAfterSelect(isDouble) {
         this.lastSelectedItems = [...this.state.selected];
         if (this.state.selected && this.state.selected.length) {
-            window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', JSON.stringify(this.lastSelectedItems));
+            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', JSON.stringify(this.lastSelectedItems));
 
             const name = this.lastSelectedItems.length === 1 ? Utils.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.state.lang }) : '';
             this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
         } else {
-            window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', '');
+            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', '');
             this.setState({selected: []}, () => this.props.onSelect && this.props.onSelect([], ''));
         }
     }
@@ -1641,7 +1667,7 @@ class ObjectBrowser extends React.Component {
 
     /**
      * Show the error dialog.
-     * @param {any} error 
+     * @param {any} error
      */
     showError(error) {
         this.setState({error: typeof error === 'object' ? (error && typeof error.toString === 'function' ? error.toString() : JSON.stringify(error)) : error});
@@ -1707,7 +1733,7 @@ class ObjectBrowser extends React.Component {
                         } else {
                             columns.splice(pos, 1);
                         }
-                        window.localStorage.setItem((this.props.key || 'App') + '.columns', JSON.stringify(columns));
+                        window.localStorage.setItem((this.props.dialogName || 'App') + '.columns', JSON.stringify(columns));
                         this.calculateColumnsVisibility(null, columns);
                         this.setState({columns});
                     }
@@ -1730,7 +1756,7 @@ class ObjectBrowser extends React.Component {
                                 onChange={e => {
                                     const columnsWidths = JSON.parse(JSON.stringify(this.state.columnsWidths));
                                     columnsWidths[id] = e.target.value;
-                                    window.localStorage.setItem((this.props.key || 'App') + '.columnsWidths', JSON.stringify(columnsWidths));
+                                    window.localStorage.setItem((this.props.dialogName || 'App') + '.columnsWidths', JSON.stringify(columnsWidths));
                                     this.calculateColumnsVisibility(null, null, null, columnsWidths);
                                     this.setState({columnsWidths});
                                 }}
@@ -1760,7 +1786,7 @@ class ObjectBrowser extends React.Component {
                     <FormControlLabel
                         className={this.props.classes.switchColumnAuto}
                         control={<Switch checked={this.state.columnsAuto} onChange={() => {
-                            window.localStorage.setItem((this.props.key || 'App') + '.columnsAuto', this.state.columnsAuto ? 'false' : 'true');
+                            window.localStorage.setItem((this.props.dialogName || 'App') + '.columnsAuto', this.state.columnsAuto ? 'false' : 'true');
                             if (!this.state.columnsAuto) {
                                 this.calculateColumnsVisibility(true);
                                 this.setState({columnsAuto: true});
@@ -1779,7 +1805,7 @@ class ObjectBrowser extends React.Component {
                     <FormControlLabel
                         className={this.props.classes.switchColumnAuto}
                         control={<Switch checked={this.state.foldersFirst} onChange={() => {
-                            window.localStorage.setItem((this.props.key || 'App') + '.foldersFirst', this.state.foldersFirst ? 'false' : 'true');
+                            window.localStorage.setItem((this.props.dialogName || 'App') + '.foldersFirst', this.state.foldersFirst ? 'false' : 'true');
                             this.setState({foldersFirst: !this.state.foldersFirst});
                         }} />}
                         label={this.props.t('ra_Folders always first')}
@@ -1805,7 +1831,7 @@ class ObjectBrowser extends React.Component {
                                             columns.splice(pos, 1);
                                         }
                                         this.calculateColumnsVisibility(null, columns);
-                                        window.localStorage.setItem((this.props.key || 'App') + '.columns', JSON.stringify(columns));
+                                        window.localStorage.setItem((this.props.dialogName || 'App') + '.columns', JSON.stringify(columns));
                                         this.setState({columns});
                                     }
                                 }} key={adapter + '_' + column.name}>
@@ -1827,7 +1853,7 @@ class ObjectBrowser extends React.Component {
                                                 onChange={e => {
                                                     const columnsWidths = JSON.parse(JSON.stringify(this.state.columnsWidths));
                                                     columnsWidths['_' + adapter + '_' + column.path] = e.target.value;
-                                                    window.localStorage.setItem((this.props.key || 'App') + '.columnsWidths', JSON.stringify(columnsWidths));
+                                                    window.localStorage.setItem((this.props.dialogName || 'App') + '.columnsWidths', JSON.stringify(columnsWidths));
                                                     this.calculateColumnsVisibility(null, null, null, columnsWidths);
                                                     this.setState({columnsWidths});
                                                 }}
@@ -2092,7 +2118,7 @@ class ObjectBrowser extends React.Component {
             if (this.filterRefs[name] && this.filterRefs[name].current) {
                 for (let i = 0; i < this.filterRefs[name].current.childNodes.length; i++) {
                     if (this.filterRefs[name].current.childNodes[i].tagName === 'INPUT') {
-                        filter[name] =this.filterRefs[name].current.childNodes[i].value;
+                        filter[name] = this.filterRefs[name].current.childNodes[i].value;
                         break;
                     }
                 }
@@ -2109,8 +2135,41 @@ class ObjectBrowser extends React.Component {
         filter = Object.assign({}, this.state.filter, filter);
 
         if (JSON.stringify(this.state.filter) !== JSON.stringify(filter)) {
-            this.setState({ filter });
+            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectFilter', JSON.stringify(filter));
+            this.setState({ filter }, () =>
+                this.props.onFilterChanged && this.props.onFilterChanged(filter));
         }
+    }
+
+    clearFilter() {
+        let filter = {};
+
+        Object.keys(this.filterRefs).forEach(name => {
+            if (this.filterRefs[name] && this.filterRefs[name].current) {
+                for (let i = 0; i < this.filterRefs[name].current.childNodes.length; i++) {
+                    const item = this.filterRefs[name].current.childNodes[i];
+                    if (item.tagName === 'INPUT') {
+                        filter[name] = '';
+                        item.value = '';
+                        break;
+                    }
+                }
+            }
+        });
+
+        filter = Object.assign({}, this.state.filter, filter);
+
+        if (JSON.stringify(this.state.filter) !== JSON.stringify(filter)) {
+            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectFilter', JSON.stringify(filter));
+            this.setState({ filter, filterKey: this.state.filterKey + 1}, () =>
+                this.props.onFilterChanged && this.props.onFilterChanged(filter));
+        }
+    }
+
+    isFilterEmpty() {
+        const someNotEmpty = Object.keys(this.state.filter).find(attr =>
+            attr !== 'expertMode' && this.state.filter[attr]);
+        return !someNotEmpty;
     }
 
     /**
@@ -2118,7 +2177,12 @@ class ObjectBrowser extends React.Component {
      * @param {string} name
      */
     getFilterInput(name) {
-        return (<FormControl className={ this.props.classes.headerCellInput } style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
+        return <FormControl
+            className={ Utils.clsx(this.props.classes.headerCellInput, this.props.classes.filterInput) }
+            key={name + '_' + this.state.filterKey}
+            //style={{ marginTop: 0, marginBottom: 0 }}
+            margin="dense"
+        >
             <Input
                 ref={ this.filterRefs[name] }
                 classes={{ underline: 'no-underline' }}
@@ -2131,7 +2195,7 @@ class ObjectBrowser extends React.Component {
                 }}
                 autoComplete="off"
             />
-        </FormControl>);
+        </FormControl>;
     }
 
     /**
@@ -2143,6 +2207,7 @@ class ObjectBrowser extends React.Component {
         const hasIcons = !!values.find(item => item.icon);
 
         return <Select
+            key={name + '_' + this.state.filterKey}
             ref={ this.filterRefs[name] }
             className={ this.props.classes.headerCellInput + ' no-underline' }
             onChange={e => {
@@ -2244,7 +2309,7 @@ class ObjectBrowser extends React.Component {
 
         if (root === this.root) {
             expanded.sort();
-            window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify(expanded));
+            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectExpanded', JSON.stringify(expanded));
 
             this.setState({ expanded });
         }
@@ -2254,7 +2319,7 @@ class ObjectBrowser extends React.Component {
      * @private
      */
     onCollapseAll() {
-        window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify([]));
+        window.localStorage.setItem((this.props.dialogName || 'App') + '.objectExpanded', JSON.stringify([]));
         this.setState({ expanded: [], depth: 0 });
     }
 
@@ -2300,7 +2365,7 @@ class ObjectBrowser extends React.Component {
             const depth = this.state.depth + 1;
             const expanded = [...this.state.expanded];
             this.expandDepth(this.root, depth, expanded);
-            window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify(expanded));
+            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectExpanded', JSON.stringify(expanded));
             this.setState({ depth, expanded });
         }
     }
@@ -2312,7 +2377,7 @@ class ObjectBrowser extends React.Component {
         if (this.state.depth > 0) {
             const depth = this.state.depth - 1;
             const expanded = this.collapseDepth(depth, this.state.expanded);
-            window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify(expanded));
+            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectExpanded', JSON.stringify(expanded));
             this.setState({ depth, expanded });
         }
     }
@@ -2353,7 +2418,7 @@ class ObjectBrowser extends React.Component {
             expanded.splice(pos, 1);
         }
 
-        window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify(expanded));
+        window.localStorage.setItem((this.props.dialogName || 'App') + '.objectExpanded', JSON.stringify(expanded));
 
         this.setState({ expanded });
     }
@@ -2389,14 +2454,14 @@ class ObjectBrowser extends React.Component {
         return [
             <IconButton key="edit" className={ classes.cellButtonsButton } size="small" aria-label="edit" title={ this.texts.editObject }
                         onClick={ () => {
-                            window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', id);
+                            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', id);
                             this.setState({ editObjectDialog: id});
                         }}>
                 <IconEdit className={ classes.cellButtonsButtonIcon } />
             </IconButton>,
             <IconButton key="delete" className={ classes.cellButtonsButton }  size="small" aria-label="delete"
                         onClick={ () => {
-                            window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', id);
+                            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', id);
                         }}
                         title={ this.texts.deleteObject }>
                 <IconDelete className={ classes.cellButtonsButtonIcon }  />
@@ -2408,7 +2473,7 @@ class ObjectBrowser extends React.Component {
                 aria-label="config"
                 title={ this.texts.customConfig }
                 onClick={ () => {
-                    window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', id);
+                    window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', id);
 
                     this.pauseSubscribe(true);
                     this.props.router && this.props.router.doNavigate(null, 'custom', id);
@@ -2422,7 +2487,7 @@ class ObjectBrowser extends React.Component {
 
     /**
      * @private
-     * @param {string} id 
+     * @param {string} id
      */
     readHistory(id) {
         /*interface GetHistoryOptions {
@@ -3115,6 +3180,14 @@ class ObjectBrowser extends React.Component {
     renderHeader() {
         const classes = this.props.classes;
 
+        let filterClearInValue = null;
+        if (!this.columnsVisibility.buttons && !this.isFilterEmpty()) {
+            filterClearInValue = <IconButton onClick={() => this.clearFilter()} className={classes.buttonClearFilter} title={this.props.t('Clear filter')}>
+                <IconClearFilter />
+                <IconClose className={classes.buttonClearFilterIcon}/>
+            </IconButton>;
+        }
+
         return <div className={ classes.headerRow } >
             <div className={ classes.headerCell } style={{ width: this.columnsVisibility.id }}>{ this.getFilterInput('id') }</div>
             {this.columnsVisibility.name    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.nameHeader }}>{ this.getFilterInput('name') }</div> : null }
@@ -3122,8 +3195,8 @@ class ObjectBrowser extends React.Component {
             {this.columnsVisibility.role    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.role }}>{ this.getFilterSelectRole() }</div> : null }
             {this.columnsVisibility.room    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.room }}>{ this.getFilterSelectRoom() }</div> : null }
             {this.columnsVisibility.func    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.func }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.adapterColumns.map(item => <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: this.columnsVisibility[item.id] }} title={item.adapter} key={item.id}>{ item.name }</div>)}
-            {this.columnsVisibility.val     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: this.columnsVisibility.val}}>{ this.props.t('ra_Value') }</div> : null }
+            {this.adapterColumns.map(item =>  <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: this.columnsVisibility[item.id] }} title={item.adapter} key={item.id}>{ item.name }</div>)}
+            {this.columnsVisibility.val     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: this.columnsVisibility.val}}>{ this.props.t('ra_Value') }{filterClearInValue}</div> : null }
             {this.columnsVisibility.buttons ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.buttons }}> { this.getFilterSelectCustoms() }</div> : null }
         </div>;
     }
@@ -3274,12 +3347,12 @@ class ObjectBrowser extends React.Component {
         }, 200);
 
         if (!this.state.loaded) {
-            return <CircularProgress key={this.props.key + '_c'}/>;
+            return <CircularProgress key={this.props.dialogName + '_c'}/>;
         } else {
             const classes = this.props.classes;
             const items = this.renderItem(this.root, undefined, classes);
 
-            return <TabContainer key={this.props.key}>
+            return <TabContainer key={this.props.dialogName}>
                 <TabHeader>
                     { this.getToolbar() }
                 </TabHeader>
@@ -3303,7 +3376,7 @@ class ObjectBrowser extends React.Component {
 }
 
 ObjectBrowser.propTypes = {
-    key: PropTypes.string,
+    dialogName: PropTypes.string, // where to store settings in localStorage
     classes: PropTypes.object,
     defaultFilters: PropTypes.object,
     selected: PropTypes.oneOfType([

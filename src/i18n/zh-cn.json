@@ -67,5 +67,6 @@
   "ra_Create new folder in %s": "在%s中创建新文件夹",
   "ra_Duplicate name": "名称重复",
   "ra_Invalid parent folder!": "父文件夹无效！",
-  "ra_Drop file here": "将档案放在这里"
+  "ra_Drop file here": "将档案放在这里",
+  "Clear filter": "清除筛选"
 }

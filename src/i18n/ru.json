@@ -70,5 +70,6 @@
   "ra_Create new folder in %s": "Создать новую папку в %s",
   "ra_Duplicate name": "Повторяющееся имя",
   "ra_Invalid parent folder!": "Неверная родительская папка!",
-  "ra_Drop file here": "Перетащите файл сюда"
+  "ra_Drop file here": "Перетащите файл сюда",
+  "Clear filter": "Очистить фильтр"
 }

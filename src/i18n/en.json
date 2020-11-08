@@ -82,5 +82,6 @@
   "ra_Create new folder in %s": "Create new folder in %s",
   "ra_Duplicate name": "Duplicate name",
   "ra_Invalid parent folder!": "Invalid parent folder!",
-  "ra_Drop file here": "Drop file here"
+  "ra_Drop file here": "Drop file here",
+  "Clear filter": "Clear filter"
 }

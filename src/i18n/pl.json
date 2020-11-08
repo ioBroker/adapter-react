@@ -68,5 +68,6 @@
   "ra_Create new folder in %s": "Utwórz nowy folder w %s",
   "ra_Duplicate name": "Zduplikowana nazwa",
   "ra_Invalid parent folder!": "Nieprawidłowy folder nadrzędny!",
-  "ra_Drop file here": "Upuść plik tutaj"
+  "ra_Drop file here": "Upuść plik tutaj",
+  "Clear filter": "Czysty filtr"
 }

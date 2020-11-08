@@ -68,5 +68,6 @@
   "ra_Create new folder in %s": "Créer un nouveau dossier dans %s",
   "ra_Duplicate name": "Nom en double",
   "ra_Invalid parent folder!": "Dossier parent non valide!",
-  "ra_Drop file here": "Déposer le fichier ici"
+  "ra_Drop file here": "Déposer le fichier ici",
+  "Clear filter": "Effacer le filtre"
 }

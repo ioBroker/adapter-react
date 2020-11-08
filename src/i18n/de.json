@@ -71,5 +71,6 @@
   "ra_Create new folder in %s": "Erstellen Sie einen neuen Ordner in %s",
   "ra_Duplicate name": "Doppelter Name",
   "ra_Invalid parent folder!": "Ungültiger übergeordneter Ordner!",
-  "ra_Drop file here": "Datei hier ablegen"
+  "ra_Drop file here": "Datei hier ablegen",
+  "Clear filter": "Filter löschen"
 }
