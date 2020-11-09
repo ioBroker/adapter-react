@@ -54,7 +54,7 @@ const styles = theme => ({
  * @property {string} [cancel] The cancel button text; default: Cancel (translated)
  * @property {() => void} onClose Close handler that is always called when the dialog is closed.
  * @property {(selected: string | string[] | undefined, name: string) => void} onOk Handler that is called when the user presses OK.
- * @property {{headerID: string; dialog: string; content: string}} classes The styling class names.
+ * @property {{headerID: string; dialog: string; content: string}} [classes] The styling class names.
  *
  * @extends {React.Component<SelectIDProps>}
  */
