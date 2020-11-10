@@ -32,7 +32,7 @@ class Utils {
      * Get the name of the object by id from the name or description.
      * @param {Record<string, ioBroker.Object>} objects
      * @param {string} id
-     * @param {{ name: any; } | null} settings
+     * @param {{ name: any; } | ioBroker.Languages | null} settings
      * @param {{ language?: ioBroker.Languages; }} options
      * @param {boolean} [isDesc] Set to true to get the description.
      * @returns {string}
@@ -41,6 +41,11 @@ class Utils {
         let item = objects[id];
         let text = id;
         const attr = isDesc ? 'desc' : 'name';
+
+        if (typeof settings === 'string' && !options) {
+            options = {language: settings};
+            settings = null;
+        }
 
         options = options || {};
         if (!options.language) {
@@ -76,8 +81,8 @@ class Utils {
     /**
      * Get the name of the object from the name or description.
      * @param {ioBroker.PartialObject} obj
-     * @param {{ name: any; }} settings
-     * @param {{ language?: ioBroker.Languages; }} options
+     * @param {{ name: any; } | ioBroker.Languages | null } settings or language
+     * @param {{ language?: ioBroker.Languages; } } options
      * @param {boolean} [isDesc] Set to true to get the description.
      * @returns {string}
      */
@@ -85,6 +90,11 @@ class Utils {
         let item = obj;
         let text = (obj && obj._id) || '';
         const attr = isDesc ? 'desc' : 'name';
+
+        if (typeof settings === 'string' && !options) {
+            options = {language: settings};
+            settings = null;
+        }
 
         options = options || {};
 

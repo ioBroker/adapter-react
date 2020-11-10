@@ -261,6 +261,9 @@ Usage: `
 #### ObjectBrowser.js
 
 ## Changelog
+### 1.4.8 (2020-11-10)
+* (bluefox) Allow calls like `Utils.getObjectNameFromObj(obj, I18n.getLanguage())`
+
 ### 1.4.6 (2020-11-07)
 * (bluefox) Better icon processing
 * (bluefox) Added getParentId function
