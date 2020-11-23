@@ -261,6 +261,9 @@ Usage: `
 #### ObjectBrowser.js
 
 ## Changelog
+### 1.4.9 (2020-11-23)
+* (bluefox) Corrected the `removeSmartName` function 
+
 ### 1.4.8 (2020-11-10)
 * (bluefox) Allow calls like `Utils.getObjectNameFromObj(obj, I18n.getLanguage())`
 

@@ -713,10 +713,10 @@ class Utils {
     static removeSmartName(obj, instanceId, noCommon) {
         if (noCommon) {
             if (obj.common && obj.common.custom && obj.common.custom[instanceId]) {
-                delete obj.common.custom[instanceId];
+                obj.common.custom[instanceId] = null;
             }
         } else {
-            obj.common.smartName = undefined;
+            obj.common.smartName = null;
         }
     }
 
