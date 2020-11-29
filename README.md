@@ -54,12 +54,12 @@ If you want to create the configuration page with react:
 5. Call in `src`: `npm install`
 6. Copy gulpfile.js into `src`: `cp node_modules/@iobroker/adapter-react/gulpfile.js gulpfile.js`
 7. Start your dummy application `npm run start` for developing or build with `npm run build` and
-copy files in `build` directory to `www` or to `admin`. In admin you must rename `index.html` to `index_m.html`.
+copy files in `build` directory to `www` or to `admin`. In the admin you must rename `index.html` to `index_m.html`.
 8. You can do that with `gulp` tasks: `gulp build`, `gulp copy`, `gulp renameIndex` or  `gulp renameTab`
 
 
 ## Development
-1. Add socket.io to public/index.html
+1. Add `socket.io` to `public/index.html`.
 After
 
 ```
@@ -121,7 +121,7 @@ class App extends GenericApp {
 }
 ```
 
-4. Replace index.js with following code to support themes:
+4. Replace `index.js` with following code to support themes:
 ```
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -239,7 +239,7 @@ Usage: `Utils.getObjectNameFromObj(this.objects[id], null, {language: I18n.getLa
 ##### getObjectIcon
 `getObjectIcon(id, obj)`
 
-Get icon from object.
+Get icon from the object.
 
 Usage: 
 ```
@@ -260,9 +260,19 @@ Usage: `
 
 #### ObjectBrowser.js
 
+## List of adapters, that uses adapter-react
+- Admin
+- iot
+- echarts
+- text2command
+- scenes
+- javascript
+- devices
+- eventlist
+
 ## Changelog
 ### 1.4.10 (2020-11-29)
-* (bluefox) Add errors to the connection class 
+* (bluefox) Added errors to the connection class 
 
 ### 1.4.9 (2020-11-23)
 * (bluefox) Corrected the `removeSmartName` function 
@@ -275,10 +285,10 @@ Usage: `
 * (bluefox) Added getParentId function
 
 ### 1.4.4 (2020-11-02)
-* (bluefox) Fix React warning
+* (bluefox) Fixed the React warning
 
 ### 1.4.3 (2020-10-30)
-* (bluefox) Optimize loading
+* (bluefox) Optimize the loading
 
 ### 1.4.2 (2020-10-29)
 * (UncleSamSwiss) More JSDoc issues fixed 
