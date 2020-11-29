@@ -21,6 +21,11 @@ export const PROGRESS = {
 const PERMISSION_ERROR = 'permissionError';
 const NOT_CONNECTED    = 'notConnectedError';
 
+const ERRORS = {
+    PERMISSION_ERROR,
+    NOT_CONNECTED
+};
+
 class Connection {
     /**
      * @param {import('./types').ConnectionProps} props
@@ -1857,5 +1862,7 @@ Connection.Connection = {
     onReady: PropTypes.func,
     onProgress: PropTypes.func,
 };
+
+export {ERRORS};
 
 export default Connection;

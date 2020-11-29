@@ -261,6 +261,9 @@ Usage: `
 #### ObjectBrowser.js
 
 ## Changelog
+### 1.4.10 (2020-11-29)
+* (bluefox) Add errors to the connection class 
+
 ### 1.4.9 (2020-11-23)
 * (bluefox) Corrected the `removeSmartName` function 
 
