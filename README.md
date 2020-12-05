@@ -271,6 +271,9 @@ Usage: `
 - eventlist
 
 ## Changelog
+### 1.4.11 (2020-12-05)
+* (bluefox) Better multiple states selection
+
 ### 1.4.10 (2020-11-29)
 * (bluefox) Added errors to the connection class 
 

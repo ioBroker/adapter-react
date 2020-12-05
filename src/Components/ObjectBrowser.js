@@ -190,7 +190,7 @@ const styles = theme => ({
         padding: 0,
     },
     cellId: {
-        //display: 'inline-block',
+        position: 'relative',
         fontSize: '1rem',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -244,13 +244,13 @@ const styles = theme => ({
         color: 'white',
         width: SMALL_BUTTON_SIZE,
         height: SMALL_BUTTON_SIZE,
-        //position: 'absolute',
-        //top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
-        right: 0,
-        opacity: 0.7,
+        top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
+        opacity: 0.8,
         '&:hover': {
             opacity: 1,
         },
+        position: 'absolute',
+        right: 3,
     },
     cellEditButton: {
         width: SMALL_BUTTON_SIZE,
@@ -1245,6 +1245,7 @@ class IconDocument extends React.Component {
 class IconCopy extends React.Component {
     render() {
         return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+            <path fill="#CCC" d="m45.5,135.85c0,0 125,0 124.5,-0.85c0.5,0.85 0.5,-94.19736 0,-95c0,0.78497 123.50417,0.85 123,0c0.51386,0 0.5,103.85 0,103c0,0.8512 113.5,0.85 113,0c0.50318,0 0.5,232.85 0,232c0,0.85054 -129.74592,0.85 -130,0c0.19795,0 0.5,93.99693 0,93c0,0.95782 -231.5,0.85 -232,0"/>
             <path fill="currentColor" d="M433.941 65.941l-51.882-51.882A48 48 0 0 0 348.118 0H176c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h224c26.51 0 48-21.49 48-48v-48h80c26.51 0 48-21.49 48-48V99.882a48 48 0 0 0-14.059-33.941zM266 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h74v224c0 26.51 21.49 48 48 48h96v42a6 6 0 0 1-6 6zm128-96H182a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h106v88c0 13.255 10.745 24 24 24h88v202a6 6 0 0 1-6 6zm6-256h-64V48h9.632c1.591 0 3.117.632 4.243 1.757l48.368 48.368a6 6 0 0 1 1.757 4.243V112z"/>
         </svg>;
     }
@@ -2970,13 +2971,7 @@ class ObjectBrowser extends React.Component {
                 >
                     { iconItem }
                 </Grid>
-                <Grid
-                    item
-                    container
-                    alignItems="center"
-                >
-                    <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={(e) => this.onCopy(e, id) } />
-                </Grid>
+                <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={(e) => this.onCopy(e, id) } />
             </Grid>
             {this.columnsVisibility.name    ? <div className={ classes.cellName }    style={{ width: this.columnsVisibility.name }}>{ (item.data && item.data.title) || '' }</div> : null }
             {this.columnsVisibility.type    ? <div className={ classes.cellType }    style={{ width: this.columnsVisibility.type }}>{ typeImg } { obj && obj.type }</div> : null }
