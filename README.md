@@ -237,6 +237,7 @@ renderMessage() {
 ```
 
 #### SelectID.js
+![Logo](img/selectID.png)
 ```
 renderSelectIdDialog() {
      if (this.state.showSelectId) {
@@ -286,6 +287,8 @@ return (<img src={icon}/>);
 Usage: `
 
 #### Loader.js
+![Logo](img/loader.png)
+
 ```
 render() {
      if (!this.state.loaded) {
@@ -297,7 +300,10 @@ render() {
 }
 
 ```
+
 #### Logo.js
+![Logo](img/logo.png)
+
 ```
 render() {
    return <form className={this.props.classes.tab}>
@@ -312,10 +318,14 @@ render() {
    </form>;
 }
 ```
+
 #### Router.js
 
 #### ObjectBrowser.js
-It is better to use `Dialog/SelectID`, but if you want: 
+It is better to use `Dialog/SelectID`, but if you want:
+
+![Logo](img/objectBrowser.png)
+
 ```
 <ObjectBrowser
    foldersFirst={ this.props.foldersFirst }
@@ -350,7 +360,10 @@ It is better to use `Dialog/SelectID`, but if you want:
    } }
 />
 ```
+
 #### TreeTable.js
+![Logo](img/tableTree.png)
+
 ```
 // STYLES
 const styles = theme => ({
