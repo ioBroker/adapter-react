@@ -223,8 +223,41 @@ export default ExportImportDialog;
 #### Error.js
 
 #### Message.js
+```
+renderMessage() {
+   if (this.state.showMessage) {
+      return <Message
+         text={this.state.showMessage}
+         onClose={() => this.setState({showMessage: false})}
+      />;
+   } else {
+      return null;
+   }
+}
+```
 
 #### SelectID.js
+```
+renderSelectIdDialog() {
+     if (this.state.showSelectId) {
+         return <DialogSelectID
+             key="tableSelect"
+             imagePrefix="../.."
+             dialogName={this.props.adapterName}
+             themeType={this.props.themeType}
+             socket={this.props.socket}
+             statesOnly={true}
+             selected={this.state.selectIdValue}
+             onClose={() => this.setState({showSelectId: false})}
+             onOk={(selected, name) => {
+                 this.setState({showSelectId: false, selectIdValue: selected});                 
+             }}
+         />;
+     } else {
+         return null;
+     }
+ }
+```
 
 ### Components
 
@@ -253,12 +286,190 @@ return (<img src={icon}/>);
 Usage: `
 
 #### Loader.js
+```
+render() {
+     if (!this.state.loaded) {
+         return <MuiThemeProvider theme={this.state.theme}>
+             <Loader theme={this.state.themeType}/>
+         </MuiThemeProvider>;
+     }
+     // render loaded data
+}
 
+```
 #### Logo.js
-
+```
+render() {
+   return <form className={this.props.classes.tab}>
+      <Logo
+       instance={this.props.instance}
+       common={this.props.common}
+       native={this.props.native}
+       onError={text => this.setState({errorText: text})}
+       onLoad={this.props.onLoad}
+      />
+      ...
+   </form>;
+}
+```
 #### Router.js
 
 #### ObjectBrowser.js
+It is better to use `Dialog/SelectID`, but if you want: 
+```
+<ObjectBrowser
+   foldersFirst={ this.props.foldersFirst }
+   imagePrefix={ this.props.imagePrefix || this.props.prefix } // prefix is for back compatibility
+   defaultFilters={ this.filters }
+   dialogName={this.dialogName}
+   showExpertButton={ this.props.showExpertButton !== undefined ? this.props.showExpertButton : true }
+   style={ {width: '100%', height: '100%'} }
+   columns={ this.props.columns || ['name', 'type', 'role', 'room', 'func', 'val'] }
+   types={ this.props.types || ['state'] }
+   t={ I18n.t }
+   lang={ this.props.lang || I18n.getLanguage() }
+   socket={ this.props.socket }
+   selected={ this.state.selected }
+   multiSelect={ this.props.multiSelect }
+   notEditable={ this.props.notEditable === undefined ? true : this.props.notEditable }
+   name={ this.state.name }
+   themeName={ this.props.themeName }
+   themeType={ this.props.themeType }
+   customFilter={ this.props.customFilter }
+   onFilterChanged={ filterConfig => {
+      this.filters = filterConfig;
+      window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
+   } }
+   onSelect={ (selected, name, isDouble) => {
+      if (JSON.stringify(selected) !== JSON.stringify(this.state.selected)) {
+          this.setState({selected, name}, () =>
+              isDouble && this.handleOk());
+      } else if (isDouble) {
+          this.handleOk();
+      }
+   } }
+/>
+```
+#### TreeTable.js
+```
+// STYLES
+const styles = theme => ({
+    tableDiv: {
+        width: '100%',
+        overflow: 'hidden',
+        height: 'calc(100% - 48px)',
+    },
+});
+class MyConmponent extends Component {
+   constructor(props) {
+      super(props);
+      
+      this.state = {
+          data: [
+             {
+                 id: 'UniqueID1' // required
+                 fieldIdInData: 'Name1',
+                 myType: 'number',
+             },
+             {
+                 id: 'UniqueID2' // required
+                 fieldIdInData: 'Name12',
+                 myType: 'string',
+             },
+         ],
+      };
+      
+      this.columns = [
+          {
+              title: 'Name of field', // required, else it will be "field"
+              field: 'fieldIdInData', // required
+              editable: false,        // or true [default - true]
+              cellStyle: {            // CSS style - // optional
+                  maxWidth: '12rem',
+                  overflow: 'hidden',
+                  wordBreak: 'break-word'
+              },
+              lookup: {               // optional => edit will be automatically "SELECT"
+                  'value1': 'text1',
+                  'value2': 'text2',
+              }
+          },
+          {
+              title: 'Type',          // required, else it will be "field"
+              field: 'myType',        // required
+              editable: true,         // or true [default - true]
+              lookup: {               // optional => edit will be automatically "SELECT"
+                  'number': 'Number',
+                  'string': 'String',
+                  'boolean': 'Boolean',
+              },
+              type: 'number/string/color/oid/icon/boolean', // oid=ObjectID,icon=base64-icon
+              editComponent: props =>
+                  <div>Prefix&#123; <br/>
+                      <textarea
+                          rows={4}
+                          style={{width: '100%', resize: 'vertical'}}
+                          value={props.value}
+                          onChange={e => props.onChange(e.target.value)}
+                      />
+                      Suffix
+                  </div>,
+          },
+      ];
+   }
+   // renderTable
+   render() {
+       return <div className={this.props.classes.tableDiv}>
+           <TreeTable
+               columns={this.columns}
+               data={this.state.data}
+               onUpdate={(newData, oldData) => {
+                   const data = JSON.parse(JSON.stringify(this.state.data));
+                   
+                   // Added new line
+                   if (newData === true) {
+                        // find unique ID
+                        let i = 1;
+                        let id = 'line_' + i;
+
+                        // eslint-disable-next-line
+                        while(this.state.data.find(item => item.id === id)) {
+                            i++;
+                            id = 'line_' + i;
+                        }
+
+                        data.push({
+                            id,
+                            name: I18n.t('New resource') + '_' + i,
+                            color: '',
+                            icon: '',
+                            unit: '',
+                            price: 0,
+                        });
+                    } else {
+                        // existing line was modifed
+                        const pos = this.state.data.indexOf(oldData);
+                        if (pos !== -1) {
+                            Object.keys(newData).forEach(attr => data[pos][attr] = newData[attr]);
+                        }
+                    }
+
+                    this.setState({data});
+               }}
+               onDelete={oldData => {
+                    console.log('Delete: ' + JSON.stringify(oldData));
+                    const pos = this.state.data.indexOf(oldData);
+                    if (pos !== -1) {
+                        const data = JSON.parse(JSON.stringify(this.state.data));
+                        data.splice(pos, 1);
+                        this.setState({data});
+                    }
+                }}
+           />
+       </div>;
+   }
+}
+```
 
 ## List of adapters, that uses adapter-react
 - Admin
@@ -271,6 +482,9 @@ Usage: `
 - eventlist
 
 ## Changelog
+### 1.5.0 (2020-12-10)
+* (bluefox) Added the editable table
+
 ### 1.4.11 (2020-12-05)
 * (bluefox) Better multiple states selection
 
