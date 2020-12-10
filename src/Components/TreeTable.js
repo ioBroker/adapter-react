@@ -2,7 +2,6 @@ import React from 'react';
 
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
-import clsx from 'clsx';
 import { HexColorPicker as ColorPicker } from 'react-colorful';
 import 'react-colorful/dist/index.css';
 
@@ -433,7 +432,7 @@ class TreeTable extends React.Component {
         if (this.state.editMode === i && col.editable !== 'never' && col.editable !== false) {
             return <TableCell
                 key={col.field}
-                className={clsx(this.props.classes.cell, level && this.props.classes.cellSecondary)}
+                className={Utils.clsx(this.props.classes.cell, level && this.props.classes.cellSecondary)}
                 style={col.cellStyle}
                 component="th"
             >
@@ -442,7 +441,7 @@ class TreeTable extends React.Component {
         } else {
             return <TableCell
                 key={col.field}
-                className={clsx(this.props.classes.cell, level && this.props.classes.cellSecondary)}
+                className={Utils.clsx(this.props.classes.cell, level && this.props.classes.cellSecondary)}
                 style={col.cellStyle}
                 component="th" >{getAttr(item, col.field, col.lookup)}</TableCell>;
         }
@@ -466,7 +465,7 @@ class TreeTable extends React.Component {
             return [
                 <TableRow
                     key={item.id}
-                    className={clsx(
+                    className={Utils.clsx(
                         this.props.classes.row,
                         level  && this.props.classes.rowSecondary,
                         !level && children.length && this.props.classes.rowMainWithChildren,
@@ -475,7 +474,7 @@ class TreeTable extends React.Component {
                         this.state.deleteMode !== false && this.state.deleteMode !== i && this.props.classes.rowNoEdit,
                     )}
                 >
-                    <TableCell className={clsx(this.props.classes.cell, this.props.classes.cellExpand, level && this.props.classes.cellSecondary)}>
+                    <TableCell className={Utils.clsx(this.props.classes.cell, this.props.classes.cellExpand, level && this.props.classes.cellSecondary)}>
                         {children.length ? <IconButton onClick={() => {
                             const opened = [...this.state.opened];
                             const pos = opened.indexOf(item.id);
@@ -494,7 +493,7 @@ class TreeTable extends React.Component {
                         </IconButton>  : null}
                     </TableCell>
                     <TableCell scope="row"
-                               className={clsx(this.props.classes.cell, level && this.props.classes.cellSecondary)}
+                               className={Utils.clsx(this.props.classes.cell, level && this.props.classes.cellSecondary)}
                                style={this.props.columns[0].cellStyle}>
                         {getAttr(item, this.props.columns[0].field, this.props.columns[0].lookup)}
                     </TableCell>
@@ -502,7 +501,7 @@ class TreeTable extends React.Component {
                     {this.props.columns.map((col, ii) =>
                         !ii && !col.hidden ? null : this.renderCell(item, col, level, i))}
 
-                    {this.props.onUpdate ? <TableCell className={clsx(this.props.classes.cell, this.props.classes.cellButton)}>
+                    {this.props.onUpdate ? <TableCell className={Utils.clsx(this.props.classes.cell, this.props.classes.cellButton)}>
                         {this.state.editMode === i || this.state.deleteMode === i ?
                             <IconButton
                                 disabled={this.state.editMode !== false && (!this.state.editData || !Object.keys(this.state.editData).length)}
@@ -524,7 +523,7 @@ class TreeTable extends React.Component {
                                 <IconEdit/>
                             </IconButton>}
                     </TableCell> : null}
-                    {this.props.onDelete ? <TableCell className={clsx(this.props.classes.cell, this.props.classes.cellButton)}>
+                    {this.props.onDelete ? <TableCell className={Utils.clsx(this.props.classes.cell, this.props.classes.cellButton)}>
                         {this.state.editMode === i || this.state.deleteMode === i ?
                             <IconButton onClick={() => this.setState({editMode: false, deleteMode: false})}>
                                 <IconClose/>
@@ -553,11 +552,11 @@ class TreeTable extends React.Component {
             <TableRow key="headerRow">
                 <TableCell
                     component="th"
-                    className={clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellExpand)}
+                    className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellExpand)}
                 />
                 <TableCell
                     component="th"
-                    className={clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes['width_' + this.props.columns[0].field.replace(/\./g, '_')])}
+                    className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes['width_' + this.props.columns[0].field.replace(/\./g, '_')])}
                     style={this.props.columns[0].headerStyle || this.props.columns[0].cellStyle}
                     sortDirection={this.state.orderBy === this.props.columns[0].field ? this.state.order : false}
                 >
@@ -576,7 +575,7 @@ class TreeTable extends React.Component {
                 {this.props.columns.map((col, i) =>
                     !i && !col.hidden ? null : <TableCell
                         key={col.field}
-                        className={clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes['width_' + col.field.replace(/\./g, '_')])}
+                        className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes['width_' + col.field.replace(/\./g, '_')])}
                         style={col.headerStyle || col.cellStyle}
                         component="th"
                     >
@@ -592,7 +591,7 @@ class TreeTable extends React.Component {
                                 </span> : null}
                         </TableSortLabel>
                     </TableCell>)}
-                {this.props.onUpdate ? <TableCell component="th" className={clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}>
+                {this.props.onUpdate ? <TableCell component="th" className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}>
                     <Fab
                         color="primary"
                         size="small"
@@ -601,7 +600,7 @@ class TreeTable extends React.Component {
                         <IconAdd/>
                     </Fab>
                 </TableCell> : null}
-                {this.props.onDelete ? <TableCell component="th" className={clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}/> : null}
+                {this.props.onDelete ? <TableCell component="th" className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}/> : null}
             </TableRow>
         </TableHead>;
     }
@@ -610,7 +609,7 @@ class TreeTable extends React.Component {
         const lookup = this.props.columns.find(col => col.field === this.state.orderBy).lookup;
         const table = stableSort(this.props.data, getComparator(this.state.order, this.state.orderBy, lookup));
 
-        return <div className={clsx(this.props.classes.tableContainer, this.props.className)}>
+        return <div className={Utils.clsx(this.props.classes.tableContainer, this.props.className)}>
             <Table className={this.props.classes.table} aria-label="simple table" size="small" stickyHeader={true}>
                 {this.renderHead()}
                 <TableBody>

@@ -995,7 +995,10 @@ class Utils {
      * @returns {string}
      */
     static clsx () {
-        let i=0, tmp, x, str='';
+        let i = 0;
+        let tmp;
+        let x;
+        let str = '';
         while (i < arguments.length) {
             if (tmp = arguments[i++]) {
                 if (x = Utils._toVal(tmp)) {
