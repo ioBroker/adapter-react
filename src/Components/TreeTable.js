@@ -218,6 +218,7 @@ class TreeTable extends React.Component {
             order: 'asc',
             orderBy: this.props.columns[0].field,
             useTable: false,
+            showSelectColor: false
         }
     }
 
