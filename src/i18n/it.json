@@ -69,5 +69,6 @@
   "ra_Duplicate name": "Nome duplicato",
   "ra_Invalid parent folder!": "Cartella principale non valida!",
   "ra_Drop file here": "Trascina il file qui",
-  "Clear filter": "Filtro pulito"
+  "Clear filter": "Filtro pulito",
+  "ra_Suppress question for next %s minutes": "Sopprimi la domanda per i prossimi %s minuti"
 }

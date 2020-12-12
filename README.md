@@ -204,6 +204,9 @@ class ExportImportDialog extends React.Component {
             text={ I18n.t('All data will be lost. Confirm?') }
             ok={ I18n.t('Yes') }
             cancel={ I18n.t('Cancel') }
+            suppressQuestionMinutes={5}
+            dialogName="myConfirmDialogThatCouldBeSuppressed"
+            suppressText={I18n.t('Suppress question for next %s minutes', 5)}
             onClose={isYes => {
                 this.setState({ confirmDialog: false} );
             }}
@@ -239,25 +242,39 @@ renderMessage() {
 #### SelectID.js
 ![Logo](img/selectID.png)
 ```
-renderSelectIdDialog() {
-     if (this.state.showSelectId) {
-         return <DialogSelectID
-             key="tableSelect"
-             imagePrefix="../.."
-             dialogName={this.props.adapterName}
-             themeType={this.props.themeType}
-             socket={this.props.socket}
-             statesOnly={true}
-             selected={this.state.selectIdValue}
-             onClose={() => this.setState({showSelectId: false})}
-             onOk={(selected, name) => {
-                 this.setState({showSelectId: false, selectIdValue: selected});                 
-             }}
-         />;
-     } else {
-         return null;
-     }
- }
+import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
+
+class MyComponent extends Component {
+   constructor(props) {
+      super(props);
+      this.state = {
+         showSelectId: false,
+      };
+   }
+
+   renderSelectIdDialog() {
+        if (this.state.showSelectId) {
+            return <DialogSelectID
+                key="tableSelect"
+                imagePrefix="../.."
+                dialogName={this.props.adapterName}
+                themeType={this.props.themeType}
+                socket={this.props.socket}
+                statesOnly={true}
+                selected={this.state.selectIdValue}
+                onClose={() => this.setState({showSelectId: false})}
+                onOk={(selected, name) => {
+                    this.setState({showSelectId: false, selectIdValue: selected});                 
+                }}
+            />;
+        } else {
+            return null;
+        }
+    }
+    render() {
+      return renderSelectIdDialog();
+    }
+}
 ```
 
 ### Components
@@ -484,6 +501,56 @@ class MyConmponent extends Component {
 }
 ```
 
+#### Toast
+Toast is not a part of `adapter-react` but it is an example how to use toast in application: 
+
+```
+import Snackbar from '@material-ui/core/Snackbar';
+
+class MyComponent {
+   constructor(props) {
+      super(props);
+      this.state = {
+         // ....
+         toast: '',
+      };
+   }
+// ...
+ renderToast() {
+     if (!this.state.toast) {
+         return null;
+     }
+     return <Snackbar
+          anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+          }}
+          open={true}
+          autoHideDuration={6000}
+          onClose={() => this.setState({toast: ''})}
+          ContentProps={{'aria-describedby': 'message-id'}}
+          message={<span id="message-id">{this.state.toast}</span>}
+          action={[
+              <IconButton
+                  key="close"
+                  aria-label="Close"
+                  color="inherit"
+                  className={this.props.classes.close}
+                  onClick={() => this.setState({toast: ''})}
+              >
+                  <IconClose />
+              </IconButton>,
+          ]}
+      />;
+ }
+ render() {
+   return <div>
+      {this.renderToast()}
+   </div>;
+ }
+}
+```
+
 ## List of adapters, that uses adapter-react
 - Admin
 - iot
@@ -495,6 +562,9 @@ class MyConmponent extends Component {
 - eventlist
 
 ## Changelog
+### 1.5.1 (2020-12-12)
+* (bluefox) The confirmation dialog could be suppressed 
+
 ### 1.5.0 (2020-12-10)
 * (bluefox) Added the editable table
 

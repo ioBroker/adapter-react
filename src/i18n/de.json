@@ -72,5 +72,6 @@
   "ra_Duplicate name": "Doppelter Name",
   "ra_Invalid parent folder!": "Ungültiger übergeordneter Ordner!",
   "ra_Drop file here": "Datei hier ablegen",
-  "Clear filter": "Filter löschen"
+  "Clear filter": "Filter löschen",
+  "ra_Suppress question for next %s minutes": "Frage für die nächsten %s Minuten unterdrücken"
 }

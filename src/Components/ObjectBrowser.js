@@ -1073,6 +1073,8 @@ function getSelectIdIcon(objects, id, imagePrefix) {
         if (!aIcon.startsWith('data:image/')) {
             if (aIcon.includes('.')) {
                 src = imagePrefix + '/adapter/' + objects[_id_].common.name + '/' + aIcon;
+            } else if (aIcon.length < 3) {
+                return aIcon; // utf-8
             } else {
                 return null; //'<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
             }
@@ -1107,6 +1109,8 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                             }
                             src = imagePrefix + '/adapter/' + instance[0];
                         }
+                    } else if (aIcon.length < 3) {
+                        return aIcon; // utf-8
                     } else {
                         return null;
                     }
@@ -2894,7 +2898,11 @@ class ObjectBrowser extends React.Component {
         let iconItem = null;
         if (item.data.icon) {
             if (typeof item.data.icon === 'string') {
-                iconItem = <img className={ Utils.clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } alt="" />;
+                if (item.data.icon.length < 3) {
+                    iconItem = <span className={ Utils.clsx(classes.cellIdIconOwn, 'iconOwn') }>{item.data.icon}</span>; // utf-8 char
+                } else {
+                    iconItem = <img className={ Utils.clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } alt="" />;
+                }
             } else {
                 iconItem = item.data.icon;
             }
