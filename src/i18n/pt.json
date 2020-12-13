@@ -69,6 +69,7 @@
   "ra_Duplicate name": "Nome duplicado",
   "ra_Invalid parent folder!": "Pasta pai inválida!",
   "ra_Drop file here": "Solte o arquivo aqui",
-  "Clear filter": "Filtro limpo",
-  "ra_Suppress question for next %s minutes": "Suprimir pergunta nos próximos %s minutos"
+  "ra_Suppress question for next %s minutes": "Suprimir pergunta nos próximos %s minutos",
+  "ra_Clear filter": "Filtro limpo",
+  "ra_Update": "Atualizar"
 }

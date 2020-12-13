@@ -83,6 +83,7 @@
   "ra_Duplicate name": "Duplicate name",
   "ra_Invalid parent folder!": "Invalid parent folder!",
   "ra_Drop file here": "Drop file here",
-  "Clear filter": "Clear filter",
-  "ra_Suppress question for next %s minutes": "Suppress question for next %s minutes"
+  "ra_Suppress question for next %s minutes": "Suppress question for next %s minutes",
+  "ra_Clear filter": "Clear filter",
+  "ra_Update": "Update"
 }

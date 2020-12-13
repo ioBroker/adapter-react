@@ -1073,7 +1073,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
         if (!aIcon.startsWith('data:image/')) {
             if (aIcon.includes('.')) {
                 src = imagePrefix + '/adapter/' + objects[_id_].common.name + '/' + aIcon;
-            } else if (aIcon.length < 3) {
+            } else if (aIcon && aIcon.length < 3) {
                 return aIcon; // utf-8
             } else {
                 return null; //'<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
@@ -1109,7 +1109,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                             }
                             src = imagePrefix + '/adapter/' + instance[0];
                         }
-                    } else if (aIcon.length < 3) {
+                    } else if (aIcon && aIcon.length < 3) {
                         return aIcon; // utf-8
                     } else {
                         return null;
@@ -2765,7 +2765,7 @@ class ObjectBrowser extends React.Component {
                     <Button onClick={() => this.onColumnsEditCustomDialogClose(true)}
                             disabled={!this.state.customColumnDialogValueChanged}
                             color="primary">
-                        <IconCheck className={this.props.classes.buttonIcon}/> {this.props.t('Update')}
+                        <IconCheck className={this.props.classes.buttonIcon}/> {this.props.t('ra_Update')}
                     </Button>
                 </DialogActions>
             </Dialog>;
@@ -3185,7 +3185,7 @@ class ObjectBrowser extends React.Component {
 
         let filterClearInValue = null;
         if (!this.columnsVisibility.buttons && !this.isFilterEmpty()) {
-            filterClearInValue = <IconButton onClick={() => this.clearFilter()} className={classes.buttonClearFilter} title={this.props.t('Clear filter')}>
+            filterClearInValue = <IconButton onClick={() => this.clearFilter()} className={classes.buttonClearFilter} title={this.props.t('ra_Clear filter')}>
                 <IconClearFilter />
                 <IconClose className={classes.buttonClearFilterIcon}/>
             </IconButton>;

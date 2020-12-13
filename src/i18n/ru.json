@@ -71,6 +71,7 @@
   "ra_Duplicate name": "Повторяющееся имя",
   "ra_Invalid parent folder!": "Неверная родительская папка!",
   "ra_Drop file here": "Перетащите файл сюда",
-  "Clear filter": "Очистить фильтр",
-  "ra_Suppress question for next %s minutes": "Скрыть вопрос на следующие %s минут(ы)"
+  "ra_Suppress question for next %s minutes": "Скрыть вопрос на следующие %s минут(ы)",
+  "ra_Clear filter": "Очистить фильтр",
+  "ra_Update": "Обновить"
 }

@@ -69,6 +69,7 @@
   "ra_Duplicate name": "Dubbele naam",
   "ra_Invalid parent folder!": "Ongeldige bovenliggende map!",
   "ra_Drop file here": "Zet het bestand hier neer",
-  "Clear filter": "Filter wissen",
-  "ra_Suppress question for next %s minutes": "Vraag de volgende %s minuten onderdrukken"
+  "ra_Suppress question for next %s minutes": "Vraag de volgende %s minuten onderdrukken",
+  "ra_Clear filter": "Filter wissen",
+  "ra_Update": "Bijwerken"
 }

@@ -69,6 +69,7 @@
   "ra_Duplicate name": "Nom en double",
   "ra_Invalid parent folder!": "Dossier parent non valide!",
   "ra_Drop file here": "Déposer le fichier ici",
-  "Clear filter": "Effacer le filtre",
-  "ra_Suppress question for next %s minutes": "Supprimer la question pour les %s prochaines minutes"
+  "ra_Suppress question for next %s minutes": "Supprimer la question pour les %s prochaines minutes",
+  "ra_Clear filter": "Effacer le filtre",
+  "ra_Update": "Mise à jour"
 }
