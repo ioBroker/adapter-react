@@ -562,7 +562,7 @@ class MyComponent {
 - eventlist
 
 ## Changelog
-### 1.5.2 (2020-12-13)
+### 1.5.3 (2020-12-13)
 * (bluefox) Corrected error in select ID dialog
 
 ### 1.5.1 (2020-12-12)

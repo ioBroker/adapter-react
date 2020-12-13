@@ -29,6 +29,13 @@ const styles = theme => ({
     content: {
         height: '100%',
         overflow: 'hidden'
+    },
+    titleRoot: {
+        whiteSpace: 'nowrap',
+        width: 'calc(100% - 72px)',
+        overflow: 'hidden',
+        display: 'inline-block',
+        textOverflow: 'ellipsis',
     }
 });
 
@@ -128,7 +135,7 @@ class SelectID extends React.Component {
             open={true}
             aria-labelledby="selectid-dialog-title"
         >
-            <DialogTitle id="selectid-dialog-title">{ title }</DialogTitle>
+            <DialogTitle id="selectid-dialog-title" classes={{root: this.props.classes.titleRoot}}>{ title }</DialogTitle>
             <DialogContent className={this.props.classes.content}>
                 <ObjectBrowser
                     foldersFirst={ this.props.foldersFirst }
