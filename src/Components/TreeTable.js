@@ -592,7 +592,7 @@ class TreeTable extends React.Component {
                                 </span> : null}
                         </TableSortLabel>
                     </TableCell>)}
-                {this.props.onUpdate ? <TableCell component="th" className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}>
+                {this.props.onUpdate && !this.props.noAdd ? <TableCell component="th" className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}>
                     <Fab
                         color="primary"
                         size="small"
@@ -725,6 +725,7 @@ TreeTable.propTypes = {
     noSort: PropTypes.bool, // todo
     onUpdate: PropTypes.func,
     onDelete: PropTypes.func,
+    noAdd: PropTypes.bool, // hide add button
     themeType: PropTypes.string,
     socket: PropTypes.object // only if oid type is used
 };
