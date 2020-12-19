@@ -158,6 +158,13 @@ const styles = theme => ({
     colorDialog: {
         overflow: 'hidden',
         padding: 15,
+    },
+    subText: {
+        fontSize: 10,
+        fontStyle: 'italic',
+    },
+    glow: {
+        animation: 'glow 0.2s 2 alternate'
     }
 });
 
@@ -216,9 +223,39 @@ class TreeTable extends React.Component {
             deleteMode: false,
             editData: null,
             order: 'asc',
+            update: null,
             orderBy: this.props.columns[0].field,
             useTable: false,
-            showSelectColor: false
+            showSelectColor: false,
+            glowOnChange: props.glowOnChange
+        }
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.glowOnChange) {
+            const update = [];
+            let count = 0;
+            if (props.data && state.data) {
+                props.data.forEach(line => {
+                    count++;
+                    const oldLine = state.data.find(it => it.id === line.id);
+                    if (oldLine) {
+                        if (JSON.stringify(oldLine) !== JSON.stringify(line)) {
+                            update.push(line.id);
+                        }
+                    } else {
+                        update.push(line.id);
+                    }
+                });
+            }
+
+            if (update.length && update.length !== count) {
+                return {data: props.data, update};
+            } else {
+                return {data: props.data};
+            }
+        } else {
+            return {data: props.data};
         }
     }
 
@@ -429,6 +466,23 @@ class TreeTable extends React.Component {
         </div>;
     }
 
+    renderCellNonEdit(item, col) {
+        let val = getAttr(item, col.field, col.lookup);
+        if (Array.isArray(val)) {
+            val = val[0];
+        }
+
+        if (col.type === 'boolean') {
+            return <Checkbox
+                checked={!!val}
+                disabled={true}
+                inputProps={{ 'aria-label': 'checkbox' }}
+            />
+        } else {
+            return val;
+        }
+    }
+
     renderCell(item, col, level, i) {
         if (this.state.editMode === i && col.editable !== 'never' && col.editable !== false) {
             return <TableCell
@@ -444,8 +498,19 @@ class TreeTable extends React.Component {
                 key={col.field}
                 className={Utils.clsx(this.props.classes.cell, level && this.props.classes.cellSecondary)}
                 style={col.cellStyle}
-                component="th" >{getAttr(item, col.field, col.lookup)}</TableCell>;
+                component="th" >
+                    {this.renderCellNonEdit(item, col)}
+                </TableCell>;
         }
+    }
+
+    renderCellWithSubField(item, col) {
+        const main = getAttr(item, col.field, col.lookup);
+        const sub = getAttr(item, col.subField, col.subLookup)
+        return <div>
+            <div className={this.props.classes.mainText}>{main}</div>
+            <div className={this.props.classes.subText} style={col.subStyle || {}}>{sub}</div>
+        </div>;
     }
 
     renderLine(item, level) {
@@ -467,6 +532,8 @@ class TreeTable extends React.Component {
                 <TableRow
                     key={item.id}
                     className={Utils.clsx(
+                        'table-row-' + (item.id || '').replace(/[.$]/g, '_'),
+                        this.state.update && this.state.update.includes(item.id) && this.props.classes.glow,
                         this.props.classes.row,
                         level  && this.props.classes.rowSecondary,
                         !level && children.length && this.props.classes.rowMainWithChildren,
@@ -496,7 +563,11 @@ class TreeTable extends React.Component {
                     <TableCell scope="row"
                                className={Utils.clsx(this.props.classes.cell, level && this.props.classes.cellSecondary)}
                                style={this.props.columns[0].cellStyle}>
-                        {getAttr(item, this.props.columns[0].field, this.props.columns[0].lookup)}
+                        {this.props.columns[0].subField ?
+                            this.renderCellWithSubField(item, this.props.columns[0])
+                            :
+                            getAttr(item, this.props.columns[0].field, this.props.columns[0].lookup)
+                        }
                     </TableCell>
 
                     {this.props.columns.map((col, ii) =>
@@ -524,17 +595,17 @@ class TreeTable extends React.Component {
                                 <IconEdit/>
                             </IconButton>}
                     </TableCell> : null}
-                    {this.props.onDelete ? <TableCell className={Utils.clsx(this.props.classes.cell, this.props.classes.cellButton)}>
+                    {this.props.onUpdate || this.props.onDelete ? <TableCell className={Utils.clsx(this.props.classes.cell, this.props.classes.cellButton)}>
                         {this.state.editMode === i || this.state.deleteMode === i ?
                             <IconButton onClick={() => this.setState({editMode: false, deleteMode: false})}>
                                 <IconClose/>
                             </IconButton>
                             :
-                            <IconButton
+                            (this.props.onDelete ? <IconButton
                                 disabled={this.state.deleteMode !== false}
                                 onClick={() => this.setState({deleteMode: i})}>
                                 <IconDelete/>
-                            </IconButton>
+                            </IconButton> : null)
                         }
                     </TableCell> : null}
                 </TableRow>,
@@ -592,16 +663,16 @@ class TreeTable extends React.Component {
                                 </span> : null}
                         </TableSortLabel>
                     </TableCell>)}
-                {this.props.onUpdate && !this.props.noAdd ? <TableCell component="th" className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}>
-                    <Fab
+                {this.props.onUpdate ? <TableCell component="th" className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}>
+                    {!this.props.noAdd ? <Fab
                         color="primary"
                         size="small"
                         disabled={this.state.editMode !== false}
                         onClick={() => this.props.onUpdate(true)}>
                         <IconAdd/>
-                    </Fab>
+                    </Fab>: null }
                 </TableCell> : null}
-                {this.props.onDelete ? <TableCell component="th" className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}/> : null}
+                {this.props.onDelete || this.props.onUpdate ? <TableCell component="th" className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}/> : null}
             </TableRow>
         </TableHead>;
     }
@@ -609,6 +680,14 @@ class TreeTable extends React.Component {
     render() {
         const lookup = this.props.columns.find(col => col.field === this.state.orderBy).lookup;
         const table = stableSort(this.props.data, getComparator(this.state.order, this.state.orderBy, lookup));
+
+        if (this.state.update && this.state.update.length) {
+            this.updateTimeout && clearTimeout(this.updateTimeout);
+            this.updateTimeout = setTimeout(() => {
+                this.updateTimeout = null;
+                this.setState({update: null});
+            }, 500)
+        }
 
         return <div className={Utils.clsx(this.props.classes.tableContainer, this.props.className)}>
             <Table className={this.props.classes.table} aria-label="simple table" size="small" stickyHeader={true}>
@@ -727,8 +806,8 @@ TreeTable.propTypes = {
     onDelete: PropTypes.func,
     noAdd: PropTypes.bool, // hide add button
     themeType: PropTypes.string,
+    glowOnChange: PropTypes.bool,
     socket: PropTypes.object // only if oid type is used
 };
 
 export default withStyles(styles)(TreeTable);
-

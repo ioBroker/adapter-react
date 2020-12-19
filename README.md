@@ -562,6 +562,9 @@ class MyComponent {
 - eventlist
 
 ## Changelog
+### 1.5.4 (2020-12-19)
+* (bluefox) Added table component 
+
 ### 1.5.3 (2020-12-13)
 * (bluefox) Corrected error in select ID dialog
 

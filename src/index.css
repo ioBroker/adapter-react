@@ -37,12 +37,19 @@ body {
     border-radius: 5px;
 }
 
-
-
 #root {
     height: 100%;
 }
 
 .App {
     height: 100%;
+}
+
+@keyframes glow {
+    from {
+        background-color: initial;
+    }
+    to {
+        background-color: #58c458;
+    }
 }
