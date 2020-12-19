@@ -70,5 +70,7 @@
   "ra_Drop file here": "将档案放在这里",
   "ra_Suppress question for next %s minutes": "在接下来的%s分钟内取消提问",
   "ra_Clear filter": "清除筛选",
-  "ra_Update": "更新资料"
+  "ra_Update": "更新资料",
+  "ra_Load configuration from file": "从文件加载配置",
+  "ra_Save configuration to file": "将配置保存到文件"
 }

@@ -85,5 +85,7 @@
   "ra_Drop file here": "Drop file here",
   "ra_Suppress question for next %s minutes": "Suppress question for next %s minutes",
   "ra_Clear filter": "Clear filter",
-  "ra_Update": "Update"
+  "ra_Update": "Update",
+  "ra_Load configuration from file": "Load configuration from file",
+  "ra_Save configuration to file": "Save configuration to file"
 }

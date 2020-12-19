@@ -114,8 +114,8 @@ class Logo extends React.Component {
                     const win = window.open(this.props.common.readme, '_blank');
                     win.focus();
                 }}><IconHelp /></Fab> : null}
-            <Fab size="small" color="primary" aria-label="Load config" className={this.props.classes.buttons} title={I18n.t('Load configuration from file')} onClick={() => this.upload()}><IconUpload /></Fab>
-            <Fab size="small" color="primary" aria-label="Save config" className={this.props.classes.buttons} title={I18n.t('Save configuration to file')} onClick={() => this.download()}><IconDownload /></Fab>
+            <Fab size="small" color="primary" aria-label="Load config" className={this.props.classes.buttons} title={I18n.t('ra_Load configuration from file')} onClick={() => this.upload()}><IconUpload /></Fab>
+            <Fab size="small" color="primary" aria-label="Save config" className={this.props.classes.buttons} title={I18n.t('ra_Save configuration to file')} onClick={() => this.download()}><IconDownload /></Fab>
         </div>;
     }
 }

@@ -74,5 +74,7 @@
   "ra_Drop file here": "Datei hier ablegen",
   "ra_Suppress question for next %s minutes": "Frage für die nächsten %s Minuten unterdrücken",
   "ra_Clear filter": "Filter löschen",
-  "ra_Update": "Aktualisieren"
+  "ra_Update": "Aktualisieren",
+  "ra_Load configuration from file": "Konfiguration aus Datei laden",
+  "ra_Save configuration to file": "Konfiguration in Datei speichern"
 }

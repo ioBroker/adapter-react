@@ -71,5 +71,7 @@
   "ra_Drop file here": "Zet het bestand hier neer",
   "ra_Suppress question for next %s minutes": "Vraag de volgende %s minuten onderdrukken",
   "ra_Clear filter": "Filter wissen",
-  "ra_Update": "Bijwerken"
+  "ra_Update": "Bijwerken",
+  "ra_Load configuration from file": "Laad configuratie uit bestand",
+  "ra_Save configuration to file": "Sla de configuratie op in een bestand"
 }
