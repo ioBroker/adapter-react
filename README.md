@@ -8,11 +8,11 @@ If you want to create the configuration page with react:
     - Change `name` from `src` to `ADAPTERNAME-admin` (Of course replace `ADAPTERNAME` with yours)
     - Add to dependencies:
       ```
-      "@material-ui/core": "^4.2.0",
-      "react-icons": "^3.7.0",
-      "@iobroker/adapter-react": "^0.1.0",
+      "@material-ui/core": "^4.11.2",
+      "@sentry/browser": "^5.29.2",
+      "@iobroker/adapter-react": "^1.5.5",
       "gulp": "^4.0.2",
-      "del": "^5.0.0"
+      "del": "^6.0.0"
       ```
       Versions can be higher.
       So your src/package.json should look like:
@@ -27,10 +27,11 @@ If you want to create the configuration page with react:
     "react-dom": "^16.13.1",
     "react-icons": "^3.10.0",
     "react-scripts": "^3.4.1",
+    "@sentry/browser": "^5.29.2",
     "@material-ui/core": "^4.10.2",
     "@material-ui/lab": "^4.0.0-alpha.56",
-    "@iobroker/adapter-react": "^actual-version",
-    "del": "^5.1.0",
+    "@iobroker/adapter-react": "^1.5.5",
+    "del": "^6.0.0",
     "gulp": "^4.0.2"
   },
   "scripts": {
@@ -562,6 +563,9 @@ class MyComponent {
 - eventlist
 
 ## Changelog
+### 1.5.5 (2020-12-21)
+* (bluefox) init sentry with the unique system ID.
+
 ### 1.5.4 (2020-12-19)
 * (bluefox) Added table component 
 

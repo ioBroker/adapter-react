@@ -1,5 +1,6 @@
 import React from 'react';
 import Connection, {PROGRESS} from './Connection';
+import * as Sentry from '@sentry/browser';
 
 import DialogError from './Dialogs/Error';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -137,14 +138,35 @@ class GenericApp extends Router {
                         return this.socket.getObject(this.instanceId);
                     })
                     .then(obj => {
-                        if (obj) {
-                            this.common = obj && obj.common;
-                            this.onPrepareLoad(obj.native); // decode all secrets
-                            this.setState({native: obj.native, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
-                        } else {
-                            console.warn('Cannot load instance settings');
-                            this.setState({native: {}, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
+                        let waitPromise;
+
+                        // read UUID and init sentry with it.
+                        if (!this.sentryInited) {
+                            this.sentryInited = true;
+
+                            if (window.location.host !== 'localhost:3000') {
+                                waitPromise = this.socket.getObject('system.meta.uuid')
+                                    .then(uuidObj => {
+                                        if (uuidObj && uuidObj.native && uuidObj.native.uuid) {
+                                            Sentry.configureScope(scope =>
+                                                scope.setUser({id: uuidObj.native.uuid}));
+                                        }
+                                    });
+                            }
                         }
+                        waitPromise = waitPromise || Promise.resolve();
+
+                        waitPromise
+                            .then(() => {
+                                if (obj) {
+                                    this.common = obj && obj.common;
+                                    this.onPrepareLoad(obj.native); // decode all secrets
+                                    this.setState({native: obj.native, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
+                                } else {
+                                    console.warn('Cannot load instance settings');
+                                    this.setState({native: {}, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
+                                }
+                            });
                     });
             },
             onError: err => {
@@ -324,7 +346,7 @@ class GenericApp extends Router {
     /**
      * Gets called before the settings are saved.
      * You may override this if needed.
-     * @param {Record<string, any>} settings 
+     * @param {Record<string, any>} settings
      */
     onPrepareSave(settings) {
         // here you can encode values
@@ -338,7 +360,7 @@ class GenericApp extends Router {
     /**
      * Gets called after the settings are loaded.
      * You may override this if needed.
-     * @param {Record<string, any>} settings 
+     * @param {Record<string, any>} settings
      */
     onPrepareLoad(settings) {
         // here you can encode values
@@ -491,7 +513,7 @@ class GenericApp extends Router {
     renderError() {
         if (!this.state.errorText) {
             return null;
-        } else {            
+        } else {
             return <DialogError text={this.state.errorText} onClose={() => this.setState({errorText: ''})}/>;
         }
     }
@@ -570,9 +592,9 @@ class GenericApp extends Router {
 
     /**
      * @private
-     * @param {Record<string, any>} obj 
-     * @param {any} attrs 
-     * @param {any} value 
+     * @param {Record<string, any>} obj
+     * @param {any} attrs
+     * @param {any} value
      * @returns {boolean | undefined}
      */
     _updateNativeValue(obj, attrs, value) {
@@ -604,7 +626,7 @@ class GenericApp extends Router {
 
     /**
      * Update the native value
-     * @param {string} attr The attribute name with dots as delimiter. 
+     * @param {string} attr The attribute name with dots as delimiter.
      * @param {any} value The new value.
      * @param {(() => void)} [cb] Callback which will be called upon completion.
      */
