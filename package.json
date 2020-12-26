@@ -23,29 +23,30 @@
     "url": "https://github.com/ioBroker/adapter-react/issues"
   },
   "homepage": "https://github.com/ioBroker/adapter-react#readme",
-  "devDependencies": {
+  "dependencies": {
     "@sentry/browser": "^5.29.2",
     "clsx": "^1.1.1",
+    "@material-ui/lab": "^4.0.0-alpha.57",
+    "@material-ui/core": "^4.11.2",
+    "@material-ui/icons": "^4.11.2",
+    "react-color": "^2.19.3",
+    "react-colorful": "^4.4.4",
+    "react-dropzone": "^11.2.4",
+    "@types/iobroker": "^3.2.7"
+  },
+  "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/preset-env": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
     "@babel/preset-flow": "^7.12.1",
     "@babel/preset-react": "^7.12.10",
-    "@material-ui/icons": "^4.11.2",
-    "@material-ui/core": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.57",
-    "@types/iobroker": "^3.2.7",
     "@types/react": "^16.9.56",
     "babel": "^6.23.0",
-    "react-dropzone": "^11.2.4",
     "del": "^6.0.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
-    "react-color": "^2.19.3",
-    "react-colorful": "^4.4.3",
-    "typescript": "^4.1.2"
-  },
-  "dependencies": {}
+    "typescript": "^4.1.3"
+  }
 }
