@@ -532,7 +532,7 @@ class TreeTable extends React.Component {
                 <TableRow
                     key={item.id}
                     className={Utils.clsx(
-                        'table-row-' + (item.id || '').replace(/[.$]/g, '_'),
+                        'table-row-' + (item.id || '').toString().replace(/[.$]/g, '_'),
                         this.state.update && this.state.update.includes(item.id) && this.props.classes.glow,
                         this.props.classes.row,
                         level  && this.props.classes.rowSecondary,

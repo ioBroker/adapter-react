@@ -735,6 +735,20 @@ class Connection {
     }
 
     /**
+     * Deletes the given object and all its children.
+     * @param {string} id The object ID.
+     * @returns {Promise<void>}
+     */
+    delObjects(id) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('delObjects', id, err =>
+                err ? reject(err) : resolve()));
+    }
+
+    /**
      * Sets the object.
      * @param {string} id The object ID.
      * @param {ioBroker.SettableObject} obj The object.

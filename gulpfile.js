@@ -58,6 +58,12 @@ gulp.task('compile', gulp.parallel('copy',
             .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest('dist/Dialogs')),
 
+        gulp.src(['src/icons/*.js'])
+            .pipe(sourcemaps.init())
+            .pipe(babel(babelOptions))
+            .pipe(sourcemaps.write('.'))
+            .pipe(gulp.dest('dist/icons')),
+
         gulp.src(['src/*.js', '!src/gulpfile.js'])
             .pipe(sourcemaps.init())
             .pipe(babel(babelOptions))

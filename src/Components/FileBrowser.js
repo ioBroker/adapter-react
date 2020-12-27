@@ -4,7 +4,7 @@
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone'
 
@@ -44,7 +44,7 @@ import IconTile from '@material-ui/icons/ViewModule';
 import IconBack from '@material-ui/icons/ArrowBack';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import ExpertIcon from  './ExpertIcon';
+import ExpertIcon from  '../icons/IconExpert';
 import NoImage from '../assets/no_icon.svg';
 
 const ROW_HEIGHT = 32;
@@ -52,6 +52,8 @@ const BUTTON_WIDTH = 32;
 
 const TILE_HEIGHT = 120;
 const TILE_WIDTH = 64;
+
+const NOT_FOUND = 'Not found';
 
 const styles = theme => ({
     root: {
@@ -352,14 +354,14 @@ function isFile(path) {
 }
 
 // all icons are copied from https://github.com/FortAwesome/Font-Awesome/blob/0d1f27efb836eb2ab994ba37221849ed64a73e5c/svgs/regular/
-class IconClosed extends React.Component {
+class IconClosed extends Component {
     render() {
         return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 650 512" xmlns="http://www.w3.org/2000/svg" width={this.props.width || 28} height={this.props.height || 28} className={ this.props.className }>
             <path fill="currentColor" d="M464 128H272l-64-64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48z"/>
         </svg>;
     }
 }
-class IconOpen extends React.Component {
+class IconOpen extends Component {
     render() {
         return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 650 512" xmlns="http://www.w3.org/2000/svg" width={this.props.width || 28} height={this.props.height || 28} className={ this.props.className }>
             <path fill="currentColor" d="M572.694 292.093L500.27 416.248A63.997 63.997 0 0 1 444.989 448H45.025c-18.523 0-30.064-20.093-20.731-36.093l72.424-124.155A64 64 0 0 1 152 256h399.964c18.523 0 30.064 20.093 20.73 36.093zM152 224h328v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v278.046l69.077-118.418C86.214 242.25 117.989 224 152 224z"/>
@@ -604,7 +606,8 @@ class FileBrowser extends React.Component {
 
             if (!item.temp) {
                 return this.browseFolder(item.id)
-                    .then(folders => this.setState({expanded, folders}));
+                    .then(folders => this.setState({expanded, folders}))
+                    .catch(err => this.setState({errorText: err === NOT_FOUND ? this.props.t('re_Cannot find "%s"', item.id) : this.props.t('re_Cannot read "%s"', item.id)}));
             } else {
                 this.setState({expanded});
             }
@@ -1221,7 +1224,7 @@ class FileBrowser extends React.Component {
                     if (!this.state.folders[folder]) {
                         return this.browseFolder(folder)
                             .then(folders => this.setState({folders}, () => resolve(true)))
-                            .catch(err => this.setState({errorText: err === 'Not found' ? this.props.t('re_Cannot find "%s"', folder) : this.props.t('re_Cannot read "%s"', folder)}));
+                            .catch(err => this.setState({errorText: err === NOT_FOUND ? this.props.t('re_Cannot find "%s"', folder) : this.props.t('re_Cannot read "%s"', folder)}));
                     } else {
                         return resolve(true);
                     }
@@ -1236,7 +1239,7 @@ class FileBrowser extends React.Component {
 
     renderBreadcrumb() {
         const parts = this.state.selected.startsWith('/') ? this.state.selected.split('/') : ('/' + this.state.selected).split('/');
-        let p = [];
+        const p = [];
         return parts.map((part, i) => {
             part && p.push(part);
             const path = p.join('/');
@@ -1245,7 +1248,7 @@ class FileBrowser extends React.Component {
                     <div key={this.state.selected + '_' + i} className={this.props.classes.pathDivBreadcrumbDir} onClick={e => this.changeFolder(e, path || '/')}>
                         {part || this.props.t('re_Root')}
                     </div>,
-                    <span key={this.state.selected + '_s_' + i} className={this.props.classes.pathDivBreadcrumbSlash}></span>];
+                    <span key={this.state.selected + '_s_' + i} className={this.props.classes.pathDivBreadcrumbSlash}>&gt;</span>];
             } else {
                 return <div key={this.state.selected + '_' + i} className={this.props.classes.pathDivBreadcrumbFile} onClick={() => this.setState({pathFocus: true})}>{part}</div>;
             }

@@ -6,13 +6,9 @@ If you want to create the configuration page with react:
 3. `cd src`
 4. Modify package.json file in src directory:
     - Change `name` from `src` to `ADAPTERNAME-admin` (Of course replace `ADAPTERNAME` with yours)
-    - Add to dependencies:
+    - Add to devDependencies:
       ```
-      "@material-ui/core": "^4.11.2",
-      "@sentry/browser": "^5.29.2",
       "@iobroker/adapter-react": "^1.5.5",
-      "gulp": "^4.0.2",
-      "del": "^6.0.0"
       ```
       Versions can be higher.
       So your src/package.json should look like:
@@ -26,11 +22,10 @@ If you want to create the configuration page with react:
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-icons": "^3.10.0",
-    "react-scripts": "^3.4.1",
+    "react-scripts": "^3.4.4",
     "@sentry/browser": "^5.29.2",
-    "@material-ui/core": "^4.10.2",
-    "@material-ui/lab": "^4.0.0-alpha.56",
-    "@iobroker/adapter-react": "^1.5.5",
+    "@material-ui/core": "^4.11.2",
+    "@iobroker/adapter-react": "^1.5.6",
     "del": "^6.0.0",
     "gulp": "^4.0.2"
   },
@@ -563,6 +558,10 @@ class MyComponent {
 - eventlist
 
 ## Changelog
+### 1.6.0 (2020-12-27)
+* (bluefox) merged changes from admin
+* (bluefox) all icons are outsourced
+
 ### 1.5.5 (2020-12-21)
 * (bluefox) init sentry with the unique system ID.
 

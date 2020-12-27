@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
-import clsx from 'clsx';
 
 import TextField from '@material-ui/core/TextField';
 import I18n from '@iobroker/adapter-react/i18n';
@@ -22,6 +21,7 @@ import SelectIcon from '@material-ui/icons/ViewModule';
 
 import Image from './Image';
 import FileBrowser from './FileBrowser';
+import Utils from './Utils';
 
 import IconLampTable from '../assets/lamp_table.svg';
 import IconLampCeiling from '../assets/lamp_ceiling.svg';
@@ -107,7 +107,7 @@ const PRESET_PREFIX = 'preset:';
  * @property {string} [imagePrefix] The image prefix (default: './files/')
  * @property {React.CSSProperties} [style] Additional styling for this component.
  * @property {string} [className] The CSS class name.
- * 
+ *
  * @extends {React.Component<IconPickerProps>}
  */
 class IconPicker extends React.Component {
@@ -149,7 +149,7 @@ class IconPicker extends React.Component {
              item
              xs
              key={item.name || i}
-             className={clsx(this.props.classes.gridIcon, this.state.dialogValue && this.state.dialogValue.startsWith(PRESET_PREFIX) && this.state.dialogValue.endsWith(item.name) && this.props.classes.iconSelected)}
+             className={Utils.clsx(this.props.classes.gridIcon, this.state.dialogValue && this.state.dialogValue.startsWith(PRESET_PREFIX) && this.state.dialogValue.endsWith(item.name) && this.props.classes.iconSelected)}
              onClick={() => this.setState({dialogValue: PRESET_PREFIX + item.name})}
              onDoubleClick={() => this.setState({dialogValue: PRESET_PREFIX + item.name}, () => this.onDialogClose(this.state.dialogValue))}
         >
@@ -275,7 +275,7 @@ class IconPicker extends React.Component {
         return <div
             key={this.props.key}
             style={this.props.style || {}}
-            className={ clsx(this.props.classes.div, this.props.className)}
+            className={ Utils.clsx(this.props.classes.div, this.props.className)}
         >
             <div className={this.props.classes.imagePreviewDiv}>
                 <Image
