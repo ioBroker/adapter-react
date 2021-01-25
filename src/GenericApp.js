@@ -355,6 +355,8 @@ class GenericApp extends Router {
                 settings[attr] = this.encrypt(settings[attr]);
             }
         });
+
+        return true;
     }
 
     /**
@@ -444,9 +446,9 @@ class GenericApp extends Router {
                     }
                 }
 
-                this.onPrepareSave(oldObj.native);
-
-                return this.socket.setObject(this.instanceId, oldObj);
+                if (this.onPrepareSave(oldObj.native) !== false) {
+                    return this.socket.setObject(this.instanceId, oldObj);
+                }
             })
             .then(() => {
                 this.savedNative = oldObj.native;
@@ -562,32 +564,31 @@ class GenericApp extends Router {
             height: this.state.theme.saveToolbar.button.height || 32,
         };
 
-        return (
-            <Toolbar position="absolute" style={{bottom: this.isIFrame ? 38 : 0, left: 0, right: 0, position: 'absolute', background: this.state.theme.saveToolbar.background}}>
-                <Fab
-                    variant="extended"
-                    aria-label="Save"
-                    disabled={!this.state.changed}
-                    onClick={() => this.onSave(false)}
-                    style={buttonStyle}
-                >
-                    <IconSave style={!narrowWidth ? styles.buttonIcon : {}}/>{!narrowWidth && I18n.t('ra_Save')}
-                </Fab>
-                <Fab
-                    variant="extended"
-                    aria-label="Save and close"
-                    disabled={!this.state.changed}
-                    onClick={() => this.onSave(true)}
-                    style={Object.assign({}, buttonStyle, {marginLeft: 10})}>
-                    <IconSave style={!narrowWidth ? styles.buttonIcon : {}}/>
-                    {!narrowWidth ? I18n.t('ra_Save and close') : '+'}
-                    {narrowWidth && <IconClose/>}
-                </Fab>
-                <div style={{flexGrow: 1}}/>
-                <Fab variant="extended" aria-label="Close" onClick={() => GenericApp.onClose()} style={buttonStyle}>
-                    <IconClose style={!narrowWidth ? styles.buttonIcon : {}}/>{!narrowWidth && I18n.t('ra_Close')}
-                </Fab>
-            </Toolbar>)
+        return <Toolbar position="absolute" style={{bottom: this.isIFrame ? 38 : 0, left: 0, right: 0, position: 'absolute', background: this.state.theme.saveToolbar.background}}>
+            <Fab
+                variant="extended"
+                aria-label="Save"
+                disabled={!this.state.changed}
+                onClick={() => this.onSave(false)}
+                style={buttonStyle}
+            >
+                <IconSave style={!narrowWidth ? styles.buttonIcon : {}}/>{!narrowWidth && I18n.t('ra_Save')}
+            </Fab>
+            <Fab
+                variant="extended"
+                aria-label="Save and close"
+                disabled={!this.state.changed}
+                onClick={() => this.onSave(true)}
+                style={Object.assign({}, buttonStyle, {marginLeft: 10})}>
+                <IconSave style={!narrowWidth ? styles.buttonIcon : {}}/>
+                {!narrowWidth ? I18n.t('ra_Save and close') : '+'}
+                {narrowWidth && <IconClose/>}
+            </Fab>
+            <div style={{flexGrow: 1}}/>
+            <Fab variant="extended" aria-label="Close" onClick={() => GenericApp.onClose()} style={buttonStyle}>
+                <IconClose style={!narrowWidth ? styles.buttonIcon : {}}/>{!narrowWidth && I18n.t('ra_Close')}
+            </Fab>
+        </Toolbar>;
     }
 
     /**
