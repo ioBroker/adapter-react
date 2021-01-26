@@ -163,6 +163,18 @@ class App extend GenericApp {
 }
 ```
 
+6. The optional step to validate the data to be saved:
+```
+onPrepareSave(settings) {
+     super.onPrepareSave(settings);
+     if (DATA_INVALID) {
+         return false; // configuration will not be saved
+     } else {
+         return true;
+     }
+ }
+```
+
 ## Components
 
 ### Connection.js
@@ -558,6 +570,9 @@ class MyComponent {
 - eventlist
 
 ## Changelog
+### 1.6.1 (2020-12-27)
+* (bluefox) Allow checking the configuration before the saving.
+
 ### 1.6.0 (2020-12-27)
 * (bluefox) merged changes from admin
 * (bluefox) all icons are outsourced

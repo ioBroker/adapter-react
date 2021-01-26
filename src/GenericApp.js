@@ -448,12 +448,17 @@ class GenericApp extends Router {
 
                 if (this.onPrepareSave(oldObj.native) !== false) {
                     return this.socket.setObject(this.instanceId, oldObj);
+                } else {
+                    return Promise.reject('Invalid configuration');
                 }
             })
             .then(() => {
                 this.savedNative = oldObj.native;
                 this.setState({changed: false});
                 isClose && GenericApp.onClose();
+            })
+            .catch(e => {
+                console.error(`Cannot save configuration: ${e}`);
             });
     }
 
