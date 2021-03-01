@@ -294,6 +294,7 @@ class Connection {
             this._socket.emit('getUserPermissions', cb);
         }
     }
+
     /**
      * Called internally.
      * @private

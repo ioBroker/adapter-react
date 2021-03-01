@@ -570,6 +570,9 @@ class MyComponent {
 - eventlist
 
 ## Changelog
+### 1.6.2 (2021-03-01)
+* (bluefox) Added Icon component.
+
 ### 1.6.1 (2020-12-27)
 * (bluefox) Allow checking the configuration before the saving.
 
