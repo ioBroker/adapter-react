@@ -1652,6 +1652,19 @@ class Connection {
     }
 
     /**
+     * Send command to restart the iobroker on host
+     * @param {string} host
+     * @returns {Promise<any>}
+     */
+    restartController(host) {
+        return new Promise((resolve, reject) => {
+            this._socket.emit('sendToHost', host, 'restartController', null, error => {
+                error ? reject(error) : resolve();
+            });
+        });
+    }
+
+    /**
      * Read all states (which might not belong to this adapter) which match the given pattern.
      * @param {string} pattern
      * @returns {ioBroker.GetStatesPromise}

@@ -569,7 +569,13 @@ class MyComponent {
 - devices
 - eventlist
 
+## Usability
+In dialogs the OK button is first (on the left) and the cancel button is last (on the right)
+
 ## Changelog
+### 1.6.3 (2021-03-07)
+* (bluefox) Added "restartController" function  
+
 ### 1.6.2 (2021-03-01)
 * (bluefox) Added Icon component.
 
