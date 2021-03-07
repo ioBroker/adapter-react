@@ -1801,39 +1801,6 @@ class Connection {
     }
 
     /**
-     * Decrypt a phrase
-     * @param {string} encryptedPhrase
-     * @returns {Promise<string>}
-     */
-    decryptPhrase(encryptedPhrase) {
-        return new Promise((resolve, reject) =>
-            this._socket.emit('decryptPhrase', encryptedPhrase, (err, text) =>
-                err ? reject(err) : resolve(text)));
-    }
-
-    /**
-     * Encrypt a phrase
-     * @param {string} phrasePlainText
-     * @returns {Promise<string>}
-     */
-    encryptPhrase(phrasePlainText) {
-        return new Promise((resolve, reject) =>
-            this._socket.emit('encryptPhrase', phrasePlainText, (err, text) =>
-                err ? reject(err) : resolve(text)));
-    }
-
-    /**
-     * Encrypt a text
-     * @param {string} text
-     * @returns {Promise<string>}
-     */
-    encrypt(text) {
-        return new Promise((resolve, reject) =>
-            this._socket.emit('encrypt', text, (err, text) =>
-                err ? reject(err) : resolve(text)));
-    }
-
-    /**
      * Decrypt a text
      * @param {string} encryptedText
      * @returns {Promise<string>}
