@@ -53,7 +53,6 @@ If you want to create the configuration page with react:
 copy files in `build` directory to `www` or to `admin`. In the admin you must rename `index.html` to `index_m.html`.
 8. You can do that with `gulp` tasks: `gulp build`, `gulp copy`, `gulp renameIndex` or  `gulp renameTab`
 
-
 ## Development
 1. Add `socket.io` to `public/index.html`.
 After
@@ -282,6 +281,26 @@ class MyComponent extends Component {
     render() {
       return renderSelectIdDialog();
     }
+}
+```
+
+#### Cron
+Include `"react-text-mask": "^5.4.3",` in package.json.
+
+```
+function renderCron() {
+   if (!showCron) {
+      return null;
+   } else {   
+      return <DialogCron
+          key="dialogCron1"
+          cron={this.state.cronValue || '* * * * *'}
+          onClose={() => this.setState({ showCron: false })}
+          onOk={cronValue => {
+               this.setState({ cronValue })
+          }}
+      />;
+   }
 }
 ```
 
@@ -573,6 +592,9 @@ class MyComponent {
 In dialogs the OK button is first (on the left) and the cancel button is last (on the right)
 
 ## Changelog
+### 1.6.4 (2021-03-18)
+* (bluefox) Added CRON dialogs
+
 ### 1.6.3 (2021-03-07)
 * (bluefox) Added "restartController" function  
 
@@ -637,7 +659,7 @@ In dialogs the OK button is first (on the left) and the cancel button is last (o
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2019-2020 bluefox <dogafox@gmail.com>
+Copyright (c) 2019-2021 bluefox <dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -1659,7 +1659,7 @@ class Connection {
     restartController(host) {
         return new Promise((resolve, reject) => {
             this._socket.emit('sendToHost', host, 'restartController', null, error => {
-                error ? reject(error) : resolve();
+                error ? reject(error) : resolve(true);
             });
         });
     }
