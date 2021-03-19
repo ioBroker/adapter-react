@@ -592,6 +592,9 @@ class MyComponent {
 In dialogs the OK button is first (on the left) and the cancel button is last (on the right)
 
 ## Changelog
+### 1.6.5 (2021-03-19)
+* (bluefox) Fix error with `getAdapterInstances(true)`
+
 ### 1.6.4 (2021-03-18)
 * (bluefox) Added CRON dialogs
 

@@ -795,15 +795,15 @@ class Connection {
         }
         adapter = adapter || '';
 
-        if (!update && this._promises['instances' + adapter]) {
-            return this._promises['instances' + adapter];
+        if (!update && this._promises['instances_' + adapter]) {
+            return this._promises['instances_' + adapter];
         }
 
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        this._promises['instances' + adapter] = this._promises['instances' + adapter] || new Promise((resolve, reject) => {
+        this._promises['instances_' + adapter] = new Promise((resolve, reject) => {
             this._socket.emit(
                 'getObjectView',
                 'system',
@@ -836,6 +836,7 @@ class Connection {
             update = adapter;
             adapter = '';
         }
+
         adapter = adapter || '';
 
         if (!update && this._promises['adapter_' + adapter]) {
@@ -846,7 +847,7 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        this._promises['adapter_' + adapter] = this._promises['adapter_' + adapter] || new Promise((resolve, reject) => {
+        this._promises['adapter_' + adapter] = new Promise((resolve, reject) => {
             this._socket.emit(
                 'getObjectView',
                 'system',
@@ -1040,6 +1041,10 @@ class Connection {
     getEnums(_enum, update) {
         if (!update && this._promises['enums_' + (_enum || 'all')] ) {
             return this._promises['enums_' + (_enum || 'all')];
+        }
+
+        if (update) {
+            this._promises['enums_' + (_enum || 'all')] = null;
         }
 
         if (!this.connected) {
