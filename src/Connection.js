@@ -818,7 +818,7 @@ class Connection {
                 });
         });
 
-        return this._promises['instances' + adapter];
+        return this._promises['instances_' + adapter];
     }
 
     /**
