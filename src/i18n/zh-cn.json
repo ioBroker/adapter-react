@@ -229,5 +229,6 @@
   "ra_timestamp": "时间戳记",
   "ra_lastChange": "最后一次变更",
   "ra_Owner group": "所有者组",
-  "ra_Owner user": "所有者用户"
+  "ra_Owner user": "所有者用户",
+  "ra_Create": "创建"
 }

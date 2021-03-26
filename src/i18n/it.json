@@ -229,5 +229,6 @@
   "ra_timestamp": "Timestamp",
   "ra_lastChange": "Ultima modifica",
   "ra_Owner group": "Gruppo di proprietari",
-  "ra_Owner user": "Utente proprietario"
+  "ra_Owner user": "Utente proprietario",
+  "ra_Create": "Creare"
 }

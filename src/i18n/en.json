@@ -242,5 +242,6 @@
   "ra_timestamp": "Timestamp",
   "ra_lastChange": "Last change",
   "ra_Owner group": "Owner group",
-  "ra_Owner user": "Owner user"
+  "ra_Owner user": "Owner user",
+  "ra_Create": "Create"
 }

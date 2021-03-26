@@ -242,5 +242,6 @@
   "ra_timestamp": "Zeitstempel",
   "ra_lastChange": "Letzte Änderung",
   "ra_Owner group": "Besitzergruppe",
-  "ra_Owner user": "Besitzer Benutzer"
+  "ra_Owner user": "Besitzer Benutzer",
+  "ra_Create": "Erstellen"
 }
