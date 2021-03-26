@@ -79,8 +79,8 @@ class DialogSimpleCron extends React.Component {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => this.handleOk()} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{this.props.ok || I18n.t('ra_Ok')}</Button>
-                <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{this.props.cancel || I18n.t('ra_Cancel')}</Button>
+                <Button variant="contained" onClick={() => this.handleOk()} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{this.props.ok || I18n.t('ra_Ok')}</Button>
+                <Button variant="contained" onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{this.props.cancel || I18n.t('ra_Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

@@ -28,7 +28,7 @@ const styles = {
  * @property {(text: string) => string} [rule] The text replacement callback.
  * @property {'text' | 'number' | 'password' | 'email'} [type] The type of the textbox (default: text).
  * @property {string} [input] The input when opening the dialog.
- * 
+ *
  * @extends {React.Component<TextInputProps>}
  */
 class TextInput extends React.Component {
@@ -75,8 +75,8 @@ class TextInput extends React.Component {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => this.props.onClose(null)} >{this.props.cancelText}</Button>
-                <Button disabled={!this.state.text || this.state.error} onClick={() => this.props.onClose(this.state.text)}
+                <Button variant="contained" onClick={() => this.props.onClose(null)} >{this.props.cancelText}</Button>
+                <Button variant="contained" disabled={!this.state.text || this.state.error} onClick={() => this.props.onClose(this.state.text)}
                         color="primary">{this.props.applyText}</Button>
             </DialogActions>
         </Dialog>;

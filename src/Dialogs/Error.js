@@ -61,7 +61,7 @@ class DialogError extends React.Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('ra_Ok')}</Button>
+                    <Button variant="contained" onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('ra_Ok')}</Button>
                 </DialogActions>
             </Dialog>;
     }

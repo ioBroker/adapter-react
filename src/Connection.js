@@ -1,5 +1,5 @@
 /**
- * Copyright 2020, bluefox <dogafox@gmail.com>
+ * Copyright 2020-2021, bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -759,6 +759,23 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
+        if (!obj) {
+            return Promise.reject('Null object is not allowed');
+        }
+
+        obj = JSON.parse(JSON.stringify(obj));
+
+        if (obj.hasOwnProperty('from')) {
+            delete obj.from;
+        }
+        if (obj.hasOwnProperty('user')) {
+            delete obj.user;
+        }
+        if (obj.hasOwnProperty('ts')) {
+            delete obj.ts;
+        }
+
         return new Promise((resolve, reject) =>
             this._socket.emit('setObject', id, obj, err =>
                 err ? reject(err) : resolve()));
@@ -946,6 +963,19 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
+        obj = JSON.parse(JSON.stringify(obj));
+
+        if (obj.hasOwnProperty('from')) {
+            delete obj.from;
+        }
+        if (obj.hasOwnProperty('user')) {
+            delete obj.user;
+        }
+        if (obj.hasOwnProperty('ts')) {
+            delete obj.ts;
+        }
+
         return new Promise((resolve, reject) =>
             this._socket.emit('extendObject', id, obj, err => err ? reject(err) : resolve()));
     }
@@ -1041,10 +1071,6 @@ class Connection {
     getEnums(_enum, update) {
         if (!update && this._promises['enums_' + (_enum || 'all')] ) {
             return this._promises['enums_' + (_enum || 'all')];
-        }
-
-        if (update) {
-            this._promises['enums_' + (_enum || 'all')] = null;
         }
 
         if (!this.connected) {
@@ -1670,6 +1696,19 @@ class Connection {
     }
 
     /**
+     * Read statistics information from host
+     * @param {string} host
+     * @param {string} typeOfDiag one of none, normal, no-city, extended
+     * @returns {Promise<any>}
+     */
+    getDiagData(host, typeOfDiag) {
+        return new Promise(resolve => {
+            this._socket.emit('sendToHost', host, 'getDiagData', typeOfDiag, result =>
+                resolve(result));
+        });
+    }
+
+    /**
      * Read all states (which might not belong to this adapter) which match the given pattern.
      * @param {string} pattern
      * @returns {ioBroker.GetStatesPromise}
@@ -1806,6 +1845,17 @@ class Connection {
     }
 
     /**
+     * Encrypt a text
+     * @param {string} text
+     * @returns {Promise<string>}
+     */
+    encrypt(text) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('encrypt', text, (err, text) =>
+                err ? reject(err) : resolve(text)));
+    }
+
+    /**
      * Decrypt a text
      * @param {string} encryptedText
      * @returns {Promise<string>}
@@ -1854,6 +1904,40 @@ class Connection {
     getAdminVersion() {
         console.log('Deprecated: use getVersion');
         return this.getVersion();
+    }
+
+    /**
+     * Change access rights for file
+     * @param {string} [adapter] adapter name
+     * @param {string} [filename] file name with full path. it could be like vis.0/*
+     * @param {object} [options] like {mode: 0x644}
+     * @returns {Promise<{entries: array}>}
+     */
+    chmodFile(adapter, filename, options) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('chmodFile', adapter, filename, options, (err, entries, id) =>
+                err ? reject(err) : resolve({entries, id})));
+    }
+
+    /**
+     * Change owner or/and owner group for file
+     * @param {string} [adapter] adapter name
+     * @param {string} [filename] file name with full path. it could be like vis.0/*
+     * @param {object} [options] like {owner: 'newOwner', ownerGroup: 'newGroup'}
+     * @returns {Promise<{entries: array}>}
+     */
+    chownFile(adapter, filename, options) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('chownFile', adapter, filename, options, (err, entries, id) =>
+                err ? reject(err) : resolve({entries, id})));
     }
 }
 

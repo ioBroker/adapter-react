@@ -17,7 +17,6 @@ const IconDevice = props => {
 }
 
 IconDevice.propTypes = {
-    key: PropTypes.string,
     onClick: PropTypes.func,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
