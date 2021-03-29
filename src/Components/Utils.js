@@ -1047,9 +1047,10 @@ class Utils {
     static toggleTheme(themeName) {
         themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
 
+        // dark => blue => colored => light => dark
         const newThemeName = themeName === 'dark' ? 'blue' :
-            themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
-                themeName === 'light' ? 'dark' : 'colored';
+            (themeName === 'blue' ? 'colored' :
+                (themeName === 'colored' ? 'light' : 'dark'));
 
         Utils.setThemeName(newThemeName);
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import Connection, {PROGRESS} from './Connection';
 import * as Sentry from '@sentry/browser';
+import PropTypes from 'prop-types';
 
 import DialogError from './Dialogs/Error';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -58,7 +59,7 @@ class GenericApp extends Router {
         this.instance = args.instance !== undefined ? parseInt(args.instance, 10) || 0 : (parseInt(window.location.search.slice(1), 10) || 0);
         // extract adapter name from URL
         const tmp = window.location.pathname.split('/');
-        this.adapterName = (settings && settings.adapterName) || props.adapterName || window.adapterName || tmp[tmp.length - 2] || 'iot';
+        this.adapterName = settings?.adapterName || props.adapterName || window.adapterName || tmp[tmp.length - 2] || 'iot';
         this.instanceId  = 'system.adapter.' + this.adapterName + '.' + this.instance;
 
         const location = Router.getLocation();
@@ -79,7 +80,7 @@ class GenericApp extends Router {
             theme:          themeInstance,
             themeName:      this.getThemeName(themeInstance),
             themeType:      this.getThemeType(themeInstance),
-            bottomButtons: (settings && settings.bottomButtons) === false ? false : ((props && props.bottomButtons) === false ? false : true),
+            bottomButtons:  (settings && settings.bottomButtons) === false ? false : ((props && props.bottomButtons) === false ? false : true),
             width:          GenericApp.getWidth(),
         };
 
@@ -114,12 +115,12 @@ class GenericApp extends Router {
 
         this.savedNative = {}; // to detect if the config changed
 
-        this.encryptedFields = props.encryptedFields || (settings && settings.encryptedFields) || [];
+        this.encryptedFields = props.encryptedFields || settings?.encryptedFields || [];
 
         this.socket = new Connection({
-            ...((props && props.socket) || (settings && settings.socket)),
+            ...(props?.socket || settings?.socket),
             name: this.adapterName,
-            doNotLoadAllObjects: (settings && settings.doNotLoadAllObjects),
+            doNotLoadAllObjects: settings?.doNotLoadAllObjects,
             onProgress: progress => {
                 if (progress === PROGRESS.CONNECTING) {
                     this.setState({connected: false});
@@ -181,6 +182,7 @@ class GenericApp extends Router {
      */
     componentDidMount() {
         window.addEventListener('resize', this.onResize, true);
+        window.addEventListener('message', this.onReceiveMessage, false);
         super.componentDidMount();
     }
 
@@ -189,8 +191,33 @@ class GenericApp extends Router {
      */
     componentWillUnmount() {
         window.removeEventListener('resize', this.onResize, true);
+        window.removeEventListener('message', this.onReceiveMessage, false);
         super.componentWillUnmount();
     }
+
+    onReceiveMessage = message => {
+        if (message?.data) {
+            if (message.data === 'updateTheme') {
+                const newThemeName = Utils.getThemeName()
+                Utils.setThemeName(Utils.getThemeName());
+
+                const theme = this.createTheme(newThemeName);
+
+                this.setState({
+                    theme: theme,
+                    themeName: this.getThemeName(theme),
+                    themeType: this.getThemeType(theme)
+                }, () => {
+                    this.props.onThemeChange && this.props.onThemeChange(newThemeName);
+                    this.onThemeChanged && this.onThemeChanged(newThemeName);
+                });
+            } else if (message.data === 'updateExpertMode') {
+                this.onToggleExpertMode && this.onToggleExpertMode(window.localStorage.getItem('App.expertMode') === 'true');
+            } else {
+                console.warn('Received unknown message: ' + message.data);
+            }
+        }
+    };
 
     /**
      * @private
@@ -200,7 +227,7 @@ class GenericApp extends Router {
         this.resizeTimer = setTimeout(() => {
             this.resizeTimer = null;
             this.setState({width: GenericApp.getWidth()});
-        }, 200)
+        }, 200);
     };
 
     /**
@@ -261,9 +288,10 @@ class GenericApp extends Router {
     toggleTheme() {
         const themeName = this.state.themeName;
 
+        // dark => blue => colored => light => dark
         const newThemeName = themeName === 'dark' ? 'blue' :
-            themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
-                themeName === 'light' ? 'dark' : 'colored';
+            (themeName === 'blue' ? 'colored' :
+                (themeName === 'colored' ? 'light' : 'dark'));
 
         Utils.setThemeName(newThemeName);
 
@@ -676,5 +704,13 @@ class GenericApp extends Router {
         </div>;
     }
 }
+
+GenericApp.propTypes = {
+    adapterName: PropTypes.string, // (optional) name of adapter
+    onThemeChange: PropTypes.func, // (optional) called by theme change
+    socket: PropTypes.object, // (optional) socket information (host, port)
+    encryptedFields: PropTypes.array, // (optional) list of native attributes, that must be encrypted
+    bottomButtons: PropTypes.bool, // If the bottom buttons (Save/Close) must be shown
+};
 
 export default GenericApp;

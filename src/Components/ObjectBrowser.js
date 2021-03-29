@@ -202,6 +202,9 @@ const styles = theme => ({
         whiteSpace: 'nowrap',
         flexWrap: 'nowrap',
     },
+    tableRowAlias: {
+        height: ROW_HEIGHT + 10,
+    },
     checkBox: {
         padding: 0,
     },
@@ -245,6 +248,7 @@ const styles = theme => ({
         height: ROW_HEIGHT - 4,
         cursor: 'pointer',
         color: theme.palette.secondary.main || '#fbff7d',
+        verticalAlign: 'top',
     },
     cellIdIconDocument: {
         verticalAlign: 'middle',
@@ -287,6 +291,15 @@ const styles = theme => ({
         marginLeft: 5,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+    },
+    cellIdAlias: {
+        fontStyle: 'italic',
+        fontSize: 12,
+        opacity: 0.7,
+        lineHeight: 0,
+        '&:hover': {
+            color: theme.palette.type === 'dark' ? '#009900' : '#007700',
+        }
     },
     cellType: {
         display: 'inline-block',
@@ -523,6 +536,10 @@ const styles = theme => ({
     rightsState: {
         color: '#86b6ff',
         paddingLeft: 3,
+    },
+    textCenter: {
+        padding: 12,
+        textAlign: 'center'
     }
 });
 
@@ -910,7 +927,7 @@ function getName(name, lang) {
 
 function findRoomsForObject(data, id, lang, withParentInfo, rooms) {
     if (!id) {
-        return {rooms: [], per: false};
+        return { rooms: [], per: false };
     }
     rooms = rooms || [];
     for (let i = 0; i < data.roomEnums.length; i++) {
@@ -937,7 +954,7 @@ function findRoomsForObject(data, id, lang, withParentInfo, rooms) {
         findRoomsForObject(data, id, lang, withParentInfo, rooms);
     }
 
-    return {rooms, per: !ownEnums}; // pe is if the enums are from parent
+    return { rooms, per: !ownEnums }; // pe is if the enums are from parent
 }
 
 function findEnumsForObjectAsIds(data, id, enumName, funcs) {
@@ -958,7 +975,7 @@ function findEnumsForObjectAsIds(data, id, enumName, funcs) {
 
 function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     if (!id) {
-        return  {funcs: [], pef: false};
+        return { funcs: [], pef: false };
     }
     funcs = funcs || [];
     for (let i = 0; i < data.funcEnums.length; i++) {
@@ -984,7 +1001,7 @@ function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
         findFunctionsForObject(data, id, lang, withParentInfo, funcs);
     }
 
-    return {funcs, pef: !ownEnums};
+    return { funcs, pef: !ownEnums };
 }
 
 function getStates(obj) {
@@ -1698,7 +1715,7 @@ class ObjectBrowser extends Component {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => this.setState({ error: '' })} color="primary" autoFocus><IconCheck className={this.props.classes.buttonIcon} />{this.props.t('ra_Ok')}</Button>
+                <Button variant="contained" onClick={() => this.setState({ error: '' })} color="primary" autoFocus><IconCheck className={this.props.classes.buttonIcon} />{this.props.t('ra_Ok')}</Button>
             </DialogActions>
         </Dialog> : null;
     }
@@ -1906,7 +1923,7 @@ class ObjectBrowser extends Component {
                     </List>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.setState({ columnsSelectorShow: false })} color="primary">
+                    <Button variant="contained" onClick={() => this.setState({ columnsSelectorShow: false })} color="primary">
                         <IconClose className={this.props.classes.buttonIcon} />{this.texts['close']}
                     </Button>
                 </DialogActions>
@@ -2470,9 +2487,9 @@ class ObjectBrowser extends Component {
     }
 
     /**
- * @private
- * @param {string} id
- */
+     * @private
+     * @param {string} id
+     */
     getEnumsForId = (id) => {
         let result = [];
         console.log(this.info.enums);
@@ -2739,12 +2756,12 @@ class ObjectBrowser extends Component {
                                 window.alert(this.props.t('ra_Save of objects-tree is not possible'));
                             }
                         }}>
-                            <PublishIcon style={{transform: 'rotate(180deg)'}} />
+                            <PublishIcon style={{ transform: 'rotate(180deg)' }} />
                         </IconButton>
                     </Tooltip>
                 }
             </div>
-            <div style={{display: 'flex', whiteSpace: 'nowrap'}}>
+            <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>
             {this.props.objectEditBoolean && <IconButton onClick={() => {
@@ -2840,22 +2857,25 @@ class ObjectBrowser extends Component {
      */
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
-            return this.props.onObjectDelete ? <div className={classes.buttonDiv}>{this.props.expertMode && <div className={classes.emptyButton} />}<IconButton
-                className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone)}
-                size="small"
-                aria-label="delete"
-                title={this.texts.deleteObject}
-                onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), false)}
-            >
-                <IconDelete className={classes.cellButtonsButtonIcon} />
-            </IconButton></div> : null;
+            return this.props.onObjectDelete ? <div className={classes.buttonDiv}>
+                {this.props.expertMode && <div
+                    className={Utils.clsx(classes.emptyButton, classes.textCenter)} >---</div>}
+                <IconButton
+                    className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone)}
+                    size="small"
+                    aria-label="delete"
+                    title={this.texts.deleteObject}
+                    onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), false)}
+                >
+                    <IconDelete className={classes.cellButtonsButtonIcon} />
+                </IconButton></div> : null;
         }
 
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
 
         return [
             this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton style={{ minWidth: 47 }} onClick={() =>
-                this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data})
+                this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
             }>
                 <div className={classes.aclText}>{Number(item.data.obj.type === 'state' ?
                     item.data.obj.acl.state ?
@@ -3289,12 +3309,12 @@ class ObjectBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
-                    <Button onClick={() => this.onColumnsEditCustomDialogClose(true)}
+                    <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose(true)}
                         disabled={!this.state.customColumnDialogValueChanged}
                         color="primary">
                         <IconCheck className={this.props.classes.buttonIcon} /> {this.props.t('ra_Update')}
                     </Button>
+                    <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         } else {
@@ -3443,10 +3463,10 @@ class ObjectBrowser extends Component {
         const paddingLeft = ITEM_LEVEL * item.data.level;
 
         if (item.data.lang !== this.state.lang) {
-            const {rooms, per} = findRoomsForObject(this.info, id, this.state.lang);
+            const { rooms, per } = findRoomsForObject(this.info, id, this.state.lang);
             item.data.rooms = rooms.join(', ');
             item.data.per = per;
-            const {funcs, pef} = findFunctionsForObject(this.info, id, this.state.lang);
+            const { funcs, pef } = findFunctionsForObject(this.info, id, this.state.lang);
             item.data.funcs = funcs.join(', ');
             item.data.pef = pef;
             item.data.lang = this.state.lang;
@@ -3488,11 +3508,21 @@ class ObjectBrowser extends Component {
         item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy     + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
         item.data.obj?.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + formatDate(new Date(item.data.obj.ts)));
 
+        const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
+            <div onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.onSelect(item.data.obj.common.alias.id);
+                setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id), 200);
+            }}
+                className={classes.cellIdAlias}
+            >→{item.data.obj?.common?.alias?.id}</div> : null;
+
         return <Grid
             container
             direction="row"
             wrap="nowrap"
-            className={Utils.clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected)}
+            className={Utils.clsx(classes.tableRow, alias && classes.tableRowAlias, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected)}
             key={id}
             id={id}
             onClick={() => this.onSelect(id)}
@@ -3525,6 +3555,7 @@ class ObjectBrowser extends Component {
                     style={{ color: id === 'system' ? COLOR_NAME_SYSTEM : (id === 'system.adapter' ? COLOR_NAME_SYSTEM_ADAPTER : 'inherit') }}
                 >
                     {item.data.name}
+                    {alias}
                 </Grid>
                 <div className={classes.grow} />
                 <Grid
@@ -3536,7 +3567,7 @@ class ObjectBrowser extends Component {
                 </Grid>
                 <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={(e) => this.onCopy(e, id)} />
             </Grid>
-            {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data && item.data.title) || ''}</div> : null}
+            {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data?.title) || ''}</div> : null}
 
             {!this.state.statesView ?
                 <>
@@ -3817,16 +3848,20 @@ class ObjectBrowser extends Component {
                 setTimeout(() => this.setState({ scrollBarWidth }), 100);
             } else {
                 if (!this.selectedFound && ((this.state.selected && this.state.selected[0]) || this.lastSelectedItems)) {
-                    const node = window.document.getElementById((this.state.selected && this.state.selected[0]) || this.lastSelectedItems);
-                    node && node.scrollIntoView({
-                        behavior: 'auto',
-                        block: 'center',
-                        inline: 'center'
-                    });
-                    this.selectedFound = true;
+                    this.scrollToItem((this.state.selected && this.state.selected[0]) || this.lastSelectedItems);
                 }
             }
         }
+    }
+
+    scrollToItem(id) {
+        const node = window.document.getElementById(id);
+        node && node.scrollIntoView({
+            behavior: 'auto',
+            block: 'center',
+            inline: 'center'
+        });
+        this.selectedFound = true;
     }
 
     /**
@@ -3878,7 +3913,10 @@ class ObjectBrowser extends Component {
 
         return <ObjectBrowserEditObject
             obj={this.objects[this.state.editObjectDialog]}
+            objects={this.objects}
             themeName={this.props.themeName}
+            socket={this.props.socket}
+            dialogName={this.props.dialogName}
             t={this.props.t}
             expertMode={this.state.filter.expertMode}
             onClose={obj => {
