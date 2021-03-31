@@ -4,12 +4,9 @@ import * as Sentry from '@sentry/browser';
 import PropTypes from 'prop-types';
 
 import DialogError from './Dialogs/Error';
-import Toolbar from '@material-ui/core/Toolbar';
-import Fab from '@material-ui/core/Fab';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 
-import IconSave from '@material-ui/icons/Save';
 import IconClose from '@material-ui/icons/Close';
 
 import printPrompt from './Prompt';
@@ -17,6 +14,7 @@ import theme from './Theme';
 import Loader from './Components/Loader';
 import Router from './Components/Router';
 import Utils from './Components/Utils';
+import SaveCloseButtons from './Components/SaveCloseButtons';
 import I18n from './i18n';
 
 import './index.css';
@@ -27,13 +25,6 @@ if (!window.localStorage) {
         setItem: () => null,
     };
 }
-
-const styles = {
-    buttonIcon: {
-        marginRight: 8
-    },
-};
-
 
 /**
  * @extends {Router<import('./types').GenericAppProps, import('./types').GenericAppState>}
@@ -106,12 +97,6 @@ class GenericApp extends Router {
         }
 
         I18n.setTranslations(translations);
-
-        try {
-            this.isIFrame = window.self !== window.top;
-        } catch (e) {
-            this.isIFrame = true;
-        }
 
         this.savedNative = {}; // to detect if the config changed
 
@@ -204,7 +189,7 @@ class GenericApp extends Router {
                 const theme = this.createTheme(newThemeName);
 
                 this.setState({
-                    theme: theme,
+                    theme,
                     themeName: this.getThemeName(theme),
                     themeType: this.getThemeType(theme)
                 }, () => {
@@ -298,7 +283,7 @@ class GenericApp extends Router {
         const theme = this.createTheme(newThemeName);
 
         this.setState({
-            theme: theme,
+            theme,
             themeName: this.getThemeName(theme),
             themeType: this.getThemeType(theme)
         });
@@ -587,41 +572,17 @@ class GenericApp extends Router {
      * @returns {JSX.Element | undefined} The JSX element.
      */
     renderSaveCloseButtons() {
-        if (!this.state.bottomButtons) {
-            return;
+        if (this.state.bottomButtons) {
+            return <SaveCloseButtons
+                theme={this.state.theme}
+                noTextOnButtons={this.state.width === 'xs' || this.state.width === 'sm' || this.state.width === 'md'}
+                changed={this.state.changed}
+                onSave={() => this.onSave(true)}
+                onClose={() => GenericApp.onClose()}
+            />;
+        } else {
+            return null;
         }
-
-        const narrowWidth = this.state.width === 'xs' || this.state.width === 'sm' || this.state.width === 'md';
-        const buttonStyle = {
-            borderRadius: this.state.theme.saveToolbar.button.borderRadius || 3,
-            height: this.state.theme.saveToolbar.button.height || 32,
-        };
-
-        return <Toolbar position="absolute" style={{bottom: this.isIFrame ? 38 : 0, left: 0, right: 0, position: 'absolute', background: this.state.theme.saveToolbar.background}}>
-            <Fab
-                variant="extended"
-                aria-label="Save"
-                disabled={!this.state.changed}
-                onClick={() => this.onSave(false)}
-                style={buttonStyle}
-            >
-                <IconSave style={!narrowWidth ? styles.buttonIcon : {}}/>{!narrowWidth && I18n.t('ra_Save')}
-            </Fab>
-            <Fab
-                variant="extended"
-                aria-label="Save and close"
-                disabled={!this.state.changed}
-                onClick={() => this.onSave(true)}
-                style={Object.assign({}, buttonStyle, {marginLeft: 10})}>
-                <IconSave style={!narrowWidth ? styles.buttonIcon : {}}/>
-                {!narrowWidth ? I18n.t('ra_Save and close') : '+'}
-                {narrowWidth && <IconClose/>}
-            </Fab>
-            <div style={{flexGrow: 1}}/>
-            <Fab variant="extended" aria-label="Close" onClick={() => GenericApp.onClose()} style={buttonStyle}>
-                <IconClose style={!narrowWidth ? styles.buttonIcon : {}}/>{!narrowWidth && I18n.t('ra_Close')}
-            </Fab>
-        </Toolbar>;
     }
 
     /**

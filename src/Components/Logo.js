@@ -24,7 +24,6 @@ const styles = theme => ({
 
 /**
  * @typedef {object} LogoProps
- * @property {string} [key] The key to identify this component.
  * @property {any} common Adapter common configuration from io-package.json
  * @property {any} native Adapter native data from io-package.json
  * @property {number} instance Adapter instance number.
@@ -107,7 +106,7 @@ class Logo extends React.Component {
     }
 
     render() {
-        return <div key={this.props.key} className={this.props.className} style={this.props.style}>
+        return <div className={this.props.className} style={this.props.style}>
             {this.props.common.icon ? <img src={this.props.common.icon} className={this.props.classes.logo} alt="logo"/> : null}
             {this.props.common.readme ?
                 <Fab size="small" color="primary" aria-label="Help" className={this.props.classes.buttons} onClick={() => {
@@ -121,7 +120,6 @@ class Logo extends React.Component {
 }
 
 Logo.propTypes = {
-    key: PropTypes.string,
     common: PropTypes.object.isRequired,
     className: PropTypes.string,
     style: PropTypes.object,

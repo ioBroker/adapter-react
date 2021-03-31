@@ -102,6 +102,8 @@ class Icon extends React.Component {
             } else {
                 return this.props.src;
             }
+        } else {
+            return null;
         }
     }
 }

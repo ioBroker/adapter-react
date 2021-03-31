@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2020 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2021 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -26,6 +26,32 @@ class Utils {
             .filter(item => item)
             .map(word => word ? word[0].toUpperCase() + word.substring(1).toLowerCase() : '')
             .join(' ');
+    }
+
+    static formatSeconds(seconds) {
+        const days = Math.floor(seconds / (3600 * 24));
+        seconds %= 3600 * 24;
+        let hours = Math.floor(seconds / 3600);
+        if (hours < 10) {
+            hours = '0' + hours;
+        }
+        seconds %= 3600;
+        let minutes = Math.floor(seconds / 60);
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        seconds %= 60;
+        seconds = Math.floor(seconds);
+        if (seconds < 10) {
+            seconds = '0' + seconds;
+        }
+        let text = '';
+        if (days) {
+            text += days + ' ' + I18n.t('daysShortText') + ' ';
+        }
+        text += hours + ':' + minutes + ':' + seconds;
+
+        return text;
     }
 
     /**

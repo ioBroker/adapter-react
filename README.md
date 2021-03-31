@@ -592,6 +592,9 @@ class MyComponent {
 In dialogs the OK button is first (on the left) and the cancel button is last (on the right)
 
 ## Changelog
+### 1.6.8 (2021-03-31)
+* (bluefox) The save buttons are moved into new component
+
 ### 1.6.7 (2021-03-29)
 * (bluefox) The object browser was updated
 

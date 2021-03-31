@@ -234,5 +234,6 @@ export default type => {
             height: 32
         }
     };
+
     return createMuiTheme(theme);
 }
