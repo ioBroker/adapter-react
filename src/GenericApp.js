@@ -62,6 +62,7 @@ class GenericApp extends Router {
             selectedTab: window.localStorage.getItem(this.adapterName + '-adapter') || '',
             selectedTabNum: -1,
             native: {},
+            startedNative: {},
             errorText: '',
             changed: false,
             connected: false,
@@ -147,7 +148,7 @@ class GenericApp extends Router {
                                 if (obj) {
                                     this.common = obj && obj.common;
                                     this.onPrepareLoad(obj.native); // decode all secrets
-                                    this.setState({native: obj.native, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
+                                    this.setState({native: obj.native, startedNative: {...obj.native}, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
                                 } else {
                                     console.warn('Cannot load instance settings');
                                     this.setState({native: {}, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
@@ -544,7 +545,17 @@ class GenericApp extends Router {
      */
     getIsChanged(native) {
         native = native || this.state.native;
-        return JSON.stringify(native) !== JSON.stringify(this.savedNative);
+        const startedNative = this.state.startedNative;
+
+        const isChanged = (JSON.stringify(native) !== JSON.stringify(this.savedNative)) && (JSON.stringify(native) !== JSON.stringify(startedNative));
+
+        if (isChanged) {
+            globalThis.changed = true
+        } else {
+            globalThis.changed = false
+        }
+
+        return isChanged
     }
 
     /**
@@ -627,9 +638,10 @@ class GenericApp extends Router {
      */
     updateNativeValue(attr, value, cb) {
         const native = JSON.parse(JSON.stringify(this.state.native));
+
         if (this._updateNativeValue(native, attr, value)) {
             const changed = this.getIsChanged(native);
-            this.setState({native, changed}, cb);
+            this.setState({native: native, changed: changed}, cb);
         }
     }
 
