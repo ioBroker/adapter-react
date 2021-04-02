@@ -641,7 +641,7 @@ class GenericApp extends Router {
 
         if (this._updateNativeValue(native, attr, value)) {
             const changed = this.getIsChanged(native);
-            this.setState({native: native, changed: changed}, cb);
+            this.setState({native, changed}, cb);
         }
     }
 
