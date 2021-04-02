@@ -100,6 +100,7 @@ class DialogConfirm extends React.Component {
             <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('ra_Are you sure?')}</DialogTitle>
             <DialogContent>
                 <DialogContentText id="confirmation-dialog-description">
+                    {this.props.icon || null}
                     {this.props.text}
                     {this.props.suppressQuestionMinutes ? <br/> : null}
                     {this.props.suppressQuestionMinutes ?

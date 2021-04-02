@@ -31,6 +31,48 @@ class I18n {
         }
     }
 
+     /**
+      * Add translations
+      * User can provide two types of structures:
+      * - {"word1": "translated word1", "word2": "translated word2"}, but in this case the lang must be provided
+      * - {"word1": {"en": "translated en word1", "de": "translated de word1"}, "word2": {"en": "translated en word2", "de": "translated de word2"}}, but no lang must be provided
+      * @param {object} words additional words for specific language
+      * @param {ioBroker.Languages} lang
+      */
+     static extendTranslations(words, lang) {
+         try {
+             if (!lang) {
+                 Object.keys(words).forEach(word => {
+                     Object.keys(words[word]).forEach(lang => {
+                         if (!I18n.translations[lang]) {
+                             console.warn(`Used unknown language: ${lang}`);
+                         }
+                         if (!I18n.translations[lang][word]) {
+                             I18n.translations[lang][word] = words[word][lang];
+                         } else if (I18n.translations[lang][word] !== words[word][lang]) {
+                             console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word][lang]}`);
+                         }
+                     });
+                 });
+             } else {
+                 if (!I18n.translations[lang]) {
+                     console.warn(`Used unknown language: ${lang}`);
+                 }
+                 I18n.translations[lang] = I18n.translations[lang] || {};
+                 Object.keys(words)
+                     .forEach(word => {
+                         if (!I18n.translations[lang][word]) {
+                             I18n.translations[lang][word] = words[word];
+                         } else if (I18n.translations[lang][word] !== words[word]) {
+                             console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word]}`);
+                         }
+                     });
+             }
+         } catch (e) {
+             console.error(`Cannot apply translations: ${e}`);
+         }
+    }
+
     /**
      * Sets all translations (in all languages).
      * @param {{ [lang in ioBroker.Languages]?: Record<string, string>; }} translations
