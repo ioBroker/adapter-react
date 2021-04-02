@@ -550,12 +550,12 @@ class GenericApp extends Router {
         const isChanged = (JSON.stringify(native) !== JSON.stringify(this.savedNative)) && (JSON.stringify(native) !== JSON.stringify(startedNative));
 
         if (isChanged) {
-            globalThis.changed = true
+            globalThis.changed = true;
         } else {
-            globalThis.changed = false
+            globalThis.changed = false;
         }
 
-        return isChanged
+        return isChanged;
     }
 
     /**
