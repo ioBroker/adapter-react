@@ -62,7 +62,6 @@ class GenericApp extends Router {
             selectedTab: window.localStorage.getItem(this.adapterName + '-adapter') || '',
             selectedTabNum: -1,
             native: {},
-            startedNative: {},
             errorText: '',
             changed: false,
             connected: false,
@@ -148,7 +147,8 @@ class GenericApp extends Router {
                                 if (obj) {
                                     this.common = obj && obj.common;
                                     this.onPrepareLoad(obj.native); // decode all secrets
-                                    this.setState({native: obj.native, startedNative: {...obj.native}, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
+                                    this.startedNative = {...obj.native};
+                                    this.setState({native: obj.native, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
                                 } else {
                                     console.warn('Cannot load instance settings');
                                     this.setState({native: {}, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
@@ -545,9 +545,8 @@ class GenericApp extends Router {
      */
     getIsChanged(native) {
         native = native || this.state.native;
-        const startedNative = this.state.startedNative;
 
-        const isChanged = (JSON.stringify(native) !== JSON.stringify(this.savedNative)) && (JSON.stringify(native) !== JSON.stringify(startedNative));
+        const isChanged = (JSON.stringify(native) !== JSON.stringify(this.savedNative)) && (JSON.stringify(native) !== JSON.stringify(this.startedNative));
 
         if (isChanged) {
             globalThis.changed = true;
