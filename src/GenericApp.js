@@ -147,7 +147,7 @@ class GenericApp extends Router {
                                 if (obj) {
                                     this.common = obj && obj.common;
                                     this.onPrepareLoad(obj.native); // decode all secrets
-                                    this.savedNative = {...obj.native};
+                                    this.savedNative = JSON.parse(JSON.stringify(obj.native));
                                     this.setState({native: obj.native, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
                                 } else {
                                     console.warn('Cannot load instance settings');
