@@ -63,7 +63,7 @@ class SaveCloseButtons extends React.Component {
             <Fab
                 variant="extended"
                 aria-label="Save"
-                disabled={!this.props.changed}
+                disabled={!this.props.changed || this.props.error}
                 onClick={() => this.props.onSave(false)}
                 style={buttonStyle}
             >
@@ -72,7 +72,7 @@ class SaveCloseButtons extends React.Component {
             <Fab
                 variant="extended"
                 aria-label="Save and close"
-                disabled={!this.props.changed}
+                disabled={!this.props.changed || this.props.error}
                 onClick={() => this.props.onSave(true)}
                 style={Object.assign({}, buttonStyle, {marginLeft: 10})}>
                 <IconSave className={!noTextOnButtons ? this.props.classes.buttonIcon : ''}/>
