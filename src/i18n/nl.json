@@ -230,5 +230,9 @@
   "ra_lastChange": "Laatste wijziging",
   "ra_Owner group": "Eigenaarsgroep",
   "ra_Owner user": "Eigenaar gebruiker",
-  "ra_Create": "Creëer"
+  "ra_Create": "Creëer",
+  "ra_Changed from": "Veranderd van",
+  "ra_Quality code": "Kwaliteitscode",
+  "ra_Timestamp": "Tijdstempel",
+  "ra_Last change": "Laatste wijziging"
 }

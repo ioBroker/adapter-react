@@ -243,5 +243,9 @@
   "ra_lastChange": "Last change",
   "ra_Owner group": "Owner group",
   "ra_Owner user": "Owner user",
-  "ra_Create": "Create"
+  "ra_Create": "Create",
+  "ra_Changed from": "Changed from",
+  "ra_Quality code": "Quality code",
+  "ra_Timestamp": "Timestamp",
+  "ra_Last change": "Last change"
 }

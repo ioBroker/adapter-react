@@ -230,5 +230,9 @@
   "ra_lastChange": "最后一次变更",
   "ra_Owner group": "所有者组",
   "ra_Owner user": "所有者用户",
-  "ra_Create": "创建"
+  "ra_Create": "创建",
+  "ra_Changed from": "更改为",
+  "ra_Quality code": "质量代码",
+  "ra_Timestamp": "时间戳记",
+  "ra_Last change": "最后一次变更"
 }

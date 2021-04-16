@@ -230,5 +230,9 @@
   "ra_lastChange": "Dernier changement",
   "ra_Owner group": "Groupe propriétaire",
   "ra_Owner user": "Utilisateur propriétaire",
-  "ra_Create": "Créer"
+  "ra_Create": "Créer",
+  "ra_Changed from": "Changé de",
+  "ra_Quality code": "Code de qualité",
+  "ra_Timestamp": "Horodatage",
+  "ra_Last change": "Dernier changement"
 }

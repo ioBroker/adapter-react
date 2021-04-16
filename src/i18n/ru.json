@@ -243,5 +243,9 @@
   "ra_lastChange": "Последнее изменение",
   "ra_Owner group": "Группа владельцев",
   "ra_Owner user": "Пользователь-владелец",
-  "ra_Create": "Создать"
+  "ra_Create": "Создать",
+  "ra_Changed from": "Изменено",
+  "ra_Quality code": "Код валидности",
+  "ra_Timestamp": "Времени",
+  "ra_Last change": "Последнее изменение"
 }
