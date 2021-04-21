@@ -592,6 +592,9 @@ class MyComponent {
 In dialogs the OK button is first (on the left) and the cancel button is last (on the right)
 
 ## Changelog
+### 1.6.10 (2021-04-22)
+* (bluefox) Fixed some errors in the object browser
+
 ### 1.6.9 (2021-04-17)
 * (bluefox) Updated the expert icon
 

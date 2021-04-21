@@ -29,6 +29,7 @@ import Utils from './Utils';
 import TextInputDialog from '../Dialogs/TextInput';
 import { EXTENSIONS } from './FileViewer';
 import FileViewer from './FileViewer';
+//import FileViewer from '@iobroker/adapter-react/Components/FileViewer';
 
 // Icons
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -55,10 +56,10 @@ import NoImage from '../assets/no_icon.svg';
 import IconClosed from '../icons/IconClosed';
 import IconOpen from '../icons/IconOpen';
 
-const ROW_HEIGHT = 32;
+const ROW_HEIGHT   = 32;
 const BUTTON_WIDTH = 32;
-const TILE_HEIGHT = 120;
-const TILE_WIDTH = 64;
+const TILE_HEIGHT  = 120;
+const TILE_WIDTH   = 64;
 
 const NOT_FOUND = 'Not found';
 
@@ -447,7 +448,8 @@ class FileBrowser extends Component {
             selected,
             errorText: '',
             modalEditOfAccess: false,
-            backgroundImage
+            backgroundImage,
+            queueLength: 0
         };
 
         this.imagePrefix = this.props.imagePrefix || './files/';
@@ -455,6 +457,9 @@ class FileBrowser extends Component {
         this.levelPadding = this.props.levelPadding || 20;
         this.mounted = true;
         this.suppressDeleteConfirm = 0;
+
+        this.browseList = [];
+        this.browseListRunning = false;
 
         this.loadFolders();
     }
@@ -529,6 +534,68 @@ class FileBrowser extends Component {
         }
     }
 
+    readDirSerial(adapter, relPath) {
+        return new Promise((resolve, reject) => {
+            this.browseList.push({resolve, reject, adapter, relPath});
+            !this.browseListRunning && this.processBrowseList();
+        });
+    }
+
+    processBrowseList(level) {
+        if (!this.browseListRunning && this.browseList.length) {
+            this.browseListRunning = true;
+            if (this.browseList.length > 10) {
+                // not too often
+                if (!(this.browseList.length % 10)) {
+                    this.setState({queueLength: this.browseList.length});
+                }
+            } else {
+                this.setState({queueLength: this.browseList.length});
+            }
+
+            this.browseList[0].processing = true;
+            this.props.socket.readDir(this.browseList[0].adapter, this.browseList[0].relPath)
+                .then(files => {
+                    const item = this.browseList.shift();
+                    const resolve = item.resolve;
+                    item.resolve = null;
+                    item.reject  = null;
+                    item.adapter = null;
+                    item.relPath = null;
+                    resolve(files);
+                    this.browseListRunning = false;
+                    if (this.browseList.length) {
+                        if (level < 5) {
+                            this.processBrowseList(level + 1);
+                        } else {
+                            setTimeout(() => this.processBrowseList(0), 0);
+                        }
+                    } else {
+                        this.setState({queueLength: 0});
+                    }
+                })
+                .catch(e => {
+                    const item = this.browseList.shift();
+                    const reject = item.reject;
+                    item.resolve = null;
+                    item.reject  = null;
+                    item.adapter = null;
+                    item.relPath = null;
+                    reject(e);
+                    this.browseListRunning = false;
+                    if (this.browseList.length) {
+                        if (level < 5) {
+                            this.processBrowseList(level + 1);
+                        } else {
+                            setTimeout(() => this.processBrowseList(0), 0);
+                        }
+                    } else {
+                        this.setState({queueLength: 0});
+                    }
+                });
+        }
+    }
+
     browseFolder(folderId, _newFolders, _checkEmpty) {
         if (!_newFolders) {
             _newFolders = {};
@@ -553,6 +620,10 @@ class FileBrowser extends Component {
                 .then(objs => {
                     const _folders = [];
                     let userData = null;
+
+                    // load only adapter.admin and not other meta files like hm-rpc.0.devices.blablabla
+                    objs = objs.filter(obj => obj._id.split('.').length <= 2);
+
                     objs.forEach(obj => {
                         const item = {
                             id:     obj._id,
@@ -586,14 +657,16 @@ class FileBrowser extends Component {
                     } else {
                         return _newFolders;
                     }
-                });
+                })
+                .catch(e => window.alert('Cannot read meta items: ' + e));
         } else {
             const parts   = folderId.split('/');
             const level   = parts.length;
             const adapter = parts.shift();
             const relPath = parts.join('/');
 
-            return this.props.socket.readDir(adapter, relPath)
+            // make all requests here serial
+            return this.readDirSerial(adapter, relPath)
                 .then(files => {
                     const _folders = [];
                     files.forEach(file => {
@@ -619,6 +692,9 @@ class FileBrowser extends Component {
                     } else {
                         return _newFolders;
                     }
+                })
+                .catch(e => {
+                    window.alert(`Cannot read ${adapter}${relPath ? '/' + relPath : ''}: ${e}`)
                 });
         }
     }
@@ -636,7 +712,7 @@ class FileBrowser extends Component {
             if (!item.temp) {
                 return this.browseFolder(item.id)
                     .then(folders => this.setState({ expanded, folders }))
-                    .catch(err => this.setState({ errorText: err === NOT_FOUND ? this.props.t('re_Cannot find "%s"', item.id) : this.props.t('re_Cannot read "%s"', item.id) }));
+                    .catch(err => window.alert(err === NOT_FOUND ? this.props.t('re_Cannot find "%s"', item.id) : this.props.t('re_Cannot read "%s"', item.id)));
             } else {
                 this.setState({ expanded });
             }
@@ -688,7 +764,7 @@ class FileBrowser extends Component {
     }
 
     renderFolder(item, expanded) {
-        if (this.state.folders[item.id] && this.state.filterEmpty && !this.state.folders[item.id].length && item.id !== USER_DATA && !item.temp) {
+        if (this.state.filterEmpty && (!this.state.folders[item.id] || !this.state.folders[item.id].length) && item.id !== USER_DATA && !item.temp) {
             return null;
         }
         const Icon = expanded ? IconOpen : IconClosed;
@@ -951,7 +1027,7 @@ class FileBrowser extends Component {
         }
 
         // tile
-        if (this.state.folders[folderId]) {
+        if (this.state.folders && this.state.folders[folderId]) {
             if (this.state.viewType === TILE) {
                 const res = [];
                 if (folderId && folderId !== '/') {
@@ -1007,7 +1083,10 @@ class FileBrowser extends Component {
                 });
             }
         } else {
-            return <CircularProgress key={folderId} color="secondary" size={24} />;
+            return <div style={{position: 'relative'}}>
+                <CircularProgress key={folderId} color="secondary" size={24}/>
+                <div style={{position: 'absolute', zIndex: 2, top: 4, width: 24, textAlign: 'center'}} >{this.state.queueLength}</div>
+            </div>;
         }
     }
 
@@ -1161,7 +1240,8 @@ class FileBrowser extends Component {
     uploadFile(fileName, data) {
         const parts = fileName.split('/');
         const adapter = parts.shift();
-        return this.props.socket.writeFile64(adapter, parts.join('/'), data);
+        return this.props.socket.writeFile64(adapter, parts.join('/'), data)
+            .catch(e => window.alert('Cannot write file: ' + e));
     }
 
     findFirstFolder(id) {
@@ -1256,7 +1336,8 @@ class FileBrowser extends Component {
             const parts = id.split('/');
             const adapter = parts.shift();
             if (parts.length) {
-                return this.props.socket.deleteFile(adapter, parts.join('/'));
+                return this.props.socket.deleteFile(adapter, parts.join('/'))
+                    .catch(e => window.alert('Cannot delete file: ' + e));
             } else {
                 return Promise.resolve();
             }

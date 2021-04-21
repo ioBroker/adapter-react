@@ -6,7 +6,7 @@
   "ra_filter_customs": "Einstellungen",
   "ra_filter_role": "Rolle",
   "ra_filter_room": "Zimmer",
-  "ra_tooltip_ack": "Bestätigte Flagge",
+  "ra_tooltip_ack": "Bestätigt",
   "ra_tooltip_from": "Von",
   "ra_tooltip_lc": "Zuletzt geändert",
   "ra_tooltip_quality": "Qualität",
@@ -245,7 +245,12 @@
   "ra_Owner user": "Besitzer Benutzer",
   "ra_Create": "Erstellen",
   "ra_Changed from": "Geändert von",
-  "ra_Quality code": "Qualitätscode",
+  "ra_Quality code": "Qualität",
   "ra_Timestamp": "Zeitstempel",
-  "ra_Last change": "Letzte Änderung"
+  "ra_Last change": "Letzte Änderung",
+  "ra_Collapse all nodes": "Alle Knoten zuklappen",
+  "ra_Edit custom config": "Benutzerdefinierte Konfiguration bearbeiten",
+  "ra_Collapse one step node": "Eine Ebene zuklappen",
+  "ra_Expand one step node": "Eine Ebene aufklappen",
+  "ra_Refresh tree": "Baum aktualisieren"
 }

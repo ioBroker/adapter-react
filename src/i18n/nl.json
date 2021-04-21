@@ -232,7 +232,12 @@
   "ra_Owner user": "Eigenaar gebruiker",
   "ra_Create": "Creëer",
   "ra_Changed from": "Veranderd van",
-  "ra_Quality code": "Kwaliteitscode",
+  "ra_Quality code": "Kwaliteit",
   "ra_Timestamp": "Tijdstempel",
-  "ra_Last change": "Laatste wijziging"
+  "ra_Last change": "Laatste wijziging",
+  "ra_Collapse all nodes": "Vouw alle knooppunten samen",
+  "ra_Edit custom config": "Bewerk aangepaste config",
+  "ra_Collapse one step node": "Eén niveau samenvouwen",
+  "ra_Expand one step node": "Vouw een niveau uit",
+  "ra_Refresh tree": "Vernieuw de boom"
 }

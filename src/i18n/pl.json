@@ -4,7 +4,7 @@
   "ra_filter_name": "Imię",
   "ra_filter_role": "Rola",
   "ra_filter_room": "Sala",
-  "ra_tooltip_ack": "Potwierdzona flaga",
+  "ra_tooltip_ack": "Potwierdzon",
   "ra_tooltip_from": "Z",
   "ra_tooltip_lc": "Ostatnia zmiana",
   "ra_tooltip_quality": "Jakość",
@@ -232,7 +232,12 @@
   "ra_Owner user": "Właściciel użytkownika",
   "ra_Create": "Stwórz",
   "ra_Changed from": "Zmieniony z",
-  "ra_Quality code": "Kod jakości",
+  "ra_Quality code": "Jakości",
   "ra_Timestamp": "Znak czasu",
-  "ra_Last change": "Ostatnia zmiana"
+  "ra_Last change": "Ostatnia zmiana",
+  "ra_Collapse all nodes": "Zwiń wszystkie węzły",
+  "ra_Edit custom config": "Edytuj konfigurację niestandardową",
+  "ra_Collapse one step node": "Zwiń o jeden poziom",
+  "ra_Expand one step node": "Rozwiń o jeden poziom",
+  "ra_Refresh tree": "Odśwież drzewo"
 }

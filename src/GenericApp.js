@@ -121,6 +121,7 @@ class GenericApp extends Router {
                 this.getSystemConfig()
                     .then(obj => {
                         this._secret = (typeof obj !== 'undefined' && obj.native && obj.native.secret) || 'Zgfr56gFe87jJOM';
+                        this._systemConfig = obj?.common || {};
                         return this.socket.getObject(this.instanceId);
                     })
                     .then(obj => {
@@ -294,12 +295,24 @@ class GenericApp extends Router {
      * @returns {Promise<ioBroker.OtherObject>}
      */
     getSystemConfig() {
+        if (this._systemConfig) {
+            return Promise.resolve(this._systemConfig);
+        }
         if (this.socket.objects && this.socket.objects['system.config']) {
             return Promise.resolve(this.socket.objects['system.config']);
         } else {
             // @ts-ignore
-            return this.socket.getObject('system.config');
+            return this.socket.getObject('system.config')
+                .then(obj => obj?.common || {});
         }
+    }
+
+    /**
+     * Get current expert mode
+     * @returns {boolean}
+     */
+    getExpertMode() {
+        return window.sessionStorage.getItem('App.expertMode') === 'true' || !!this._systemConfig.expertMode;
     }
 
     /**

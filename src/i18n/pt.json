@@ -4,7 +4,7 @@
   "ra_filter_name": "Nome",
   "ra_filter_role": "Papel (Função)",
   "ra_filter_room": "Quarto",
-  "ra_tooltip_ack": "Marcação como confirmado",
+  "ra_tooltip_ack": "Confirmado",
   "ra_tooltip_from": "De",
   "ra_tooltip_lc": "Última alteração",
   "ra_tooltip_quality": "Qualidade",
@@ -232,7 +232,12 @@
   "ra_Owner user": "Usuário proprietário",
   "ra_Create": "Crio",
   "ra_Changed from": "Mudou de",
-  "ra_Quality code": "Código de qualidade",
+  "ra_Quality code": "Qualidade",
   "ra_Timestamp": "Timestamp",
-  "ra_Last change": "Última mudança"
+  "ra_Last change": "Última mudança",
+  "ra_Collapse all nodes": "Recolher todos os nós",
+  "ra_Edit custom config": "Editar configuração personalizada",
+  "ra_Collapse one step node": "Recolher um nível",
+  "ra_Expand one step node": "Expanda um nível",
+  "ra_Refresh tree": "Atualizar árvore"
 }

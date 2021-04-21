@@ -234,5 +234,10 @@
   "ra_Changed from": "更改为",
   "ra_Quality code": "质量代码",
   "ra_Timestamp": "时间戳记",
-  "ra_Last change": "最后一次变更"
+  "ra_Last change": "最后一次变更",
+  "ra_Collapse all nodes": "收合所有节点",
+  "ra_Edit custom config": "编辑自定义配置",
+  "ra_Collapse one step node": "折叠一级",
+  "ra_Expand one step node": "扩大一级",
+  "ra_Refresh tree": "刷新树"
 }

@@ -232,7 +232,12 @@
   "ra_Owner user": "Utilisateur propriétaire",
   "ra_Create": "Créer",
   "ra_Changed from": "Changé de",
-  "ra_Quality code": "Code de qualité",
+  "ra_Quality code": "Qualité",
   "ra_Timestamp": "Horodatage",
-  "ra_Last change": "Dernier changement"
+  "ra_Last change": "Dernier changement",
+  "ra_Collapse all nodes": "Réduire tous les nœuds",
+  "ra_Edit custom config": "Modifier la configuration personnalisée",
+  "ra_Collapse one step node": "Réduire d'un niveau",
+  "ra_Expand one step node": "Développer un niveau",
+  "ra_Refresh tree": "Rafraîchir l'arborescence"
 }

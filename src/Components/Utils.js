@@ -14,7 +14,7 @@ class Utils {
     static namespace = NAMESPACE;
     static INSTANCES = 'instances';
     static dateFormat = ['DD', 'MM'];
-    static FORBIDDEN_CHARS = /[\][*,;'"`<>\\?]/g;
+    static FORBIDDEN_CHARS = /[^._\-/ :!#$%&()+=@^{}|~\p{Ll}\p{Lu}\p{Nd}]+/gu;
 
     /**
      * Capitalize words.
@@ -1264,6 +1264,19 @@ class Utils {
             m.forEach(doc => text = text.replace(doc, ''));
         }
         return text;
+    }
+
+    static generateFile(filename, obj) {
+        let el = document.createElement('a');
+        el.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj, null, 2)));
+        el.setAttribute('download', filename);
+
+        el.style.display = 'none';
+        document.body.appendChild(el);
+
+        el.click();
+
+        document.body.removeChild(el);
     }
 }
 
