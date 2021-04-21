@@ -291,6 +291,16 @@
                   "noDelete": {
                     "description": "For type 'table'. If delete or add disabled, If noDelete is false, add, delete and move up/down should work",
                     "type": "boolean"
+                  },
+                  "items": {
+                    "type": "array"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "items": {
+                    "type": "object"
                   }
                 }
               }

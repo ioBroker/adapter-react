@@ -342,12 +342,6 @@
           "val": "${data.myLanguage}",
           "id": "javascript.0.value",
           "label": "Test"
-        },
-        "bla": {
-          "type": "image",
-          "crop": false,
-          "visible": false,
-          "accept": ""
         }
       }
     }
