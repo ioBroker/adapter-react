@@ -1,0 +1,762 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "multilingual": {
+      "type": "object",
+      "required": [
+        "en"
+      ],
+      "patternProperties": {
+        "en|de|ru|pt|nl|fr|it|es|pl|zh-cn": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "Control type",
+      "enum": [
+        "tabs"
+      ]
+    },
+    "$schema": {
+      "description": "Specify a JSON schema",
+      "type": "string"
+    },
+    "i18n": {
+      "description": "If translations will be provided via files, e.g. in admin/i18n/de/translations.json or provide the path to the i18n folder if it's custom or provide the translations inside this attribute as an object",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "object",
+          "patternProperties": {
+            "^.+": {
+              "$ref": "#/definitions/multilingual"
+            }
+          }
+        }
+      ]
+    },
+    "items": {
+      "description": "Consists of objects representing e.g. a single tab",
+      "type": "object",
+      "patternProperties": {
+        "^.+": {
+          "description": "Object representing e.g. a tab",
+          "type": "object",
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "language"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "system": {
+                    "description": "For type 'language'. Allow the usage of the system language from system.config as default",
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "icon"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "crop": {
+                    "description": "For type 'icon'. If true, allow user to crop the image (only for non svg)",
+                    "type": "boolean"
+                  },
+                  "square": {
+                    "description": "For type 'icon'. Width must be equal to height or crop must allow only square as shape",
+                    "type": "number"
+                  },
+                  "maxWidth": {
+                    "description": "For type 'icon'. 'Maximum width",
+                    "type": "number"
+                  },
+                  "maxHeight": {
+                    "description": "For type 'icon'. 'Maximum height",
+                    "type": "number"
+                  },
+                  "maxSize": {
+                    "description": "For type 'icon'. 'Maximum size",
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "image"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "accept": {
+                    "description": "For type 'image'. HTML accept attribute, like 'image/*,.pdf'",
+                    "type": "string"
+                  },
+                  "crop": {
+                    "description": "For type 'image'. If true, allow user to crop the image (only for non svg)",
+                    "type": "boolean"
+                  },
+                  "square": {
+                    "description": "For type 'image'. Width must be equal to height or crop must allow only square as shape",
+                    "type": "number"
+                  },
+                  "maxWidth": {
+                    "description": "For type 'image'. 'Maximum width",
+                    "type": "number"
+                  },
+                  "maxHeight": {
+                    "description": "For type 'image'. 'Maximum height",
+                    "type": "number"
+                  },
+                  "maxSize": {
+                    "description": "For type image'. 'Maximum size",
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "sendto"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "command": {
+                    "description": "For type 'sendto'. Command to be sent.",
+                    "type": "string"
+                  },
+                  "jsonData": {
+                    "description": "For type 'sendto'. Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+                    "type": "string"
+                  },
+                  "data": {
+                    "description": "For type 'sendto'. Data to be sent as JSON.",
+                    "type": "object"
+                  },
+                  "result": {
+                    "description": "For type 'sendto'. TODO",
+                    "type": "object"
+                  },
+                  "error": {
+                    "description": "For type 'sendto'. TODO",
+                    "type": "object"
+                  },
+                  "variant": {
+                    "description": "For type 'sendto'. TODO",
+                    "type": "string",
+                    "enum": [
+                      "contained",
+                      "outlined"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "password"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "repeat": {
+                    "description": "For type 'password'. Password must be compared with password",
+                    "type": "boolean"
+                  },
+                  "visible": {
+                    "description": "For type 'password'. True if allow to view the password by toggling the view button",
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "file"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "filename": {
+                    "description": "For type 'file'. Name of the file.",
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "text"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "text": {
+                    "description": "For type 'text'. Static text like description",
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "$ref": "#/definitions/multilingual"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "select"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "options": {
+                    "description": "For type 'select'.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "label",
+                        "value"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "label": {
+                          "description": "Label"
+                        },
+                        "value": {
+                          "description": "Value"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "table"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "noDelete": {
+                    "description": "For type 'table'. If delete or add disabled, If noDelete is false, add, delete and move up/down should work",
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "pattern"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "pattern": {
+                    "description": "For type 'pattern'. Read-only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)",
+                    "type": "string"
+                  },
+                  "copyToClipboard": {
+                    "description": "For type 'pattern'. If true, show copy button.",
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "pattern"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "id": {
+                    "description": "For type 'setState'. Id of the state e.g. info.test",
+                    "type": "string"
+                  },
+                  "ack": {
+                    "description": "For type 'setState'. ack-flag of the state",
+                    "type": "boolean"
+                  },
+                  "val": {
+                    "description": "For type 'setState'. State value to set"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "ip"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "listenOnAllPorts": {
+                    "description": "For type 'ip'. Add 0.0.0.0 to option",
+                    "type": "boolean"
+                  },
+                  "onlyIp4": {
+                    "description": "For type 'ip'. Show only IP4 addresses",
+                    "type": "boolean"
+                  },
+                  "onlyIp6": {
+                    "description": "For type 'ip'. Show only IP6 addresses",
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "certificate"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "certType": {
+                    "description": "For type 'certificate'. Type of the certificate",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "chained"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "staticLink"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "href": {
+                    "description": "For type 'staticLink' and 'staticImage'. Link",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "instance"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "adapter": {
+                    "description": "For type 'instance'. Name of the adapter.",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "staticImage"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "src": {
+                    "description": "For type 'staticImage'. Name of picture (from admin directory)",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "objectId"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "types": {
+                    "description": "For type 'objectId'. Array of possible types: ['channel', 'device', ...] (has only state by default)",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "state",
+                        "channel",
+                        "device",
+                        "enum",
+                        "host",
+                        "adapter",
+                        "instance",
+                        "meta",
+                        "config",
+                        "script",
+                        "user",
+                        "group",
+                        "chart",
+                        "folder"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/properties/items"
+                },
+                {
+                  "description": "For type 'table'. Items of the table",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "attr",
+                      "width",
+                      "title",
+                      "filter",
+                      "sort"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "attr": {
+                        "type": "string"
+                      },
+                      "width": {
+                        "type": [
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "filter": {
+                        "type": "boolean"
+                      },
+                      "sort": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "label": {
+              "anyOf": [
+                {
+                  "description": "Label of tab",
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/definitions/multilingual"
+                }
+              ]
+            },
+            "icon": {
+              "description": "Tab can have icon (base64)",
+              "type": "string"
+            },
+            "type": {
+              "description": "Type of the tab",
+              "type": [
+                "string",
+                "object"
+              ],
+              "enum": [
+                "tab",
+                "text",
+                "number",
+                "color",
+                "checkbox",
+                "slider",
+                "ip",
+                "user",
+                "room",
+                "func",
+                "select",
+                "icon",
+                "image",
+                "panel",
+                "password",
+                "file",
+                "sendto",
+                "staticText",
+                "custom",
+                "pattern",
+                "table",
+                "instance",
+                "language",
+                "setState",
+                "certificate",
+                "staticImage",
+                "staticLink",
+                "divider",
+                "objectId"
+              ]
+            },
+            "sm": {
+              "description": "Width in 1/12 of screen on small screen",
+              "type": "number"
+            },
+            "md": {
+              "description": "width in 1/12 of screen on middle screens",
+              "type": "number"
+            },
+            "lg": {
+              "description": "width in 1/12 of screen on large screens",
+              "type": "number"
+            },
+            "xs": {
+              "description": "width in 1/12 of screen on very small screens",
+              "type": "number"
+            },
+            "newLine": {
+              "description": "Should be shown from new line",
+              "type": "boolean"
+            },
+            "hidden": {
+              "description": "JS function that could use 'native.attribute' for calculation",
+              "type": "string"
+            },
+            "hideOnlyControl": {
+              "description": "If hidden the place will be shown, but no control",
+              "type": "boolean"
+            },
+            "disabled": {
+              "description": "JS function that could use 'native.attribute' for calculation",
+              "type": "string"
+            },
+            "helpLink": {
+              "description": "href to help",
+              "type": "string"
+            },
+            "help": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/definitions/multilingual"
+                }
+              ]
+            },
+            "encrypted": {
+              "description": "Is value encrypted or not (of course only for texts)",
+              "type": "boolean"
+            },
+            "style": {
+              "description": "css style in react notation: 'radiusBorder' and not 'radius-border'",
+              "type": "object"
+            },
+            "darkStyle": {
+              "description": "css style for dark mode",
+              "type": "string"
+            },
+            "validator": {
+              "description": "JS function: true no error, false - error",
+              "type": "string"
+            },
+            "tooltip": {
+              "description": "Optional tooltip",
+              "type": "string"
+            },
+            "default": {
+              "description": "Default value"
+            },
+            "defaultFunc": {
+              "description": "JS function to calculate default value",
+              "type": "string"
+            },
+            "placeholder": {
+              "description": "Placeholder (for text control)",
+              "type": "string"
+            },
+            "noTranslation": {
+              "description": "Do not translate selects or other options (not for help, label or placeholder)",
+              "type": "boolean"
+            },
+            "confirm": {
+              "description": "Confirm dialog",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "condition": {
+                  "description": "JS function: true show confirm dialog",
+                  "type": "string"
+                },
+                "text": {
+                  "description": "Text of confirmation dialog",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
+                },
+                "title": {
+                  "description": "Title of confirmation dialog",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
+                },
+                "ok": {
+                  "description": "Text for 'OK' button",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
+                },
+                "cancel": {
+                  "description": "Text for 'cancel' button",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "info",
+                    "warning",
+                    "error",
+                    "none"
+                  ]
+                },
+                "alsoDependsOn": {
+                  "description": "Trigger confirm dialog if on of the components changed.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "color": {
+              "description": "Optional color",
+              "type": "string",
+              "enum": [
+                "primary",
+                "secondary"
+              ]
+            },
+            "min": {
+              "description": "Minimal value",
+              "type": "number"
+            },
+            "max": {
+              "description": "Maximum number",
+              "type": "number"
+            },
+            "component": {
+              "description": "Component name that will be provided via props, like componentInstancesEditor",
+              "type": "string"
+            },
+            "okText": {
+              "description": "Alert that will be shown by pressing the button",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
