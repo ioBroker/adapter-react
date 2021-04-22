@@ -21,7 +21,8 @@
       "type": "string",
       "description": "Control type",
       "enum": [
-        "tabs"
+        "tabs",
+        "panel"
       ]
     },
     "$schema": {
@@ -146,34 +147,34 @@
               "if": {
                 "properties": {
                   "type": {
-                    "const": "sendto"
+                    "const": "sendTo"
                   }
                 }
               },
               "then": {
                 "properties": {
                   "command": {
-                    "description": "For type 'sendto'. Command to be sent.",
+                    "description": "For type 'sendTo'. Command to be sent.",
                     "type": "string"
                   },
                   "jsonData": {
-                    "description": "For type 'sendto'. Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+                    "description": "For type 'sendTo'. Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
                     "type": "string"
                   },
                   "data": {
-                    "description": "For type 'sendto'. Data to be sent as JSON.",
+                    "description": "For type 'sendTo'. Data to be sent as JSON.",
                     "type": "object"
                   },
                   "result": {
-                    "description": "For type 'sendto'. TODO",
+                    "description": "For type 'sendTo'. TODO",
                     "type": "object"
                   },
                   "error": {
-                    "description": "For type 'sendto'. TODO",
+                    "description": "For type 'sendTo'. TODO",
                     "type": "object"
                   },
                   "variant": {
-                    "description": "For type 'sendto'. TODO",
+                    "description": "For type 'sendTo'. TODO",
                     "type": "string",
                     "enum": [
                       "contained",
@@ -551,7 +552,7 @@
               "type": "string"
             },
             "type": {
-              "description": "Type of the tab",
+              "description": "Type of the element",
               "type": [
                 "string",
                 "object"
@@ -573,7 +574,7 @@
                 "panel",
                 "password",
                 "file",
-                "sendto",
+                "sendTo",
                 "staticText",
                 "custom",
                 "pattern",
