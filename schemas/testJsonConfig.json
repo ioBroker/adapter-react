@@ -70,9 +70,9 @@
             "text": "Unsecure_Auth",
             "ok": "Ignore warning",
             "cancel": "Disable authentication",
-            "type": "warning"
+            "type": "warning",
+            "alsoDependsOn": ["secure"]
           },
-          "dependsOn": ["secure"],
           "label": "Authentication",
           "sm": 12,
           "md": 6,
