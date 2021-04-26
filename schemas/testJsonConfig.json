@@ -133,6 +133,9 @@
         }
       }
     },
+    "test": {
+      "type": "setState"
+    },
     "leTab": {
       "type": "panel",
       "label": "Let's Encrypt SSL",

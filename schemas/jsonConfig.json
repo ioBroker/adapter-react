@@ -16,6 +16,7 @@
   },
   "type": "object",
   "additionalProperties": false,
+  "required": ["type"],
   "properties": {
     "type": {
       "type": "string",
@@ -70,9 +71,7 @@
                     "description": "For type 'language'. Allow the usage of the system language from system.config as default",
                     "type": "boolean"
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -84,23 +83,175 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "autocompleteSendTo"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "command": {
+                    "description": "Command to be sent.",
+                    "type": "string"
+                  },
+                  "jsonData": {
+                    "description": "Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+                    "type": "string"
+                  },
+                  "data": {
+                    "description": "Data to be sent as JSON.",
+                    "type": "object"
+                  },
+                  "freeSolo": {
+                    "description": "Set freeSolo to true so the textbox can contain any arbitrary value.",
+                    "type": "boolean"
+                  },
+                  "placeholder": {
+                    "description": "Placeholder (for text control)",
+                    "type": "string"
+                  },
+                  "label": true,
+                  "type": true,
+                  "sm": true,
+                  "md": true,
+                  "lg": true,
+                  "xs": true,
+                  "newLine": true,
+                  "hidden": true,
+                  "hideOnlyControl": true,
+                  "disabled": true,
+                  "helpLink": true,
+                  "help": true,
+                  "style": true,
+                  "darkStyle": true,
+                  "validator": true,
+                  "tooltip": true,
+                  "default": true,
+                  "defaultFunc": true,
+                  "noTranslation": true,
+                  "confirm": true
+                },
+                "additionalProperties": false,
+                "required": ["type"]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "selectSendTo"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "command": {
+                    "description": "Command to be sent.",
+                    "type": "string"
+                  },
+                  "jsonData": {
+                    "description": "Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+                    "type": "string"
+                  },
+                  "data": {
+                    "description": "Data to be sent as JSON.",
+                    "type": "object"
+                  },
+                  "manual": {
+                    "description": "Allow manual editing. Without Dropdown",
+                    "type": "boolean"
+                  },
+                  "noTranslation": true,
+                  "label": true,
+                  "type": true,
+                  "sm": true,
+                  "md": true,
+                  "lg": true,
+                  "xs": true,
+                  "newLine": true,
+                  "hidden": true,
+                  "hideOnlyControl": true,
+                  "disabled": true,
+                  "helpLink": true,
+                  "help": true,
+                  "style": true,
+                  "darkStyle": true,
+                  "validator": true,
+                  "tooltip": true,
+                  "default": true,
+                  "defaultFunc": true,
+                  "confirm": true
+                },
+                "additionalProperties": false,
+                "required": ["type"]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "header"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "size": {
+                    "description": "Size of the header: h1-h5",
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 5
+                  },
+                  "text": {
+                    "description": "Header text",
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "$ref": "#/definitions/multilingual"
+                      }
+                    ]
+                  },
+                  "label": true,
+                  "type": true,
+                  "sm": true,
+                  "md": true,
+                  "lg": true,
+                  "xs": true,
+                  "newLine": true,
+                  "hidden": true,
+                  "hideOnlyControl": true,
+                  "disabled": true,
+                  "helpLink": true,
+                  "help": true,
+                  "style": true,
+                  "darkStyle": true,
+                  "validator": true,
+                  "tooltip": true,
+                  "default": true,
+                  "defaultFunc": true,
+                  "noTranslation": true,
+                  "confirm": true
+                },
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -113,9 +264,7 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -127,23 +276,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -156,9 +299,15 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
+                  "color": {
+                    "description": "Optional color",
+                    "type": "string",
+                    "enum": [
+                      "primary",
+                      "secondary"
+                    ]
+                  },
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -170,23 +319,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -219,9 +362,7 @@
                     "description": "For type 'icon'. 'Maximum size",
                     "type": "number"
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -233,23 +374,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -262,9 +397,14 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
+                  "items": {
+                    "$ref": "#/properties/items"
+                  },
+                  "icon": {
+                    "description": "Panel can have icon (base64)",
+                    "type": "string"
+                  },
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -276,23 +416,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -329,9 +463,7 @@
                     "description": "For type image'. 'Maximum size",
                     "type": "number"
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -343,23 +475,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -376,33 +502,47 @@
                     "description": "For type 'sendTo'. Command to be sent.",
                     "type": "string"
                   },
+                  "color": {
+                    "description": "Optional color",
+                    "type": "string",
+                    "enum": [
+                      "primary",
+                      "secondary"
+                    ]
+                  },
+                  "icon": {
+                    "description": "sendTo can have icon (base64)",
+                    "type": "string"
+                  },
                   "jsonData": {
-                    "description": "For type 'sendTo'. Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+                    "description": "Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
                     "type": "string"
                   },
                   "data": {
-                    "description": "For type 'sendTo'. Data to be sent as JSON.",
+                    "description": "Data to be sent as JSON.",
                     "type": "object"
                   },
                   "result": {
-                    "description": "For type 'sendTo'. TODO",
+                    "description": "TODO",
                     "type": "object"
                   },
                   "error": {
-                    "description": "For type 'sendTo'. TODO",
+                    "description": "TODO",
                     "type": "object"
                   },
                   "variant": {
-                    "description": "For type 'sendTo'. TODO",
+                    "description": "TODO",
                     "type": "string",
                     "enum": [
                       "contained",
                       "outlined"
                     ]
                   },
-                  "items": true,
+                  "placeholder": {
+                    "description": "Placeholder (for text control)",
+                    "type": "string"
+                  },
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -414,23 +554,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -443,17 +577,19 @@
               },
               "then": {
                 "properties": {
+                  "encrypted": {
+                    "description": "Is value encrypted or not (of course only for texts)",
+                    "type": "boolean"
+                  },
                   "repeat": {
-                    "description": "For type 'password'. Password must be compared with password",
+                    "description": "Password must be compared with password",
                     "type": "boolean"
                   },
                   "visible": {
-                    "description": "For type 'password'. True if allow to view the password by toggling the view button",
+                    "description": "True if allow to view the password by toggling the view button",
                     "type": "boolean"
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -465,23 +601,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -498,9 +628,7 @@
                     "description": "For type 'file'. Name of the file.",
                     "type": "boolean"
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -512,23 +640,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -541,9 +663,7 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -555,23 +675,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -584,9 +698,11 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
+                  "component": {
+                    "description": "Component name that will be provided via props, like componentInstancesEditor",
+                    "type": "string"
+                  },
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -598,23 +714,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -627,9 +737,7 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -641,23 +749,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -670,9 +772,19 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
+                  "placeholder": {
+                    "description": "Placeholder (for text control)",
+                    "type": "string"
+                  },
+                  "min": {
+                    "description": "Minimal value",
+                    "type": "number"
+                  },
+                  "max": {
+                    "description": "Maximum number",
+                    "type": "number"
+                  },
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -684,23 +796,74 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "autocomplete"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "placeholder": {
+                    "description": "Placeholder (for text control)",
+                    "type": "string"
+                  },
+                  "freeSolo": {
+                    "description": "Set freeSolo to true so the textbox can contain any arbitrary value.",
+                    "type": "boolean"
+                  },
+                  "options": {
+                    "description": "Options which can be completed. [\"value1\", \"value2\", ...] or [{\"value\": \"value\", \"label\": \"Value1\"}, \"value2\", ...]",
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object"
+                        }
+                      ]
+                    }
+                  },
+                  "label": true,
+                  "type": true,
+                  "sm": true,
+                  "md": true,
+                  "lg": true,
+                  "xs": true,
+                  "newLine": true,
+                  "hidden": true,
+                  "hideOnlyControl": true,
+                  "disabled": true,
+                  "helpLink": true,
+                  "help": true,
+                  "style": true,
+                  "darkStyle": true,
+                  "validator": true,
+                  "tooltip": true,
+                  "default": true,
+                  "defaultFunc": true,
+                  "noTranslation": true,
+                  "confirm": true
+                },
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -724,9 +887,11 @@
                       }
                     ]
                   },
-                  "items": true,
+                  "placeholder": {
+                    "description": "Placeholder (for text control)",
+                    "type": "string"
+                  },
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -738,23 +903,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -787,9 +946,7 @@
                       }
                     }
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -801,23 +958,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -830,9 +981,7 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -844,23 +993,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -878,10 +1021,45 @@
                     "type": "boolean"
                   },
                   "items": {
-                    "type": "array"
+                    "description": "For type 'table'. Items of the table",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "attr",
+                        "width",
+                        "title",
+                        "filter",
+                        "sort"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "attr": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": [
+                            "number",
+                            "string"
+                          ]
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "filter": {
+                          "type": "boolean"
+                        },
+                        "sort": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
                   },
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -893,23 +1071,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               },
               "else": {
                 "properties": {
@@ -937,9 +1109,7 @@
                     "description": "For type 'pattern'. If true, show copy button.",
                     "type": "boolean"
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -951,21 +1121,14 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 }
               }
             },
@@ -979,6 +1142,18 @@
               },
               "then": {
                 "properties": {
+                  "color": {
+                    "description": "Optional color",
+                    "type": "string",
+                    "enum": [
+                      "primary",
+                      "secondary"
+                    ]
+                  },
+                  "icon": {
+                    "description": "setState can have icon (base64)",
+                    "type": "string"
+                  },
                   "id": {
                     "description": "For type 'setState'. Id of the state e.g. info.test",
                     "type": "string"
@@ -990,9 +1165,23 @@
                   "val": {
                     "description": "For type 'setState'. State value to set"
                   },
-                  "items": true,
+                  "okText": {
+                    "description": "Alert that will be shown by pressing the button",
+                    "type": "string"
+                  },
+                  "error": {
+                    "description": "TODO",
+                    "type": "object"
+                  },
+                  "variant": {
+                    "description": "TODO",
+                    "type": "string",
+                    "enum": [
+                      "contained",
+                      "outlined"
+                    ]
+                  },
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1004,23 +1193,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -1033,9 +1216,7 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1047,23 +1228,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -1076,9 +1251,7 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1090,23 +1263,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -1119,9 +1286,7 @@
               },
               "then": {
                 "properties": {
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1133,23 +1298,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -1174,9 +1333,7 @@
                     "description": "For type 'ip'. Show only IP6 addresses",
                     "type": "boolean"
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1188,23 +1345,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -1226,9 +1377,7 @@
                       "chained"
                     ]
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1240,23 +1389,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -1284,9 +1427,7 @@
                       }
                     ]
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1298,23 +1439,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -1338,9 +1473,7 @@
                       }
                     ]
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1352,23 +1485,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -1385,9 +1512,7 @@
                     "description": "For type 'instance'. Name of the adapter.",
                     "type": "string"
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1399,23 +1524,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -1436,9 +1555,7 @@
                     "description": "For type 'staticLink' and 'staticImage'. Link",
                     "type": "string"
                   },
-                  "items": true,
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1450,23 +1567,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             },
             {
@@ -1502,9 +1613,11 @@
                       ]
                     }
                   },
-                  "items": true,
+                  "placeholder": {
+                    "description": "Placeholder (for text control)",
+                    "type": "string"
+                  },
                   "label": true,
-                  "icon": true,
                   "type": true,
                   "sm": true,
                   "md": true,
@@ -1516,23 +1629,17 @@
                   "disabled": true,
                   "helpLink": true,
                   "help": true,
-                  "encrypted": true,
                   "style": true,
                   "darkStyle": true,
                   "validator": true,
                   "tooltip": true,
                   "default": true,
                   "defaultFunc": true,
-                  "placeholder": true,
                   "noTranslation": true,
-                  "confirm": true,
-                  "color": true,
-                  "min": true,
-                  "max": true,
-                  "component": true,
-                  "okText": true
+                  "confirm": true
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "required": ["type"]
               }
             }
           ],
@@ -1540,52 +1647,6 @@
             "type"
           ],
           "properties": {
-            "items": {
-              "anyOf": [
-                {
-                  "$ref": "#/properties/items"
-                },
-                {
-                  "description": "For type 'table'. Items of the table",
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "required": [
-                      "type",
-                      "attr",
-                      "width",
-                      "title",
-                      "filter",
-                      "sort"
-                    ],
-                    "additionalProperties": false,
-                    "properties": {
-                      "type": {
-                        "type": "string"
-                      },
-                      "attr": {
-                        "type": "string"
-                      },
-                      "width": {
-                        "type": [
-                          "number",
-                          "string"
-                        ]
-                      },
-                      "title": {
-                        "type": "string"
-                      },
-                      "filter": {
-                        "type": "boolean"
-                      },
-                      "sort": {
-                        "type": "boolean"
-                      }
-                    }
-                  }
-                }
-              ]
-            },
             "label": {
               "anyOf": [
                 {
@@ -1597,10 +1658,6 @@
                 }
               ]
             },
-            "icon": {
-              "description": "Tab can have icon (base64)",
-              "type": "string"
-            },
             "type": {
               "description": "Type of the element",
               "type": [
@@ -1608,11 +1665,13 @@
                 "object"
               ],
               "enum": [
+                "autocomplete",
                 "tab",
                 "text",
                 "number",
                 "color",
                 "checkbox",
+                "header",
                 "slider",
                 "ip",
                 "user",
@@ -1636,7 +1695,9 @@
                 "staticImage",
                 "staticLink",
                 "divider",
-                "objectId"
+                "objectId",
+                "selectSendTo",
+                "autocompleteSendTo"
               ]
             },
             "sm": {
@@ -1685,10 +1746,6 @@
                 }
               ]
             },
-            "encrypted": {
-              "description": "Is value encrypted or not (of course only for texts)",
-              "type": "boolean"
-            },
             "style": {
               "description": "css style in react notation: 'radiusBorder' and not 'radius-border'",
               "type": "object"
@@ -1710,10 +1767,6 @@
             },
             "defaultFunc": {
               "description": "JS function to calculate default value",
-              "type": "string"
-            },
-            "placeholder": {
-              "description": "Placeholder (for text control)",
               "type": "string"
             },
             "noTranslation": {
@@ -1790,30 +1843,6 @@
                   }
                 }
               }
-            },
-            "color": {
-              "description": "Optional color",
-              "type": "string",
-              "enum": [
-                "primary",
-                "secondary"
-              ]
-            },
-            "min": {
-              "description": "Minimal value",
-              "type": "number"
-            },
-            "max": {
-              "description": "Maximum number",
-              "type": "number"
-            },
-            "component": {
-              "description": "Component name that will be provided via props, like componentInstancesEditor",
-              "type": "string"
-            },
-            "okText": {
-              "description": "Alert that will be shown by pressing the button",
-              "type": "string"
             }
           }
         }
