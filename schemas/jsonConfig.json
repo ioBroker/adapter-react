@@ -68,7 +68,7 @@
               "then": {
                 "properties": {
                   "system": {
-                    "description": "For type 'language'. Allow the usage of the system language from system.config as default",
+                    "description": "Allow the usage of the system language from system.config as default",
                     "type": "boolean"
                   },
                   "label": true,
@@ -343,23 +343,23 @@
               "then": {
                 "properties": {
                   "crop": {
-                    "description": "For type 'icon'. If true, allow user to crop the image (only for non svg)",
+                    "description": "If true, allow user to crop the image (only for non svg)",
                     "type": "boolean"
                   },
                   "square": {
-                    "description": "For type 'icon'. Width must be equal to height or crop must allow only square as shape",
+                    "description": "Width must be equal to height or crop must allow only square as shape",
                     "type": "number"
                   },
                   "maxWidth": {
-                    "description": "For type 'icon'. 'Maximum width",
+                    "description": "'Maximum width",
                     "type": "number"
                   },
                   "maxHeight": {
-                    "description": "For type 'icon'. 'Maximum height",
+                    "description": "'Maximum height",
                     "type": "number"
                   },
                   "maxSize": {
-                    "description": "For type 'icon'. 'Maximum size",
+                    "description": "'Maximum size",
                     "type": "number"
                   },
                   "label": true,
@@ -440,27 +440,27 @@
               "then": {
                 "properties": {
                   "accept": {
-                    "description": "For type 'image'. HTML accept attribute, like 'image/*,.pdf'",
+                    "description": "HTML accept attribute, like 'image/*,.pdf'",
                     "type": "string"
                   },
                   "crop": {
-                    "description": "For type 'image'. If true, allow user to crop the image (only for non svg)",
+                    "description": "If true, allow user to crop the image (only for non svg)",
                     "type": "boolean"
                   },
                   "square": {
-                    "description": "For type 'image'. Width must be equal to height or crop must allow only square as shape",
+                    "description": "Width must be equal to height or crop must allow only square as shape",
                     "type": "number"
                   },
                   "maxWidth": {
-                    "description": "For type 'image'. 'Maximum width",
+                    "description": "'Maximum width",
                     "type": "number"
                   },
                   "maxHeight": {
-                    "description": "For type 'image'. 'Maximum height",
+                    "description": "'Maximum height",
                     "type": "number"
                   },
                   "maxSize": {
-                    "description": "For type image'. 'Maximum size",
+                    "description": "'Maximum size",
                     "type": "number"
                   },
                   "label": true,
@@ -499,7 +499,7 @@
               "then": {
                 "properties": {
                   "command": {
-                    "description": "For type 'sendTo'. Command to be sent.",
+                    "description": "Command to be sent.",
                     "type": "string"
                   },
                   "color": {
@@ -625,7 +625,7 @@
               "then": {
                 "properties": {
                   "filename": {
-                    "description": "For type 'file'. Name of the file.",
+                    "description": "Name of the file.",
                     "type": "boolean"
                   },
                   "label": true,
@@ -877,7 +877,7 @@
               "then": {
                 "properties": {
                   "text": {
-                    "description": "For type 'text'. Static text like description",
+                    "description": "Static text like description",
                     "anyOf": [
                       {
                         "type": "string"
@@ -1017,11 +1017,11 @@
               "then": {
                 "properties": {
                   "noDelete": {
-                    "description": "For type 'table'. If delete or add disabled, If noDelete is false, add, delete and move up/down should work",
+                    "description": "If delete or add disabled, If noDelete is false, add, delete and move up/down should work",
                     "type": "boolean"
                   },
                   "items": {
-                    "description": "For type 'table'. Items of the table",
+                    "description": "Items of the table",
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -1102,11 +1102,11 @@
               "then": {
                 "properties": {
                   "pattern": {
-                    "description": "For type 'pattern'. Read-only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)",
+                    "description": "Read-only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)",
                     "type": "string"
                   },
                   "copyToClipboard": {
-                    "description": "For type 'pattern'. If true, show copy button.",
+                    "description": "If true, show copy button.",
                     "type": "boolean"
                   },
                   "label": true,
@@ -1155,15 +1155,15 @@
                     "type": "string"
                   },
                   "id": {
-                    "description": "For type 'setState'. Id of the state e.g. info.test",
+                    "description": "info.test",
                     "type": "string"
                   },
                   "ack": {
-                    "description": "For type 'setState'. ack-flag of the state",
+                    "description": "ack-flag of the state",
                     "type": "boolean"
                   },
                   "val": {
-                    "description": "For type 'setState'. State value to set"
+                    "description": "State value to set"
                   },
                   "okText": {
                     "description": "Alert that will be shown by pressing the button",
@@ -1322,15 +1322,15 @@
               "then": {
                 "properties": {
                   "listenOnAllPorts": {
-                    "description": "For type 'ip'. Add 0.0.0.0 to option",
+                    "description": "Add 0.0.0.0 to option",
                     "type": "boolean"
                   },
                   "onlyIp4": {
-                    "description": "For type 'ip'. Show only IP4 addresses",
+                    "description": "Show only IP4 addresses",
                     "type": "boolean"
                   },
                   "onlyIp6": {
-                    "description": "For type 'ip'. Show only IP6 addresses",
+                    "description": "Show only IP6 addresses",
                     "type": "boolean"
                   },
                   "label": true,
@@ -1369,7 +1369,7 @@
               "then": {
                 "properties": {
                   "certType": {
-                    "description": "For type 'certificate'. Type of the certificate",
+                    "description": "Type of the certificate",
                     "type": "string",
                     "enum": [
                       "public",
@@ -1413,11 +1413,11 @@
               "then": {
                 "properties": {
                   "href": {
-                    "description": "For type 'staticLink' and 'staticImage'. Link",
+                    "description": "Link",
                     "type": "string"
                   },
                   "text": {
-                    "description": "For type 'text'. Static text like description",
+                    "description": "Static text like description",
                     "anyOf": [
                       {
                         "type": "string"
@@ -1463,7 +1463,7 @@
               "then": {
                 "properties": {
                   "text": {
-                    "description": "For type 'text'. Static text like description",
+                    "description": "Static text like description",
                     "anyOf": [
                       {
                         "type": "string"
@@ -1509,7 +1509,7 @@
               "then": {
                 "properties": {
                   "adapter": {
-                    "description": "For type 'instance'. Name of the adapter.",
+                    "description": "Name of the adapter.",
                     "type": "string"
                   },
                   "label": true,
@@ -1548,11 +1548,11 @@
               "then": {
                 "properties": {
                   "src": {
-                    "description": "For type 'staticImage'. Name of picture (from admin directory)",
+                    "description": "Name of picture (from admin directory)",
                     "type": "string"
                   },
                   "href": {
-                    "description": "For type 'staticLink' and 'staticImage'. Link",
+                    "description": "Link",
                     "type": "string"
                   },
                   "label": true,
@@ -1591,7 +1591,7 @@
               "then": {
                 "properties": {
                   "types": {
-                    "description": "For type 'objectId'. Array of possible types: ['channel', 'device', ...] (has only state by default)",
+                    "description": "Array of possible types: ['channel', 'device', ...] (has only state by default)",
                     "type": "array",
                     "items": {
                       "type": "string",
