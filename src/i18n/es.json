@@ -239,5 +239,6 @@
   "ra_Edit custom config": "Editar configuración personalizada",
   "ra_Collapse one step node": "Contraer un nivel",
   "ra_Expand one step node": "Expandir un nivel",
-  "ra_Refresh tree": "Actualizar árbol"
+  "ra_Refresh tree": "Actualizar árbol",
+  "ra_Expand all nodes": "Expandir todos los nodos"
 }

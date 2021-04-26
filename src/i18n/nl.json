@@ -239,5 +239,6 @@
   "ra_Edit custom config": "Bewerk aangepaste config",
   "ra_Collapse one step node": "Eén niveau samenvouwen",
   "ra_Expand one step node": "Vouw een niveau uit",
-  "ra_Refresh tree": "Vernieuw de boom"
+  "ra_Refresh tree": "Vernieuw de boom",
+  "ra_Expand all nodes": "Vouw alle knooppunten uit"
 }

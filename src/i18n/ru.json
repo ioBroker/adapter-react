@@ -252,5 +252,6 @@
   "ra_Edit custom config": "Редактировать настраиваемую конфигурацию",
   "ra_Collapse one step node": "Свернуть один уровень",
   "ra_Expand one step node": "Открыть один уровень",
-  "ra_Refresh tree": "Обновить дерево"
+  "ra_Refresh tree": "Обновить дерево",
+  "ra_Expand all nodes": "Развернуть все узлы"
 }

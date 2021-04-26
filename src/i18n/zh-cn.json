@@ -239,5 +239,6 @@
   "ra_Edit custom config": "编辑自定义配置",
   "ra_Collapse one step node": "折叠一级",
   "ra_Expand one step node": "扩大一级",
-  "ra_Refresh tree": "刷新树"
+  "ra_Refresh tree": "刷新树",
+  "ra_Expand all nodes": "展开所有节点"
 }

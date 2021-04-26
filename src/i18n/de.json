@@ -252,5 +252,6 @@
   "ra_Edit custom config": "Benutzerdefinierte Konfiguration bearbeiten",
   "ra_Collapse one step node": "Eine Ebene zuklappen",
   "ra_Expand one step node": "Eine Ebene aufklappen",
-  "ra_Refresh tree": "Baum aktualisieren"
+  "ra_Refresh tree": "Baum aktualisieren",
+  "ra_Expand all nodes": "Alle Knoten aufklappen"
 }

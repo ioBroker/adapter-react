@@ -67,6 +67,7 @@ class GenericApp extends Router {
             connected: false,
             loaded: false,
             isConfigurationError: '',
+            expertMode:     false,
             toast: '',
             theme:          themeInstance,
             themeName:      this.getThemeName(themeInstance),
@@ -118,7 +119,9 @@ class GenericApp extends Router {
             onReady: (objects, scripts) => {
                 I18n.setLanguage(this.socket.systemLang);
 
-                this.getSystemConfig()
+                // subscribe because of language and expert mode
+                this.socket.subscribeObject('system.config', this.onSystemConfigChanged)
+                    .then(() => this.getSystemConfig())
                     .then(obj => {
                         this._secret = (typeof obj !== 'undefined' && obj.native && obj.native.secret) || 'Zgfr56gFe87jJOM';
                         this._systemConfig = obj?.common || {};
@@ -149,10 +152,11 @@ class GenericApp extends Router {
                                     this.common = obj && obj.common;
                                     this.onPrepareLoad(obj.native); // decode all secrets
                                     this.savedNative = JSON.parse(JSON.stringify(obj.native));
-                                    this.setState({native: obj.native, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
+                                    this.setState({native: obj.native, loaded: true, expertMode: this.getExpertMode()}, () =>
+                                        this.onConnectionReady && this.onConnectionReady());
                                 } else {
                                     console.warn('Cannot load instance settings');
-                                    this.setState({native: {}, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
+                                    this.setState({native: {}, loaded: true, expertMode: this.getExpertMode()}, () => this.onConnectionReady && this.onConnectionReady());
                                 }
                             });
                     });
@@ -162,6 +166,22 @@ class GenericApp extends Router {
                 this.showError(err);
             }
         });
+    }
+
+    onSystemConfigChanged = (id, obj) => {
+        if (obj && id === 'system.config') {
+            if (this.socket.systemLang !== obj?.common.language) {
+                this.socket.systemLang = obj?.common.language || 'en';
+                I18n.setLanguage(this.socket.systemLang);
+            }
+
+            if (this._systemConfig.expertMode !== !!obj?.common?.expertMode) {
+                this._systemConfig = obj?.common || {};
+                this.setState({expertMode: this.getExpertMode()});
+            } else {
+                this._systemConfig = obj?.common || {};
+            }
+        }
     }
 
     /**
@@ -199,9 +219,9 @@ class GenericApp extends Router {
                     this.onThemeChanged && this.onThemeChanged(newThemeName);
                 });
             } else if (message.data === 'updateExpertMode') {
-                this.onToggleExpertMode && this.onToggleExpertMode(window.localStorage.getItem('App.expertMode') === 'true');
+                this.onToggleExpertMode && this.onToggleExpertMode(this.getExpertMode());
             } else {
-                console.warn('Received unknown message: ' + message.data);
+                console.warn('Received unknown message: ' + JSON.stringify(message.data));
             }
         }
     };

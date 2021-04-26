@@ -252,5 +252,6 @@
   "ra_Edit custom config": "Edit custom config",
   "ra_Collapse one step node": "Collapse one level",
   "ra_Expand one step node": "Expand one level",
-  "ra_Refresh tree": "Refresh tree"
+  "ra_Refresh tree": "Refresh tree",
+  "ra_Expand all nodes": "Expand all nodes"
 }
