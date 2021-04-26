@@ -31,7 +31,7 @@ const styles = theme => ({
  * @typedef {object} DialogErrorProps
  * @property {string} [key] The key to identify this component.
  * @property {string} [title] The dialog title; default: Error (translated)
- * @property {string} text The dialog text.
+ * @property {string | JSX.Element} text The dialog text.
  * @property {() => void} [onClose] Close handler.
  * @property {{titleBackground: string; titleColor: string}} classes The styling class names.
  *
@@ -71,7 +71,10 @@ DialogError.propTypes = {
     key: PropTypes.string,
     onClose: PropTypes.func,
     title: PropTypes.string,
-    text: PropTypes.string,
+    text: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.element
+    ]),
     icon: PropTypes.object
 };
 

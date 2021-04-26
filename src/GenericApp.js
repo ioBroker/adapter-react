@@ -658,7 +658,7 @@ class GenericApp extends Router {
 
     /**
      * Set the error text to be shown.
-     * @param {string} text
+     * @param {string | JSX.Element} text
      */
     showError(text) {
         this.setState({errorText: text});

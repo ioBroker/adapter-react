@@ -64,7 +64,7 @@ export interface GenericAppState {
     selectedTab: string;
     selectedTabNum: number;
     native: ioBroker.AdapterConfig;
-    errorText: string;
+    errorText: string | JSX.Element;
     changed: boolean;
     connected: boolean;
     loaded: boolean;
