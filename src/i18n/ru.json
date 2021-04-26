@@ -243,5 +243,14 @@
   "ra_lastChange": "Последнее изменение",
   "ra_Owner group": "Группа владельцев",
   "ra_Owner user": "Пользователь-владелец",
-  "ra_Create": "Создать"
+  "ra_Create": "Создать",
+  "ra_Changed from": "Изменено",
+  "ra_Quality code": "Валидность",
+  "ra_Timestamp": "Времени",
+  "ra_Last change": "Последнее изменение",
+  "ra_Collapse all nodes": "Свернуть все узлы",
+  "ra_Edit custom config": "Редактировать настраиваемую конфигурацию",
+  "ra_Collapse one step node": "Свернуть один уровень",
+  "ra_Expand one step node": "Открыть один уровень",
+  "ra_Refresh tree": "Обновить дерево"
 }

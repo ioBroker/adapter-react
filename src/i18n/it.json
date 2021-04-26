@@ -230,5 +230,14 @@
   "ra_lastChange": "Ultima modifica",
   "ra_Owner group": "Gruppo di proprietari",
   "ra_Owner user": "Utente proprietario",
-  "ra_Create": "Creare"
+  "ra_Create": "Creare",
+  "ra_Changed from": "Cambiato da",
+  "ra_Quality code": "Qualità",
+  "ra_Timestamp": "Timestamp",
+  "ra_Last change": "Ultima modifica",
+  "ra_Collapse all nodes": "Comprimi tutti i nodi",
+  "ra_Edit custom config": "Modifica configurazione personalizzata",
+  "ra_Collapse one step node": "Comprimi un livello",
+  "ra_Expand one step node": "Espandi un livello",
+  "ra_Refresh tree": "Aggiorna l'albero"
 }

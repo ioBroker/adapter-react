@@ -69,6 +69,7 @@ import PublishIcon from '@material-ui/icons/Publish';
 import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import LooksOneIcon from '@material-ui/icons/LooksOne';
+import PressButtonIcon from '@material-ui/icons/RoomService';
 
 import IconExpert from '../icons/IconExpert';
 import IconAdapter from '../icons/IconAdapter';
@@ -85,7 +86,7 @@ import IconClearFilter from '../icons/IconClearFilter';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
-const ITEM_LEVEL = ROW_HEIGHT;
+const ITEM_LEVEL = 16;
 const SMALL_BUTTON_SIZE = 20;
 const COLOR_NAME_SYSTEM = '#ff6d69';
 const COLOR_NAME_SYSTEM_ADAPTER = '#5773ff';
@@ -196,7 +197,7 @@ const styles = theme => ({
         cursor: 'pointer',
         width: '100%',
         '&:hover': {
-            background: theme.palette.primary.main,
+            background: `${theme.palette.primary.main} !important`,
             color: Utils.invertColor(theme.palette.primary.main, true),
         },
         whiteSpace: 'nowrap',
@@ -261,7 +262,7 @@ const styles = theme => ({
 
     },
     cellCopyButton: {
-        color: 'white',
+        // color: 'white',
         width: SMALL_BUTTON_SIZE,
         height: SMALL_BUTTON_SIZE,
         top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
@@ -329,6 +330,12 @@ const styles = theme => ({
     cellValue: {
         display: 'inline-block',
         verticalAlign: 'top'
+    },
+    cellValueButton: {
+        marginTop: 5,
+        '&:active': {
+            transform: 'scale(0.8)'
+        }
     },
     cellAdapter: {
         display: 'inline-block',
@@ -400,6 +407,12 @@ const styles = theme => ({
         paddingTop: 0,
         marginTop: -2,
     },
+    cellButtonsEmptyButton: {
+        fontSize: 12,
+    },
+    cellButtonMinWidth: {
+        minWidth: 47,
+    },
     cellButtonsButtonAlone: {
         marginLeft: SMALL_BUTTON_SIZE + 4,
         paddingTop: 0,
@@ -444,8 +457,8 @@ const styles = theme => ({
         opacity: 0.5,
     },
     itemSelected: {
-        background: theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark,
-        color: Utils.invertColor(theme.palette.primary.main, true),
+        background: `${theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark} !important`,
+        color: `${Utils.invertColor(theme.palette.primary.main, true)} !important`,
     },
     header: {
         width: '100%'
@@ -518,9 +531,6 @@ const styles = theme => ({
     backgroundDef: {
         backgroundColor: theme.palette.background.default
     },
-    emptyButton: {
-        minWidth: 47
-    },
     buttonDiv: {
         display: 'flex',
         height: '100%',
@@ -540,6 +550,10 @@ const styles = theme => ({
     textCenter: {
         padding: 12,
         textAlign: 'center'
+    },
+    tooltipAccessControl: {
+        display: 'flex',
+        flexDirection: 'column'
     }
 });
 
@@ -593,8 +607,8 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
         if (filters.type) {
             context.type = filters.type.toLowerCase();
         }
-        if (filters.customs) {
-            context.customs = filters.customs.toLowerCase();
+        if (filters.custom) {
+            context.custom = filters.custom.toLowerCase();
         }
         if (filters.role) {
             context.role = filters.role.toLowerCase();
@@ -639,15 +653,23 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
             }
             filteredOut = data.fID.indexOf(context.id) === -1;
         }
-        if (!filteredOut && context.name && common) {
-            if (data.fName === undefined) {
-                data.fName = (common && getName(common.name, lang)) || '';
-                data.fName = data.fName.toLowerCase();
+        if (!filteredOut && context.name) {
+            if (common) {
+                if (data.fName === undefined) {
+                    data.fName = (common && getName(common.name, lang)) || '';
+                    data.fName = data.fName.toLowerCase();
+                }
+                filteredOut = !data.fName.includes(context.name);
+            } else {
+                filteredOut = true;
             }
-            filteredOut = !data.fName.includes(context.name);
         }
         if (!filteredOut && filters.role && common) {
-            filteredOut = !(common.role && common.role.startsWith(context.role));
+            if (common) {
+                filteredOut = !(common.role && common.role.startsWith(context.role));
+            } else {
+                filteredOut = true;
+            }
         }
         if (!filteredOut && context.room) {
             filteredOut = !context.room.find(id => id === data.id || data.id.startsWith(id + '.'));
@@ -658,8 +680,12 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
         if (!filteredOut && context.type) {
             filteredOut = !(data.obj && data.obj.type && data.obj.type === context.type);
         }
-        if (!filteredOut && context.customs && common) {
-            filteredOut = !common.customs || !common.customs[context.customs];
+        if (!filteredOut && context.custom) {
+            if (common) {
+                filteredOut = !common.custom || !common.custom[context.custom];
+            } else {
+                filteredOut = true;
+            }
         }
     }
     data.visible = !filteredOut;
@@ -679,6 +705,18 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
     }
 
     return visible;
+}
+
+function getVisibleItems(item, type, objects, _result) {
+    _result = _result || [];
+    const data = item.data;
+    if (data.visible || data.hasVisibleChildren) {
+        data.id && objects[data.id] && (!type || objects[data.id].type === type) && _result.push(data.id);
+        item.children?.forEach(_item =>
+            getVisibleItems(_item, type, objects, _result));
+    }
+
+    return _result;
 }
 
 function getSystemIcon(objects, id, k, imagePrefix) {
@@ -757,15 +795,14 @@ function buildTree(objects, options) {
 
     for (let i = 0; i < ids.length; i++) {
         const id = ids[i];
+        if (!id) {
+            continue;
+        }
         const obj = objects[id];
         const parts = id.split('.');
 
         if (obj.type && !info.types.includes(obj.type)) {
             info.types.push(obj.type);
-        }
-
-        if (id.startsWith('alias')) {
-            console.log(id);
         }
 
         if (obj) {
@@ -807,12 +844,12 @@ function buildTree(objects, options) {
                         if (!binarySearch(info.ids, curPath)) {
                             const _croot = {
                                 data: {
-                                    name:   parts[k],
-                                    parent: croot,
-                                    id:     curPath,
-                                    obj:    objects[curPath],
-                                    level:  k,
-                                    icon:   getSystemIcon(objects, curPath, k, imagePrefix),
+                                    name:      parts[k],
+                                    parent:    croot,
+                                    id:        curPath,
+                                    obj:       objects[curPath],
+                                    level:     k,
+                                    icon:      getSystemIcon(objects, curPath, k, imagePrefix),
                                     generated: true,
                                 }
                             };
@@ -829,15 +866,16 @@ function buildTree(objects, options) {
 
                 const _croot = {
                     data: {
-                        name:   parts[parts.length - 1],
-                        title:  getName(obj && obj.common && obj.common.name, options.lang),
+                        name:       parts[parts.length - 1],
+                        title:      getName(obj && obj.common && obj.common.name, options.lang),
                         obj,
-                        parent: croot,
-                        icon:   getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
+                        parent:     croot,
+                        icon:       getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
                         id,
-                        hasCustoms: obj.common && obj.common.custom && Object.keys(obj.common.custom).length,
-                        level:  parts.length - 1,
-                        generated: false,
+                        hasCustoms: obj.common?.custom && Object.keys(obj.common.custom).length,
+                        level:      parts.length - 1,
+                        generated:  false,
+                        button:     obj.type === 'state' && obj.common?.role?.startsWith('button') && obj.common?.write !== false,
                     }
                 };
 
@@ -902,9 +940,6 @@ function findNode(root, id, _parts, _path, _level) {
                 found = root.children[i];
                 break;
             } else
-            /*if (_id < _path) {
-                continue;
-            } else */
             if (_id > _path) {
                 break;
             }
@@ -1046,64 +1081,7 @@ function quality2text(q) {
     return text + (custom ? '|0x' + (custom >> 16).toString(16).toUpperCase() : '') + ' [0x' + q.toString(16).toUpperCase() + ']';
 }
 
-function formatDate(dateObj) {
-    //return dateObj.getFullYear() + '-' +
-    //    ('0' + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
-    //    ('0' + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
-    //    ('0' + (dateObj.getHours()).toString(10)).slice(-2) + ':' +
-    //    ('0' + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
-    //    ('0' + (dateObj.getSeconds()).toString(10)).slice(-2);
-    // Following implementation is 5 times faster
-    if (!dateObj) return '';
-
-    let text = dateObj.getFullYear();
-    let v = dateObj.getMonth() + 1;
-    if (v < 10) {
-        text += '-0' + v;
-    } else {
-        text += '-' + v;
-    }
-
-    v = dateObj.getDate();
-    if (v < 10) {
-        text += '-0' + v;
-    } else {
-        text += '-' + v;
-    }
-
-    v = dateObj.getHours();
-    if (v < 10) {
-        text += ' 0' + v;
-    } else {
-        text += ' ' + v;
-    }
-    v = dateObj.getMinutes();
-    if (v < 10) {
-        text += ':0' + v;
-    } else {
-        text += ':' + v;
-    }
-
-    v = dateObj.getSeconds();
-    if (v < 10) {
-        text += ':0' + v;
-    } else {
-        text += ':' + v;
-    }
-
-    v = dateObj.getMilliseconds();
-    if (v < 10) {
-        text += '.00' + v;
-    } else if (v < 100) {
-        text += '.0' + v;
-    } else {
-        text += '.' + v;
-    }
-
-    return text;
-}
-
-function formatValue(id, state, obj, texts) {
+function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     const states = getStates(obj);
     const isCommon = obj.common;
 
@@ -1112,6 +1090,9 @@ function formatValue(id, state, obj, texts) {
     const type = typeof v;
     if (type === 'number') {
         v = (Math.round(v * 100000000) / 100000000); // remove 4.00000000000000001
+        if (isFloatComma) {
+            v = v.toString().replace('.', ',');
+        }
     } else if (type === 'object') {
         v = JSON.stringify(v);
     } else if (type !== 'string') {
@@ -1140,16 +1121,24 @@ function formatValue(id, state, obj, texts) {
             valFull.push({ t: texts.ack, v: state.ack.toString() });
         }
         if (state.ts) {
-            valFull.push({ t: texts.ts, v: state.ts ? formatDate(new Date(state.ts)) : '' });
+            valFull.push({ t: texts.ts, v: state.ts ? Utils.formatDate(new Date(state.ts), dateFormat) : '' });
         }
         if (state.lc) {
-            valFull.push({ t: texts.lc, v: state.lc ? formatDate(new Date(state.lc)) : '' });
+            valFull.push({ t: texts.lc, v: state.lc ? Utils.formatDate(new Date(state.lc), dateFormat) : '' });
         }
         if (state.from) {
-            valFull.push({ t: texts.from, v: state.from || '' });
+            let from = (state.from || '');
+            if (from.startsWith('system.adapter.')) {
+                from = from.substring(15);
+            }
+            valFull.push({ t: texts.from, v: from });
         }
         if (state.user) {
-            valFull.push({ t: texts.user, v: state.user || '' });
+            let user = (state.user || '');
+            if (user.startsWith('system.user.')) {
+                user = user.substring(12);
+            }
+            valFull.push({ t: texts.user, v: user });
         }
         valFull.push({ t: texts.quality, v: quality2text(state.q || 0), nbr: true });
     }
@@ -1274,24 +1263,25 @@ const DEFAULT_FILTER = {
     func:   '',
     role:   '',
     type:   '',
+    custom: '',
     expertMode: false
 };
 
 const ITEM_IMAGES = {
-    state: <IconState className="itemIcon" />,
-    channel: <IconChannel className="itemIcon" />,
-    device: <IconDevice className="itemIcon" />,
-    adapter: <IconAdapter className="itemIcon" />,
-    meta: <IconMeta className="itemIcon" />,
+    state:    <IconState className="itemIcon" />,
+    channel:  <IconChannel className="itemIcon" />,
+    device:   <IconDevice className="itemIcon" />,
+    adapter:  <IconAdapter className="itemIcon" />,
+    meta:     <IconMeta className="itemIcon" />,
     instance: <IconInstance className="itemIcon" style={{ color: '#7da7ff' }} />,
-    enum: <IconEnum className="itemIcon" />,
-    chart: <IconChart className="itemIcon" />,
-    config: <IconConfig className="itemIcon" />,
-    group: <IconGroup className="itemIcon" />,
-    user: <IconUser className="itemIcon" />,
-    host: <IconHost className="itemIcon" />,
+    enum:     <IconEnum className="itemIcon" />,
+    chart:    <IconChart className="itemIcon" />,
+    config:   <IconConfig className="itemIcon" />,
+    group:    <IconGroup className="itemIcon" />,
+    user:     <IconUser className="itemIcon" />,
+    host:     <IconHost className="itemIcon" />,
     schedule: <IconSchedule className="itemIcon" />,
-    script: <IconScript className="itemIcon" />,
+    script:   <IconScript className="itemIcon" />,
 };
 
 const StyledBadge = withStyles(theme => ({
@@ -1323,8 +1313,8 @@ const SCREEN_WIDTHS = {
             buttons: 120,
             changedFrom: 120,
             qualityCode: 100,
-            timestamp: 160,
-            lastChange: 160
+            timestamp: 165,
+            lastChange: 165
         }
     },
     ///////////////
@@ -1346,6 +1336,15 @@ const SCREEN_WIDTHS = {
         }
     },
 };
+
+const DraggableObject = props => {
+    let dragSettings = { ...props.dragSettings };
+    dragSettings.item = props.item;
+    const useDrag = props.useDrag;
+    const [{ isDragging }, dragRef] = useDrag(dragSettings);
+
+    return <div ref={dragRef} style={{backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined}}>{props.children}</div>;
+}
 
 /**
  * @extends {React.Component<import('./types').ObjectBrowserProps>}
@@ -1388,7 +1387,7 @@ class ObjectBrowser extends Component {
             }
         }
 
-        filter.expertMode = props.expertMode !== undefined ? props.expertMode : (window.localStorage.getItem('App.expertMode') === 'true');
+        filter.expertMode = props.expertMode !== undefined ? props.expertMode : (window.sessionStorage.getItem('App.expertMode') === 'true');
         this.tableRef = createRef();
         this.filterRefs = {};
 
@@ -1419,7 +1418,7 @@ class ObjectBrowser extends Component {
 
         if (props.router) {
             const location = props.router.getLocation();
-            if (location.id && location.dialog === 'custom') {
+            if (location.id && location.dialog === 'customs') {
                 customDialog = [location.id];
                 this.pauseSubscribe(true);
             }
@@ -1473,12 +1472,12 @@ class ObjectBrowser extends Component {
             editObjectDialog: '',
             enumDialog: null,
             roleDialog: null,
-
+            modalEmptyId: null,
             statesView,
             columns,
             columnsForAdmin: null,
             columnsSelectorShow: false,
-            columnsAuto: window.localStorage.getItem(`${props.dialogName || 'App'}.columnsAuto`) === 'false' ? false : true,
+            columnsAuto: window.localStorage.getItem(`${props.dialogName || 'App'}.columnsAuto`) !== 'false',
             columnsWidths,
             columnsDialogTransparent: 100,
             columnsEditCustomDialog: null,
@@ -1529,8 +1528,6 @@ class ObjectBrowser extends Component {
             aclEveryone_write_object: props.t('ra_aclEveryone_write_object'),
             aclEveryone_write_state:  props.t('ra_aclEveryone_write_state'),
         };
-
-        this.onStateChangeBound = this.onStateChange.bind(this);
 
         this.calculateColumnsVisibility();
 
@@ -1587,7 +1584,8 @@ class ObjectBrowser extends Component {
                             if (!state || !state.val) {
                                 this.defaultHistory = '';
                             }
-                        });
+                        })
+                        .catch(e => window.alert('Cannot get state: ' + e));
                 }
             })
             .then(() => this.getAdditionalColumns())
@@ -1674,7 +1672,7 @@ class ObjectBrowser extends Component {
         // remove all subscribes
         this.subscribes.forEach(pattern => {
             console.log('- unsubscribe ' + pattern);
-            this.props.socket.unsubscribeState(pattern, this.onStateChangeBound);
+            this.props.socket.unsubscribeState(pattern, this.onStateChange);
         });
 
         this.subscribes = [];
@@ -1684,11 +1682,16 @@ class ObjectBrowser extends Component {
      * Called when component is mounted.
      */
     async refreshComponent() {
-        await this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        try {
+            await this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        } catch (e) {
+            window.alert('Cannot unsubscribe object: ' + e);
+        }
+
         // remove all subscribes
         this.subscribes.forEach(async pattern => {
             console.log('- unsubscribe ' + pattern);
-            await this.props.socket.unsubscribeState(pattern, this.onStateChangeBound);
+            await this.props.socket.unsubscribeState(pattern, this.onStateChange);
         });
 
         this.subscribes = [];
@@ -1943,7 +1946,8 @@ class ObjectBrowser extends Component {
                     columnsForAdmin = this.parseObjectForAdmins(columnsForAdmin, obj));
 
                 return columnsForAdmin;
-            });
+            })
+            .catch(e => window.alert('Cannot get adapters: ' + e));
     }
 
     /**
@@ -1996,7 +2000,7 @@ class ObjectBrowser extends Component {
      * @param {string} id
      * @param {ioBroker.State} state
      */
-    onStateChange(id, state) {
+    onStateChange = (id, state) => {
         console.log('> stateChange ' + id);
         if (this.states[id]) {
             const item = this.findItem(id);
@@ -2019,7 +2023,7 @@ class ObjectBrowser extends Component {
                 this.statesUpdateTimer = null;
             }
         }
-    }
+    };
 
     /**
      * @private
@@ -2121,7 +2125,7 @@ class ObjectBrowser extends Component {
             this.subscribes.push(id);
             console.log('+ subscribe ' + id);
             if (!this.pausedSubscribes) {
-                this.props.socket.subscribeState(id, this.onStateChangeBound);
+                this.props.socket.subscribeState(id, this.onStateChange);
             }
         }
     }
@@ -2138,7 +2142,7 @@ class ObjectBrowser extends Component {
                 delete this.states[id];
             }
             console.log('- unsubscribe ' + id);
-            this.props.socket.unsubscribeState(id, this.onStateChangeBound);
+            this.props.socket.unsubscribeState(id, this.onStateChange);
 
             if (this.pausedSubscribes) {
                 console.warn('Unsubscribe during pause?');
@@ -2153,10 +2157,10 @@ class ObjectBrowser extends Component {
     pauseSubscribe(isPause) {
         if (!this.pausedSubscribes && isPause) {
             this.pausedSubscribes = true;
-            this.subscribes.forEach(id => this.props.socket.unsubscribeState(id, this.onStateChangeBound));
+            this.subscribes.forEach(id => this.props.socket.unsubscribeState(id, this.onStateChange));
         } else if (this.pausedSubscribes && !isPause) {
             this.pausedSubscribes = false;
-            this.subscribes.forEach(id => this.props.socket.subscribeState(id, this.onStateChangeBound));
+            this.subscribes.forEach(id => this.props.socket.subscribeState(id, this.onStateChange));
         }
     }
 
@@ -2183,7 +2187,7 @@ class ObjectBrowser extends Component {
         if (name) {
             filter[name] = value;
             if (name === 'expertMode') {
-                window.localStorage.setItem('App.expertMode', value ? 'true' : 'false');
+                window.sessionStorage.setItem('App.expertMode', value ? 'true' : 'false');
             }
         }
 
@@ -2294,7 +2298,7 @@ class ObjectBrowser extends Component {
                     let name;
                     let icon;
                     if (typeof item === 'object') {
-                        id = item.value;
+                        id   = item.value;
                         name = item.name;
                         icon = item.icon;
                     } else {
@@ -2380,7 +2384,7 @@ class ObjectBrowser extends Component {
      */
     getFilterSelectCustoms() {
         if (this.info.customs.length) {
-            return this.getFilterSelect('customs', this.info.customs);
+            return this.getFilterSelect('custom', this.info.customs);
         } else {
             return null;
         }
@@ -2492,7 +2496,6 @@ class ObjectBrowser extends Component {
      */
     getEnumsForId = (id) => {
         let result = [];
-        console.log(this.info.enums);
         this.info.enums.forEach(_id => {
             if (this.objects[_id]?.common?.members?.includes(id)) {
                 const en = {
@@ -2650,75 +2653,92 @@ class ObjectBrowser extends Component {
                 width: '100%',
                 alignItems: 'center'
             }}>
-                <IconButton onClick={() => this.refreshComponent()}>
-                    <RefreshIcon />
-                </IconButton>
-                {this.props.showExpertButton &&
-                    <IconButton
-                        key="expertMode"
-                        color={this.state.filter.expertMode ? 'secondary' : 'default'}
-                        onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
-                    >
-                        <IconExpert />
+
+                <Tooltip title={this.props.t('ra_Refresh tree')}>
+                    <IconButton onClick={() => this.refreshComponent()}>
+                        <RefreshIcon />
                     </IconButton>
+                </Tooltip>
+                {this.props.showExpertButton &&
+                    <Tooltip title={this.props.t('ra_expertMode')}>
+                        <IconButton
+                            key="expertMode"
+                            color={this.state.filter.expertMode ? 'secondary' : 'default'}
+                            onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                        >
+                            <IconExpert />
+                        </IconButton>
+                    </Tooltip>
                 }
                 {!this.props.disableColumnSelector &&
-                    <IconButton
-                        key="columnSelector"
-                        onClick={() => this.setState({ columnsSelectorShow: true })}
-                    >
-                        <IconColumns />
-                    </IconButton>
+                    <Tooltip title={this.props.t('ra_Configure visible columns')}>
+                        <IconButton
+                            key="columnSelector"
+                            onClick={() => this.setState({ columnsSelectorShow: true })}
+                        >
+                            <IconColumns />
+                        </IconButton>
+                    </Tooltip>
                 }
                 {this.state.expandAllVisible &&
-                    <IconButton
-                        key="expandAll"
-                        onClick={() => this.onExpandAll()}
-                    >
-                        <IconOpen />
-                    </IconButton>
+                    <Tooltip title={this.props.t('ra_Expand all nodes')}>
+                        <IconButton
+                            key="expandAll"
+                            onClick={() => this.onExpandAll()}
+                        >
+                            <IconOpen />
+                        </IconButton>
+                    </Tooltip>
                 }
-                <IconButton
-                    key="collapseAll"
-                    onClick={() => this.onCollapseAll()}
-                >
-                    <IconClosed />
-                </IconButton>
-                <IconButton
-                    key="expandVisible"
-                    color="primary"
-                    onClick={() => this.onExpandVisible()}
-                >
-                    <StyledBadge badgeContent={this.state.depth} color="secondary">
-                        <IconOpen />
-                    </StyledBadge>
-                </IconButton>
-                <IconButton
-                    key="collapseVisible"
-                    color="primary"
-                    onClick={() => this.onCollapseVisible()}
-                >
-                    <StyledBadge badgeContent={this.state.depth} color="secondary">
+                <Tooltip title={this.props.t('ra_Collapse all nodes')}>
+                    <IconButton
+                        key="collapseAll"
+                        onClick={() => this.onCollapseAll()}
+                    >
                         <IconClosed />
-                    </StyledBadge>
-                </IconButton>
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('ra_Expand one step node')}>
+                    <IconButton
+                        key="expandVisible"
+                        color="primary"
+                        onClick={() => this.onExpandVisible()}
+                    >
+                        <StyledBadge badgeContent={this.state.depth} color="secondary">
+                            <IconOpen />
+                        </StyledBadge>
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('ra_Collapse one step node')}>
+                    <IconButton
+                        key="collapseVisible"
+                        color="primary"
+                        onClick={() => this.onCollapseVisible()}
+                    >
+                        <StyledBadge badgeContent={this.state.depth} color="secondary">
+                            <IconClosed />
+                        </StyledBadge>
+                    </IconButton>
+                </Tooltip>
                 {this.props.objectStatesView && <Tooltip title={this.props.t('ra_Toggle the states view')}>
                     <IconButton onClick={() => this.onStatesViewVisible()}>
                         <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>}
-                {this.props.objectAddBoolean && <Tooltip title={this.props.t('ra_Add new child object to selected parent')}>
-                    <IconButton onClick={() => {
-                        if (this.state.selected.length) {
-                            this.setState({ modalNewObj: true });
-                        } else {
-                            this.setState({ toast: this.props.t('ra_please select object') });
-                        }
-                    }}>
-                        <AddIcon />
-                    </IconButton>
-                </Tooltip>
+
+                {this.props.objectAddBoolean ?
+                    (!this.state.selected.length || (this.objects[this.state.selected[0]] && this.objects[this.state.selected[0]].type === 'state') || (!this.props.expertMode && !this.state.selected[0].startsWith('alias.0') && !this.state.selected[0].startsWith('0_userdata')) ?
+                        <IconButton disabled><AddIcon /></IconButton>
+                        :
+                        <Tooltip title={this.props.t('ra_Add new child object to selected parent')}>
+                            <IconButton onClick={() =>
+                                this.setState({ modalNewObj: true })}
+                            >
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>) : null
                 }
+
                 {this.props.objectImportExport &&
                     <Tooltip title={this.props.t('ra_Add objects tree from JSON file')}>
                         <IconButton onClick={() => {
@@ -2738,20 +2758,27 @@ class ObjectBrowser extends Component {
                         <IconButton onClick={() => {
                             if (this.state.selected.length) {
                                 let result = {};
-                                Object.keys(this.objects).forEach(key => {
-                                    if (!key.search(this.state.selected[0])) {
+                                let keys = Object.keys(this.objects);
+                                let id = this.state.selected[0];
+                                let idLen = id.length;
+                                for (let k = 0; k < keys.length; k++) {
+                                    const key = keys[k];
+                                    if (!key.startsWith(id)) {
                                         result[key] = JSON.parse(JSON.stringify(this.objects[key]));
                                         // add enum information
                                         if (result[key].common) {
                                             const enums = this.getEnumsForId(key);
-                                            console.log(enums);
                                             if (enums) {
                                                 result[key].common.enums = enums;
                                             }
                                         }
                                     }
-                                })
-                                generateFile(this.state.selected[0] + '.json', result);
+                                    if (key.substring(0, idLen) > id) {
+                                        break;
+                                    }
+                                }
+
+                                generateFile(id + '.json', result);
                             } else {
                                 window.alert(this.props.t('ra_Save of objects-tree is not possible'));
                             }
@@ -2764,18 +2791,27 @@ class ObjectBrowser extends Component {
             <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>
-            {this.props.objectEditBoolean && <IconButton onClick={() => {
-                if (this.state.selected.length) {
-                    window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
-                    this.pauseSubscribe(true);
-                    this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
-                    this.setState({ customDialog: [this.state.selected[0]] });
-                } else {
-                    this.setState({ toast: this.props.t('ra_please select object') });
-                }
-            }}>
-                <BuildIcon />
-            </IconButton>
+            {this.props.objectEditBoolean &&
+            <Tooltip title={this.props.t('ra_Edit custom config')}>
+                <IconButton onClick={() => {
+                    // get all visible states
+                    const ids = getVisibleItems(this.root, 'state', this.objects);
+
+                    if (ids.length) {
+                        this.pauseSubscribe(true);
+
+                        if (ids.length === 1) {
+                            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
+                            this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
+                        }
+                        this.setState({ customDialog: ids });
+                    } else {
+                        this.setState({ toast: this.props.t('ra_please select object') });
+                    }
+                }}>
+                    <BuildIcon />
+                </IconButton>
+            </Tooltip>
             }
         </div>;
     }
@@ -2827,7 +2863,7 @@ class ObjectBrowser extends Component {
             { value: '0x20',  valueNum: 0x20,  title: 'write', group: 'Group' },
             { value: '0x4',   valueNum: 0x4,   title: 'read',  group: 'Everyone' },
             { value: '0x2',   valueNum: 0x2,   title: 'write', group: 'Everyone' }
-        ]
+        ];
         const arrayTooltipText = [];
         const funcRenderStateObject = (value = 'object') => {
             let rights = acl[value];
@@ -2841,13 +2877,13 @@ class ObjectBrowser extends Component {
                 }
             });
         }
-        arrayTooltipText.push(<span key="group">{this.texts.ownerGroup + ': ' + acl.ownerGroup.replace('system.group.', '')}</span>);
-        arrayTooltipText.push(<span key="owner">{this.texts.ownerUser  + ': ' + acl.owner.replace('system.user.', '')}</span>);
+        arrayTooltipText.push(<span key="group">{this.texts.ownerGroup + ': ' + (acl.ownerGroup || '').replace('system.group.', '')}</span>);
+        arrayTooltipText.push(<span key="owner">{this.texts.ownerUser  + ': ' + (acl.owner || '').replace('system.user.', '')}</span>);
         funcRenderStateObject();
         if (acl.state) {
             funcRenderStateObject('state');
         }
-        return arrayTooltipText.length ? <span style={{ display: 'flex', flexDirection: 'column' }}>{arrayTooltipText.map(el => el)}</span> : '';
+        return arrayTooltipText.length ? <span className={this.props.classes.tooltipAccessControl}>{arrayTooltipText.map(el => el)}</span> : '';
     }
 
     /**
@@ -2858,8 +2894,11 @@ class ObjectBrowser extends Component {
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
             return this.props.onObjectDelete ? <div className={classes.buttonDiv}>
-                {this.props.expertMode && <div
-                    className={Utils.clsx(classes.emptyButton, classes.textCenter)} >---</div>}
+                {this.props.expertMode && <IconButton
+                    className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsEmptyButton, classes.cellButtonMinWidth)}
+                    onClick={() =>
+                        this.setState({ modalEditOfAccess: true, modalEmptyId: id, modalEditOfAccessObjData: item.data })}
+                >---</IconButton>}
                 <IconButton
                     className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone)}
                     size="small"
@@ -2873,16 +2912,14 @@ class ObjectBrowser extends Component {
 
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
 
+        const acl = item.data.obj.acl ? (item.data.obj.type === 'state' ? item.data.obj.acl.state : item.data.obj.acl.object) : 0;
+
         return [
-            this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton style={{ minWidth: 47 }} onClick={() =>
+            this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton className={classes.cellButtonMinWidth} onClick={() =>
                 this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
             }>
-                <div className={classes.aclText}>{Number(item.data.obj.type === 'state' ?
-                    item.data.obj.acl.state ?
-                        item.data.obj.acl.state :
-                        item.data.obj.acl.object :
-                    item.data.obj.acl.object).toString(16)}</div>
-            </IconButton></Tooltip> : <div key="aclEmpty" className={classes.emptyButton} />,
+                <div className={classes.aclText}>{Number(acl).toString(16)}</div>
+            </IconButton></Tooltip> : <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
             <IconButton
                 key="edit"
                 className={classes.cellButtonsButton}
@@ -2916,7 +2953,7 @@ class ObjectBrowser extends Component {
                     window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', id);
 
                     this.pauseSubscribe(true);
-                    this.props.router && this.props.router.doNavigate(null, 'custom', id);
+                    this.props.router && this.props.router.doNavigate(null, 'customs', id);
                     this.setState({ customDialog: [id] });
                 }}
             >
@@ -3012,7 +3049,7 @@ class ObjectBrowser extends Component {
         const state = this.states[id];
         let info = item.data.state;
         if (!info) {
-            info = item.data.state = item.data.state || formatValue(id, state, item.data.obj, this.texts);
+            info = item.data.state = item.data.state || formatValue(id, state, item.data.obj, this.texts, this.props.dateFormat, this.props.isFloatComma);
 
             info.valFull = info.valFull.map(item => [
                 <div className={classes.cellValueTooltipTitle} key={item.t}>{item.t}:</div>,
@@ -3035,6 +3072,11 @@ class ObjectBrowser extends Component {
             ];
         }
 
+        let val = info.valText;
+        if (!this.props.expertMode && item.data.button) {
+            val = <PressButtonIcon className={this.props.classes.cellValueButton}/>;
+        }
+
         return <Tooltip
             key="value"
             title={info.valFull}
@@ -3042,7 +3084,7 @@ class ObjectBrowser extends Component {
             onOpen={() => this.readHistory(id)}
         >
             <div style={info.style} className={classes.cellValueText} >
-                {info.valText}
+                {val}
             </div>
         </Tooltip>;
     }
@@ -3116,8 +3158,7 @@ class ObjectBrowser extends Component {
             const itemEnums = this.state.enumDialogEnums;
             const enumsOriginal = this.state.enumDialog.enumsOriginal;
 
-            const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums).map(id =>
-            ({
+            const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums).map(id => ({
                 name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop(), this.props.lang),
                 value: id,
                 icon: getSelectIdIcon(this.objects, id, this.imagePrefix)
@@ -3215,8 +3256,10 @@ class ObjectBrowser extends Component {
                 t={this.props.t}
                 roles={this.info.roles}
                 onClose={obj => {
-                    this.info.objects[this.state.roleDialog] = obj;
-                    this.setState({ roleDialog: null });
+                    if (obj) {
+                        this.info.objects[this.state.roleDialog] = obj;
+                    }
+                    this.setState({ roleDialog: false });
                 }}
             />;
         } else {
@@ -3309,9 +3352,12 @@ class ObjectBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose(true)}
+                    <Button
+                        variant="contained"
+                        onClick={() => this.onColumnsEditCustomDialogClose(true)}
                         disabled={!this.state.customColumnDialogValueChanged}
-                        color="primary">
+                        color="primary"
+                    >
                         <IconCheck className={this.props.classes.buttonIcon} /> {this.props.t('ra_Update')}
                     </Button>
                     <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
@@ -3431,7 +3477,9 @@ class ObjectBrowser extends Component {
 
         // icon
         let iconFolder;
-        if (item.children) {
+        let itemType = item.data.obj?.type;
+
+        if (item.children || itemType === 'folder' || itemType === 'device' || itemType === 'channel' || itemType === 'meta') {
             iconFolder = isExpanded ? <IconOpen
                 className={classes.cellIdIconFolder}
                 onClick={() => this.toggleExpanded(id)}
@@ -3485,9 +3533,9 @@ class ObjectBrowser extends Component {
             console.log(item.data.funcs);
         }*/
 
-        const valueEditable = !this.props.notEditable && item.data.obj?.type === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
-        const enumEditable = !this.props.notEditable && (this.props.expertMode || item.data.obj?.type === 'state' || item.data.obj?.type === 'channel' || item.data.obj?.type === 'device');
-        const checkVisibleObjectType = this.state.statesView && (item.data.obj?.type === 'state' || item.data.obj?.type === 'channel' || item.data.obj?.type === 'device');
+        const valueEditable = !this.props.notEditable && itemType === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
+        const enumEditable = !this.props.notEditable && (this.props.expertMode || itemType === 'state' || itemType === 'channel' || itemType === 'device');
+        const checkVisibleObjectType = this.state.statesView && (itemType === 'state' || itemType === 'channel' || itemType === 'device');
         let newValue = '';
         let newValueTitle = [];
         if (checkVisibleObjectType) {
@@ -3506,18 +3554,28 @@ class ObjectBrowser extends Component {
         }
         item.data.obj?.from && newValueTitle.push(this.texts.objectChangedFrom   + ' ' + item.data.obj.from.replace(/^system\.adapter\.|^system\./, ''));
         item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy     + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
-        item.data.obj?.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + formatDate(new Date(item.data.obj.ts)));
+        item.data.obj?.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + Utils.formatDate(new Date(item.data.obj.ts), this.props.dateFormat));
 
+        // TODO: id could be an object with {read: id, write: id}
         const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
-            <div onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                this.onSelect(item.data.obj.common.alias.id);
-                setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id), 200);
-            }}
+            <div
+                onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    this.onSelect(item.data.obj.common.alias.id);
+                    setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id), 200);
+                }}
                 className={classes.cellIdAlias}
             >→{item.data.obj?.common?.alias?.id}</div> : null;
 
+        let checkColor = item.data?.obj?.common?.color;
+        let invertBackground = 'none';
+        if (checkColor && !this.state.selected.includes(id)) {
+            invertBackground = Utils.invertColor(checkColor, true);
+        }
+        if (!checkColor || this.state.selected.includes(id)) {
+            checkColor = 'inherit';
+        }
         return <Grid
             container
             direction="row"
@@ -3545,6 +3603,10 @@ class ObjectBrowser extends Component {
                     item
                     container
                     alignItems="center"
+                    style={{
+                        color: checkColor,
+                        background: invertBackground
+                    }}
                 >
                     {checkbox}
                     {iconFolder}
@@ -3552,12 +3614,21 @@ class ObjectBrowser extends Component {
                 <Grid
                     item
                     className={classes.cellIdSpan}
-                    style={{ color: id === 'system' ? COLOR_NAME_SYSTEM : (id === 'system.adapter' ? COLOR_NAME_SYSTEM_ADAPTER : 'inherit') }}
+                    style={{
+                        background: invertBackground,
+                        color: id === 'system' ?
+                            COLOR_NAME_SYSTEM : (id === 'system.adapter' ? COLOR_NAME_SYSTEM_ADAPTER :
+                                checkColor)
+                    }}
                 >
                     {item.data.name}
                     {alias}
                 </Grid>
-                <div className={classes.grow} />
+                <div
+                    style={{
+                        color: checkColor,
+                        background: invertBackground
+                    }} className={classes.grow} />
                 <Grid
                     item
                     container
@@ -3565,7 +3636,12 @@ class ObjectBrowser extends Component {
                 >
                     {iconItem}
                 </Grid>
-                <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={(e) => this.onCopy(e, id)} />
+                <div
+                    style={{
+                        color: checkColor
+                    }}>
+                    <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={(e) => this.onCopy(e, id)} />
+                </div>
             </Grid>
             {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data?.title) || ''}</div> : null}
 
@@ -3580,15 +3656,21 @@ class ObjectBrowser extends Component {
                 <>
                     {this.columnsVisibility.changedFrom ? <div className={classes.cellName} style={{ width: this.columnsVisibility.changedFrom }} title={newValueTitle.join('\n')}>{checkVisibleObjectType && this.states[id]?.from ? newValue : null}</div> : null}
                     {this.columnsVisibility.qualityCode ? <div className={classes.cellName} style={{ width: this.columnsVisibility.qualityCode }}>{checkVisibleObjectType ? quality2text(this.states[id]?.q || 0) : null}</div> : null}
-                    {this.columnsVisibility.timestamp   ? <div className={classes.cellName} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? formatDate(new Date(this.states[id].ts)) : null}</div> : null}
-                    {this.columnsVisibility.lastChange  ? <div className={classes.cellName} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? formatDate(new Date(this.states[id].lc)) : null}</div> : null}
+                    {this.columnsVisibility.timestamp   ? <div className={classes.cellName} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat) : null}</div> : null}
+                    {this.columnsVisibility.lastChange  ? <div className={classes.cellName} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat) : null}</div> : null}
                 </>
             }
             {this.adapterColumns.map(it => <div className={classes.cellAdapter} style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{this.renderCustomValue(obj, it, item)}</div>)}
-            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? 'text' : 'default' }} onClick={valueEditable ? () => {
+            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? (item.data.button ? 'grab' : 'text') : 'default' }} onClick={valueEditable ? () => {
                 if (!item.data.obj || !this.states) {
                     return null;
                 }
+
+                // in non expert mode control button directly
+                if (!this.props.expertMode && item.data.button) {
+                    return this.props.socket.setState(id, true);
+                }
+
                 this.edit = {
                     val: this.states[id] ? this.states[id].val : '',
                     q:   0,
@@ -3612,7 +3694,11 @@ class ObjectBrowser extends Component {
     renderItem(root, isExpanded, classes, counter) {
         const items = [];
         counter = counter || { count: 0 };
-        root.data.id && items.push(this.renderLeaf(root, isExpanded, classes, counter));
+        let leaf = this.renderLeaf(root, isExpanded, classes, counter);
+        if (this.props.dragEnabled) {
+            leaf = <DraggableObject item={root} dragSettings={this.props.dragSettings} useDrag={this.props.useDrag}>{leaf}</DraggableObject>;
+        }
+        root.data.id && items.push(leaf);
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
 
@@ -3873,17 +3959,26 @@ class ObjectBrowser extends Component {
             const ObjectCustomDialog = this.props.objectCustomDialog;
 
             return <ObjectCustomDialog
+                reportChangedIds={changedIds => this.changedIds = [...changedIds]}
                 objectIDs={this.state.customDialog}
                 expertMode={this.state.filter.expertMode}
                 t={this.props.t}
                 lang={this.props.lang}
                 socket={this.props.socket}
                 themeName={this.props.themeName}
+                themeType={this.props.themeType}
+                theme={this.props.theme}
                 objects={this.objects}
                 customsInstances={this.info.customs}
                 onClose={() => {
                     this.pauseSubscribe(false);
                     this.setState({ customDialog: null });
+                    if (this.changedIds) {
+                        this.changedIds = null;
+                        // update all changed IDs
+                        this.forceUpdate();
+                    }
+
                     this.props.router && this.props.router.doNavigate('tab-objects');
                 }}
             />;
@@ -3913,7 +4008,10 @@ class ObjectBrowser extends Component {
 
         return <ObjectBrowserEditObject
             obj={this.objects[this.state.editObjectDialog]}
+            roleArray={this.info.roles}
             objects={this.objects}
+            dateFormat={this.props.dateFormat}
+            isFloatComma={this.props.isFloatComma}
             themeName={this.props.themeName}
             socket={this.props.socket}
             dialogName={this.props.dialogName}
@@ -4030,7 +4128,7 @@ ObjectBrowser.defaultProps = {
     objectEditOfAccessControl: false,
     modalNewObject: () => { },
     modalEditOfAccessControl: () => { },
-}
+};
 
 ObjectBrowser.propTypes = {
     dialogName: PropTypes.string, // where to store settings in localStorage
@@ -4048,12 +4146,15 @@ ObjectBrowser.propTypes = {
     imagePrefix: PropTypes.string,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
+    theme: PropTypes.object,
     t: PropTypes.func,
     lang: PropTypes.string.isRequired,
     multiSelect: PropTypes.bool,
     notEditable: PropTypes.bool,
     foldersFirst: PropTypes.bool,
     disableColumnSelector: PropTypes.bool,
+    isFloatComma: PropTypes.bool,
+    dateFormat: PropTypes.string,
 
     // components
     objectCustomDialog: PropTypes.oneOfType([
@@ -4078,6 +4179,9 @@ ObjectBrowser.propTypes = {
     ]),
     types: PropTypes.array,   // optional ['state', 'instance', 'channel']
     columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
+    dragSettings: PropTypes.object,
+    dragEnabled: PropTypes.bool,
+    useDrag: PropTypes.func,
 };
 
 /** @type {typeof ObjectBrowser} */

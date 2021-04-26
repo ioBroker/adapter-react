@@ -40,7 +40,7 @@
   "ra_filter_type": "Type",
   "ra_invalidConfig": "Invalid settings",
   "ra_otherConfig": "Settings from other adapter %s",
-  "ra_tooltip_ack": "Acknowledged flag",
+  "ra_tooltip_ack": "Acknowledged",
   "ra_tooltip_from": "From",
   "ra_tooltip_lc": "Last changed",
   "ra_tooltip_quality": "Quality",
@@ -243,5 +243,14 @@
   "ra_lastChange": "Last change",
   "ra_Owner group": "Owner group",
   "ra_Owner user": "Owner user",
-  "ra_Create": "Create"
+  "ra_Create": "Create",
+  "ra_Changed from": "Changed from",
+  "ra_Quality code": "Quality",
+  "ra_Timestamp": "Timestamp",
+  "ra_Last change": "Last change",
+  "ra_Collapse all nodes": "Collapse all nodes",
+  "ra_Edit custom config": "Edit custom config",
+  "ra_Collapse one step node": "Collapse one level",
+  "ra_Expand one step node": "Expand one level",
+  "ra_Refresh tree": "Refresh tree"
 }

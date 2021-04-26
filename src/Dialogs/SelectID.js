@@ -187,6 +187,8 @@ SelectID.propTypes = {
     title: PropTypes.string,
     lang: PropTypes.string,
     foldersFirst: PropTypes.bool,
+    isFloatComma: PropTypes.bool,
+    dateFormat: PropTypes.string,
     selected: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.array
