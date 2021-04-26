@@ -93,7 +93,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "system"]
               }
             },
             {
@@ -148,7 +148,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "command"]
               }
             },
             {
@@ -199,7 +199,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "command"]
               }
             },
             {
@@ -251,7 +251,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "size", "text"]
               }
             },
             {
@@ -307,6 +307,10 @@
                       "secondary"
                     ]
                   },
+                  "height": {
+                    "description": "Optional height",
+                    "type": "number"
+                  },
                   "label": true,
                   "type": true,
                   "sm": true,
@@ -348,18 +352,18 @@
                   },
                   "square": {
                     "description": "Width must be equal to height or crop must allow only square as shape",
-                    "type": "number"
+                    "type": "boolean"
                   },
                   "maxWidth": {
-                    "description": "'Maximum width",
+                    "description": "Maximum width",
                     "type": "number"
                   },
                   "maxHeight": {
-                    "description": "'Maximum height",
+                    "description": "Maximum height",
                     "type": "number"
                   },
                   "maxSize": {
-                    "description": "'Maximum size",
+                    "description": "Maximum size",
                     "type": "number"
                   },
                   "label": true,
@@ -426,7 +430,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "items"]
               }
             },
             {
@@ -449,7 +453,7 @@
                   },
                   "square": {
                     "description": "Width must be equal to height or crop must allow only square as shape",
-                    "type": "number"
+                    "type": "boolean"
                   },
                   "maxWidth": {
                     "description": "'Maximum width",
@@ -462,6 +466,10 @@
                   "maxSize": {
                     "description": "'Maximum size",
                     "type": "number"
+                  },
+                  "filename": {
+                    "description": "Name of the file",
+                    "type": "string"
                   },
                   "label": true,
                   "type": true,
@@ -523,15 +531,15 @@
                     "type": "object"
                   },
                   "result": {
-                    "description": "TODO",
+                    "description": "{result1: {en: 'A'}, result2: {en: 'B'}}",
                     "type": "object"
                   },
                   "error": {
-                    "description": "TODO",
+                    "description": "{error1: {en: 'E'}, error2: {en: 'E2'}}",
                     "type": "object"
                   },
                   "variant": {
-                    "description": "TODO",
+                    "description": "If outlined or contained",
                     "type": "string",
                     "enum": [
                       "contained",
@@ -564,7 +572,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "command"]
               }
             },
             {
@@ -625,8 +633,8 @@
               "then": {
                 "properties": {
                   "filename": {
-                    "description": "Name of the file.",
-                    "type": "boolean"
+                    "description": "Name of the file",
+                    "type": "string"
                   },
                   "label": true,
                   "type": true,
@@ -650,7 +658,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "filename"]
               }
             },
             {
@@ -661,8 +669,24 @@
                   }
                 }
               },
+
               "then": {
                 "properties": {
+                  "min": {
+                    "description": "Minimal value",
+                    "type": "number",
+                    "default": 0
+                  },
+                  "max": {
+                    "description": "Maximum number",
+                    "type": "number",
+                    "default": 100
+                  },
+                  "step": {
+                    "description": "Step size",
+                    "type": "number",
+                    "default": 1
+                  },
                   "label": true,
                   "type": true,
                   "sm": true,
@@ -863,7 +887,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "options"]
               }
             },
             {
@@ -927,7 +951,7 @@
               "then": {
                 "properties": {
                   "options": {
-                    "description": "For type 'select'.",
+                    "description": "Options which can be selected",
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -946,41 +970,6 @@
                       }
                     }
                   },
-                  "label": true,
-                  "type": true,
-                  "sm": true,
-                  "md": true,
-                  "lg": true,
-                  "xs": true,
-                  "newLine": true,
-                  "hidden": true,
-                  "hideOnlyControl": true,
-                  "disabled": true,
-                  "helpLink": true,
-                  "help": true,
-                  "style": true,
-                  "darkStyle": true,
-                  "validator": true,
-                  "tooltip": true,
-                  "default": true,
-                  "defaultFunc": true,
-                  "noTranslation": true,
-                  "confirm": true
-                },
-                "additionalProperties": false,
-                "required": ["type"]
-              }
-            },
-            {
-              "if": {
-                "properties": {
-                  "type": {
-                    "const": "tab"
-                  }
-                }
-              },
-              "then": {
-                "properties": {
                   "label": true,
                   "type": true,
                   "sm": true,
@@ -1081,14 +1070,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
-              },
-              "else": {
-                "properties": {
-                  "items": {
-                    "type": "object"
-                  }
-                }
+                "required": ["type", "items"]
               }
             },
             {
@@ -1129,7 +1111,9 @@
                   "defaultFunc": true,
                   "noTranslation": true,
                   "confirm": true
-                }
+                },
+                "additionalProperties": false,
+                "required": ["type", "pattern"]
               }
             },
             {
@@ -1155,12 +1139,13 @@
                     "type": "string"
                   },
                   "id": {
-                    "description": "info.test",
+                    "description": "State ID, e.g. 'info.test'",
                     "type": "string"
                   },
                   "ack": {
                     "description": "ack-flag of the state",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
                   },
                   "val": {
                     "description": "State value to set"
@@ -1170,11 +1155,11 @@
                     "type": "string"
                   },
                   "error": {
-                    "description": "TODO",
+                    "description": "{error1: {en: 'E'}, error2: {en: 'E2'}}",
                     "type": "object"
                   },
                   "variant": {
-                    "description": "TODO",
+                    "description": "If outlined or contained",
                     "type": "string",
                     "enum": [
                       "contained",
@@ -1203,7 +1188,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "id", "val"]
               }
             },
             {
@@ -1216,6 +1201,10 @@
               },
               "then": {
                 "properties": {
+                  "short": {
+                    "description": "no system.func.",
+                    "type": "string"
+                  },
                   "label": true,
                   "type": true,
                   "sm": true,
@@ -1251,6 +1240,10 @@
               },
               "then": {
                 "properties": {
+                  "short": {
+                    "description": "no system.room.",
+                    "type": "string"
+                  },
                   "label": true,
                   "type": true,
                   "sm": true,
@@ -1286,6 +1279,10 @@
               },
               "then": {
                 "properties": {
+                  "short": {
+                    "description": "no system.user.",
+                    "type": "string"
+                  },
                   "label": true,
                   "type": true,
                   "sm": true,
@@ -1399,7 +1396,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "certType"]
               }
             },
             {
@@ -1449,7 +1446,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "href", "text"]
               }
             },
             {
@@ -1495,7 +1492,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "text"]
               }
             },
             {
@@ -1534,7 +1531,7 @@
                   "confirm": true
                 },
                 "additionalProperties": false,
-                "required": ["type"]
+                "required": ["type", "adapter"]
               }
             },
             {
@@ -1660,13 +1657,9 @@
             },
             "type": {
               "description": "Type of the element",
-              "type": [
-                "string",
-                "object"
-              ],
+              "type": "string",
               "enum": [
                 "autocomplete",
-                "tab",
                 "text",
                 "number",
                 "color",
