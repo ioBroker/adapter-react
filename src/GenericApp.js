@@ -148,6 +148,7 @@ class GenericApp extends Router {
                                 if (obj) {
                                     this.common = obj && obj.common;
                                     this.onPrepareLoad(obj.native); // decode all secrets
+                                    this.savedNative = JSON.parse(JSON.stringify(obj.native));
                                     this.setState({native: obj.native, loaded: true}, () => this.onConnectionReady && this.onConnectionReady());
                                 } else {
                                     console.warn('Cannot load instance settings');
@@ -480,6 +481,7 @@ class GenericApp extends Router {
             })
             .then(() => {
                 this.savedNative = oldObj.native;
+                globalThis.changed = false;
                 this.setState({changed: false});
                 isClose && GenericApp.onClose();
             })
@@ -557,7 +559,15 @@ class GenericApp extends Router {
      */
     getIsChanged(native) {
         native = native || this.state.native;
-        return JSON.stringify(native) !== JSON.stringify(this.savedNative);
+        const isChanged =  JSON.stringify(native) !== JSON.stringify(this.savedNative);
+
+        if(isChanged) {
+            globalThis.changed = true;
+        } else {
+            globalThis.changed = false;
+        }
+
+        return isChanged;
     }
 
     /**
@@ -590,7 +600,7 @@ class GenericApp extends Router {
                 theme={this.state.theme}
                 noTextOnButtons={this.state.width === 'xs' || this.state.width === 'sm' || this.state.width === 'md'}
                 changed={this.state.changed}
-                onSave={() => this.onSave(true)}
+                onSave={(val) => this.onSave(val)}
                 onClose={() => GenericApp.onClose()}
             />;
         } else {
