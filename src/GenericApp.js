@@ -600,7 +600,7 @@ class GenericApp extends Router {
                 theme={this.state.theme}
                 noTextOnButtons={this.state.width === 'xs' || this.state.width === 'sm' || this.state.width === 'md'}
                 changed={this.state.changed}
-                onSave={(val) => this.onSave(val)}
+                onSave={(isClose) => this.onSave(isClose)}
                 onClose={() => GenericApp.onClose()}
             />;
         } else {
