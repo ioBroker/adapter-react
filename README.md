@@ -23,8 +23,6 @@ If you want to create the configuration page with react:
     "react-dom": "^16.13.1",
     "react-icons": "^3.10.0",
     "react-scripts": "^3.4.4",
-    "@sentry/browser": "^5.29.2",
-    "@material-ui/core": "^4.11.2",
     "@iobroker/adapter-react": "^1.5.6",
     "del": "^6.0.0",
     "gulp": "^4.0.2"
