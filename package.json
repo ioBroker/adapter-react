@@ -1,6 +1,6 @@
 {
   "name": "@iobroker/adapter-react",
-  "version": "1.6.10",
+  "version": "1.6.11",
   "description": "React classes to develop admin interfaces for ioBroker with react.",
   "author": {
     "name": "bluefox",
@@ -29,6 +29,7 @@
     "react-color": "^2.19.3",
     "react-colorful": "^4.4.4",
     "react-dropzone": "^11.2.4",
+    "react-inlinesvg": "^2.2.2",
     "@types/iobroker": "^3.2.7"
   },
   "devDependencies": {

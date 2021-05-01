@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import SVG from 'react-inlinesvg';
 
 import IconSystem from '@material-ui/icons/SettingsApplications';
 import IconPhoto from '@material-ui/icons/Photo';
@@ -97,7 +98,11 @@ class Icon extends React.Component {
                 if (this.props.src.length < 3) {
                     return <span style={this.props.style || {}} className={ Utils.clsx(this.props.className, 'iconOwn') }>{this.props.src}</span>; // utf-8 char
                 } else {
-                    return <img style={this.props.style || {}} className={ Utils.clsx(this.props.className, 'iconOwn') } src={ this.props.src } alt="" />;
+                    if (this.props.src.startsWith('data:image/svg')) {
+                        return <SVG src={this.props.src} className={ Utils.clsx(this.props.className, 'iconOwn') } width={this.props.style?.width || 28} height={this.props.style?.height || this.props.style?.width || 28} style={this.props.style || {}}/>;
+                    } else {
+                        return <img style={this.props.style || {}} className={ Utils.clsx(this.props.className, 'iconOwn') } src={ this.props.src } alt="" />;
+                    }
                 }
             } else {
                 return this.props.src;

@@ -23,6 +23,7 @@ If you want to create the configuration page with react:
     "react-dom": "^16.13.1",
     "react-icons": "^3.10.0",
     "react-scripts": "^3.4.4",
+    "react-inlinesvg": "^2.2.2",
     "@sentry/browser": "^5.29.2",
     "@material-ui/core": "^4.11.2",
     "@iobroker/adapter-react": "^1.5.6",
@@ -592,6 +593,9 @@ class MyComponent {
 In dialogs the OK button is first (on the left) and the cancel button is last (on the right)
 
 ## Changelog
+### 1.6.11 (2021-05-01)
+* (bluefox) Allowed to change the color of object icons.
+
 ### 1.6.10 (2021-04-22)
 * (bluefox) Fixed some errors in the object browser
 
