@@ -31,16 +31,17 @@ class Connection {
      * @param {import('./types').ConnectionProps} props
      */
     constructor(props) {
-        props = props || { protocol: window.location.protocol, host: window.location.hostname };
-        this.props = props;
+        props                 = props || { protocol: window.location.protocol, host: window.location.hostname };
+        this.props            = props;
 
         this.autoSubscribes   = this.props.autoSubscribes || [];
         this.autoSubscribeLog = this.props.autoSubscribeLog;
 
-        this.props.protocol  = this.props.protocol || window.location.protocol;
-        this.props.host      = this.props.host     || window.location.hostname;
-        this.props.port      = this.props.port     || (window.location.port === '3000' ? 8081 : window.location.port);
-        this.props.ioTimeout = Math.max(this.props.ioTimeout || 20000, 20000);
+        this.props.protocol   = this.props.protocol || window.location.protocol;
+        this.props.host       = this.props.host     || window.location.hostname;
+        this.props.port       = this.props.port     || (window.location.port === '3000' ? 8081 : window.location.port);
+        this.props.ioTimeout  = Math.max(this.props.ioTimeout  || 20000, 20000);
+        this.props.cmdTimeout = Math.max(this.props.cmdTimeout || 5000, 5000);
 
         // breaking change. Do not load all objects by default is true
         this.doNotLoadAllObjects = this.props.doNotLoadAllObjects === undefined ? true : this.props.doNotLoadAllObjects;
@@ -837,12 +838,52 @@ class Connection {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(doc.rows.map(item => item.value));
+                        resolve(doc.rows.map(item => {
+                            const obj = item.value;
+                            Connection._fixAdminUI(obj);
+                            return obj;
+                        }));
                     }
                 });
         });
 
         return this._promises['instances_' + adapter];
+    }
+
+    static _fixAdminUI(obj) {
+        if (obj && obj.common && !obj.common.adminUI) {
+            if (obj.common.noConfig) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'none';
+            } else if (obj.common.jsonConfig) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'json';
+            } else if (obj.common.materialize) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'materialize';
+            } else {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'html';
+            }
+
+            if (obj.common.jsonCustom) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'json';
+            } else if (obj.common.supportCustoms) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.custom = 'json';
+            }
+
+            if (obj.common.materializeTab && obj.common.adminTab) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.tab = 'materialize';
+            } else if (obj.common.adminTab) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.tab = 'html';
+            }
+
+            obj.common.adminUI && console.log(`Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`);
+        }
     }
 
     /**
@@ -881,7 +922,13 @@ class Connection {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(doc.rows.map(item => item.value).filter(obj => obj && (!adapter || (obj.common && obj.common.name === adapter))));
+                        resolve(doc.rows
+                            .map(item => {
+                                const obj = item.value;
+                                Connection._fixAdminUI(obj);
+                                return obj;
+                            })
+                            .filter(obj => obj && (!adapter || (obj.common && obj.common.name === adapter))));
                     }
                 });
         });
@@ -1213,6 +1260,7 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
         return new Promise(resolve =>
             this._socket.emit('sendToHost', host, 'getLogs', linesNumber || 200, lines =>
                 resolve(lines)));
@@ -1446,7 +1494,7 @@ class Connection {
      * @param {boolean} [update] Force update.
      * @returns {Promise<any>}
      */
-    getHostInfo(host, update) {
+    getHostInfo(host, update, timeoutMs) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
@@ -1466,9 +1514,9 @@ class Connection {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
-                    reject('timeout');
+                    reject('getHostInfo timeout');
                 }
-            }, 5000);
+            }, timeoutMs || this.props.cmdTimeout);
 
             this._socket.emit('sendToHost', host, 'getHostInfo', null, data => {
                 if (timeout) {
@@ -1493,9 +1541,10 @@ class Connection {
      * @param {string} host
      * @param {any} [args]
      * @param {boolean} [update] Force update.
+     * @param {number} [timeoutMs] timeout in ms.
      * @returns {Promise<any>}
      */
-    getRepository(host, args, update) {
+    getRepository(host, args, update, timeoutMs) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
@@ -1515,9 +1564,9 @@ class Connection {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
-                    reject('timeout');
+                    reject('getRepository timeout');
                 }
-            }, 5000);
+            }, timeoutMs || this.props.cmdTimeout);
 
             this._socket.emit('sendToHost', host, 'getRepository', args, data => {
                 if (timeout) {
@@ -1543,7 +1592,7 @@ class Connection {
      * @param {boolean} [update] Force update.
      * @returns {Promise<any>}
      */
-    getInstalled(host, update) {
+    getInstalled(host, update, cmdTimeout) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
@@ -1563,9 +1612,9 @@ class Connection {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
-                    reject('timeout');
+                    reject('getInstalled timeout');
                 }
-            }, 5000);
+            }, cmdTimeout || this.props.cmdTimeout);
 
             this._socket.emit('sendToHost', host, 'getInstalled', null, data => {
                 if (timeout) {
@@ -1608,9 +1657,9 @@ class Connection {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
-                    reject('timeout');
+                    reject('cmdExec timeout');
                 }
-            }, 5000);
+            }, this.props.cmdTimeout);
 
             this._socket.emit('cmdExec', host, cmdId, cmd, null, err => {
                 if (timeout) {
@@ -1668,9 +1717,9 @@ class Connection {
                         let timeout = setTimeout(() => {
                             if (timeout) {
                                 timeout = null;
-                                reject('timeout');
+                                reject('readBaseSettings timeout');
                             }
-                        }, 5000);
+                        }, this.props.cmdTimeout);
 
                         this._socket.emit('sendToHost', host, 'readBaseSettings', null, data => {
                             if (timeout) {
@@ -1713,9 +1762,9 @@ class Connection {
                         let timeout = setTimeout(() => {
                             if (timeout) {
                                 timeout = null;
-                                reject('timeout');
+                                reject('writeBaseSettings timeout');
                             }
-                        }, 5000);
+                        }, this.props.cmdTimeout);
 
                         this._socket.emit('sendToHost', host, 'writeBaseSettings', config, data => {
                             if (timeout) {
@@ -2148,6 +2197,53 @@ class Connection {
             this._socket.emit('getEasyMode', (error, config) =>
                 error ? reject(error) : resolve(config)));
     }
+
+    /**
+     * Read current user
+     * @returns {Promise<string>}
+     */
+    getCurrentUser() {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise(resolve =>
+            this._socket.emit('authEnabled', (isSecure, user) =>
+                resolve(user)));
+    }
+
+    /**
+     * Read adapter ratings
+     * @returns {Promise<any>}
+     */
+    getRatings(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getRatings', update, (err, ratings) =>
+                err ? reject(err) : resolve(ratings)));
+    }
+
+    /**
+     * Read current web, socketio or admin namespace, like admin.0
+     * @returns {Promise<string>}
+     */
+    getCurrentInstance() {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.currentInstance = this._promises.currentInstance ||
+            new Promise((resolve, reject) =>
+                this._socket.emit('getCurrentInstance', (err, namespace) =>
+                    err ? reject(err) : resolve(namespace)));
+
+        return this._promises.currentInstance;
+    }
+
 }
 
 Connection.Connection = {

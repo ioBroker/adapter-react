@@ -34,9 +34,21 @@ class Router extends React.Component {
     static getLocation() {
         let hash = window.location.hash;
         hash = hash.replace(/^#/, '');
-        const parts = hash.split('/');
+        const parts = hash.split('/').map(item => {
+            try {
+                return item ? decodeURIComponent(item) : ''
+            } catch (e) {
+                console.error('Router: Cannot decode ' + item);
+                return item || '';
+            }
+        });
         // #tabName/dialogName/deviceId
-        return {tab: parts[0] || '', dialog: parts[1] || '', id: parts[2] || '', arg: parts[3] || ''};
+        return {
+            tab:    parts[0] || '',
+            dialog: parts[1] || '',
+            id:     parts[2] || '',
+            arg:    parts[3] || ''
+        };
     }
 
     /**

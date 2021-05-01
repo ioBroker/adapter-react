@@ -590,6 +590,9 @@ class MyComponent {
 In dialogs the OK button is first (on the left) and the cancel button is last (on the right)
 
 ## Changelog
+### 1.6.11 (2021-05-01)
+* (bluefox) Allowed to change the color of object icons.
+
 ### 1.6.10 (2021-04-22)
 * (bluefox) Fixed some errors in the object browser
 

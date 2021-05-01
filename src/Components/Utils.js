@@ -7,9 +7,32 @@
 import React from 'react';
 import I18n from '../i18n';
 
-const NAMESPACE = 'material';
-const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const NAMESPACE    = 'material';
+const days         = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const months       = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const QUALITY_BITS = {
+    0x00: '0x00 - good',
+
+    0x01: '0x01 - general problem',
+    0x02: '0x02 - no connection problem',
+
+    0x10: '0x10 - substitute value from controller',
+    0x20: '0x20 - substitute initial value',
+    0x40: '0x40 - substitute value from device or instance',
+    0x80: '0x80 - substitute value from sensor',
+
+    0x11: '0x11 - general problem by instance',
+    0x41: '0x41 - general problem by device',
+    0x81: '0x81 - general problem by sensor',
+
+    0x12: '0x12 - instance not connected',
+    0x42: '0x42 - device not connected',
+    0x82: '0x82 - sensor not connected',
+
+    0x44: '0x44 - device reports error',
+    0x84: '0x84 - sensor reports error',
+};
+
 class Utils {
     static namespace = NAMESPACE;
     static INSTANCES = 'instances';
@@ -942,11 +965,33 @@ class Utils {
         return bytes.toFixed(1) + ' ' + units[u];
     }
 
+    /**
+     * Invert the given color according to theme type to get the inverted text color for background
+     * @param {string} color Color in the format '#rrggbb' or '#rgb' (or without hash)
+     * @param {string} themeType theme type
+     * @param {string} invert dark theme has light color in control or light theme has light color in control
+     * @returns {string}
+     */
+    static getInvertedColor(color, themeType, invert) {
+        if (!color) {
+            return undefined;
+        } else {
+            const invertedColor = Utils.invertColor(color, true);
+            if (invertedColor === '#FFFFFF' && (themeType === 'dark' || (invert && themeType === 'light'))) {
+                return '#DDD';
+            }
+            if (invertedColor === '#000000' && (themeType === 'light' || (invert && themeType === 'dark'))) {
+                return '#222';
+            }
+            return undefined;
+        }
+    }
+
     // Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
     /**
      * Invert the given color
      * @param {string} hex Color in the format '#rrggbb' or '#rgb' (or without hash)
-     * @param {boolean} [bw] Set to black or white.
+     * @param {boolean} bw Set to black or white.
      * @returns {string}
      */
     static invertColor(hex, bw) {
@@ -1266,9 +1311,14 @@ class Utils {
         return text;
     }
 
-    static generateFile(filename, obj) {
+    /**
+     * Generate the json file on the file for download.
+     * @param {string} filename file name
+     * @returns {object} json structure (not stringified)
+     */
+    static generateFile(filename, json) {
         let el = document.createElement('a');
-        el.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj, null, 2)));
+        el.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(json, null, 2)));
         el.setAttribute('download', filename);
 
         el.style.display = 'none';
@@ -1277,6 +1327,72 @@ class Utils {
         el.click();
 
         document.body.removeChild(el);
+    }
+
+    /**
+     * Convert quality code into text
+     * @param {number} quality code
+     * @returns {array<string>} lines that decode qulity
+     */
+    static quality2text(quality) {
+        const custom = quality & 0xFFFF0000;
+        const text = QUALITY_BITS[quality];
+        let result;
+        if (text) {
+            result = [text];
+        } else if (quality & 0x01) {
+            result = [QUALITY_BITS[0x01], '0x' + (quality & (0xFFFF & ~1)).toString(16)];
+        } else if (quality & 0x02) {
+            result = [QUALITY_BITS[0x02], '0x' + (quality & (0xFFFF & ~2)).toString(16)];
+        } else {
+            result = ['0x' + quality.toString(16)];
+        }
+        if (custom) {
+            result.push('0x' + (custom >> 16).toString(16).toUpperCase());
+        }
+        return result;
+    }
+
+    /**
+     * Deep copy object
+     * @param {object} object
+     * @returns {object}
+     */
+    static clone(object) {
+        return JSON.parse(JSON.stringify(object));
+    }
+
+    /**
+     * Get states of object
+     * @param {object} obj
+     * @returns {object} states as an object in form {"value1": "label1", "value2": "label2"} or null
+     */
+    static getStates(obj) {
+        let states = obj?.common?.states;
+        if (states) {
+            if (typeof states === 'string' && states[0] === '{') {
+                try {
+                    states = JSON.parse(states);
+                } catch (ex) {
+                    console.error(`Cannot parse states: ${states}`);
+                    states = null;
+                }
+            } else
+            // if old format val1:text1;val2:text2
+            if (typeof states === 'string') {
+                const parts = states.split(';');
+                states = {};
+                for (let p = 0; p < parts.length; p++) {
+                    const s = parts[p].split(':');
+                    states[s[0]] = s[1];
+                }
+            } else if (Array.isArray(states)) {
+                const result = {};
+                states.forEach((value, key) => result[key] = value);
+                return result;
+            }
+        }
+        return states;
     }
 }
 
