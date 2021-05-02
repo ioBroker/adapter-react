@@ -75,9 +75,9 @@ class TextInput extends React.Component {
                 />
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={() => this.props.onClose(null)} >{this.props.cancelText}</Button>
                 <Button variant="contained" disabled={!this.state.text || this.state.error} onClick={() => this.props.onClose(this.state.text)}
                         color="primary">{this.props.applyText}</Button>
+                <Button variant="contained" onClick={() => this.props.onClose(null)} >{this.props.cancelText}</Button>
             </DialogActions>
         </Dialog>;
     }

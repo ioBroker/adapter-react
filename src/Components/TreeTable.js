@@ -3,7 +3,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 import { HexColorPicker as ColorPicker } from 'react-colorful';
-import 'react-colorful/dist/index.css';
 
 import Fab from '@material-ui/core/Fab';
 import Table from '@material-ui/core/Table';
