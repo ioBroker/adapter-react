@@ -240,5 +240,7 @@
     "ra_Collapse one step node": "折叠一级",
     "ra_Expand one step node": "扩大一级",
     "ra_Refresh tree": "刷新树",
-    "ra_Expand all nodes": "展开所有节点"
+    "ra_Expand all nodes": "展开所有节点",
+    "ra_Deselect all": "全部取消选择",
+    "ra_Select all": "全选"
 }

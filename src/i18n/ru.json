@@ -253,5 +253,7 @@
     "ra_Collapse one step node": "Свернуть один уровень",
     "ra_Expand one step node": "Открыть один уровень",
     "ra_Refresh tree": "Обновить дерево",
-    "ra_Expand all nodes": "Развернуть все узлы"
+    "ra_Expand all nodes": "Развернуть все узлы",
+    "ra_Deselect all": "Убрать выбор везде",
+    "ra_Select all": "Выбрать все"
 }

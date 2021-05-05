@@ -240,5 +240,7 @@
     "ra_Collapse one step node": "Zwiń o jeden poziom",
     "ra_Expand one step node": "Rozwiń o jeden poziom",
     "ra_Refresh tree": "Odśwież drzewo",
-    "ra_Expand all nodes": "Rozwiń wszystkie węzły"
+    "ra_Expand all nodes": "Rozwiń wszystkie węzły",
+    "ra_Deselect all": "Odznacz wszystko",
+    "ra_Select all": "Zaznacz wszystko"
 }

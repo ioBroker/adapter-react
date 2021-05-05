@@ -240,5 +240,7 @@
     "ra_Collapse one step node": "Recolher um nível",
     "ra_Expand one step node": "Expanda um nível",
     "ra_Refresh tree": "Atualizar árvore",
-    "ra_Expand all nodes": "Expanda todos os nós"
+    "ra_Expand all nodes": "Expanda todos os nós",
+    "ra_Deselect all": "Desmarque todos",
+    "ra_Select all": "Selecionar tudo"
 }
