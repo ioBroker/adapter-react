@@ -593,6 +593,9 @@ class MyComponent {
 In dialogs the OK button is first (on the left) and the cancel button is last (on the right)
 
 ## Changelog
+### 1.6.14 (2021-05-06)
+* (bluefox) Fixed translations
+
 ### 1.6.13 (2021-05-05)
 * (bluefox) Fixed translations
 * (bluefox) Added two new components: SelectWithIcon, TextWithIcon
