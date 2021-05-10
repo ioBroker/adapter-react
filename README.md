@@ -605,7 +605,7 @@ In dialogs the OK button is first (on the left) and the cancel button is last (o
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 1.6.15 (2021-05-10)
 * (UncleSamSwiss) Fixed: Dependencies of produced npm package now contain all required packages
 * (bluefox) Fixed translations
 
