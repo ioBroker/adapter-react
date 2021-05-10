@@ -175,6 +175,7 @@ onPrepareSave(settings) {
 ## Components
 
 ### Connection.js
+This is non-react class to provide the communication for socket connection with server. 
 
 ### GenericApp.js
 
@@ -183,8 +184,11 @@ onPrepareSave(settings) {
 ### Theme.js
 
 ### Dialogs
+Some dialogs are predefined and could be used out of the box.
 
 #### Confirm.js
+<!-- TODO: Provide screenshot here -->
+
 Usage: 
 ```
 import React from 'react';
@@ -229,8 +233,10 @@ export default ExportImportDialog;
 ```
 
 #### Error.js
+<!-- TODO: Provide screenshot here -->
 
 #### Message.js
+<!-- TODO: Provide screenshot here -->
 ```
 renderMessage() {
    if (this.state.showMessage) {
@@ -284,6 +290,8 @@ class MyComponent extends Component {
 
 #### Cron
 Include `"react-text-mask": "^5.4.3",` in package.json.
+
+<!-- TODO: Provide screenshot here -->
 
 ```
 function renderCron() {
@@ -527,6 +535,8 @@ class MyConmponent extends Component {
 ```
 
 #### Toast
+<!-- TODO: Provide screenshot here -->
+
 Toast is not a part of `adapter-react` but it is an example how to use toast in application: 
 
 ```
@@ -589,7 +599,16 @@ class MyComponent {
 ## Usability
 In dialogs the OK button is first (on the left) and the cancel button is last (on the right)
 
+<!--
+	Placeholder for the next version (at the beginning of the line):
+	### __WORK IN PROGRESS__
+-->
+
 ## Changelog
+### __WORK IN PROGRESS__
+* (UncleSamSwiss) Fixed: Dependencies of produced npm package now contain all required packages
+* (bluefox) Fixed translations
+
 ### 1.6.14 (2021-05-06)
 * (bluefox) Fixed translations
 

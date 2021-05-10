@@ -7,7 +7,8 @@
     "email": "dogafox@gmail.com"
   },
   "scripts": {
-    "prepublishOnly": "echo \"Error: publish from dist directory and write gulp\" && exit 1"
+    "prepublishOnly": "echo \"Error: publish from dist directory and write gulp\" && exit 1",
+    "build": "gulp"
   },
   "repository": {
     "type": "git",

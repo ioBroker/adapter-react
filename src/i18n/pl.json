@@ -242,5 +242,17 @@
     "ra_Refresh tree": "Odśwież drzewo",
     "ra_Expand all nodes": "Rozwiń wszystkie węzły",
     "ra_Deselect all": "Odznacz wszystko",
-    "ra_Select all": "Zaznacz wszystko"
+    "ra_Select all": "Zaznacz wszystko",
+    "ra_%s object(s) processed": "Przetworzono %s obiektów",
+    "ra_Invalid structure": "Nieprawidłowa struktura",
+    "ra_%s was imported": "%s został zaimportowany",
+    "ra_Failed to open JSON File": "Nie udało się otworzyć pliku JSON",
+    "ra_Only following structures of objects are available:": "Dostępne są tylko następujące struktury obiektów:",
+    "ra_Folder → State": "Folder → Stan",
+    "ra_Folder → Channel → State": "Folder → Kanał → Stan",
+    "ra_Folder → Device → Channel → State": "Folder → Urządzenie → Kanał → Stan",
+    "ra_Device → Channel → State": "Urządzenie → Kanał → Stan",
+    "ra_Channel → State": "Kanał → Stan",
+    "ra_Non-experts may create new objects only in \"0_userdata.0\" or \"alias.0\".": "Osoby nie będące ekspertami mogą tworzyć nowe obiekty tylko w „0_userdata.0” lub „alias.0”.",
+    "ra_The experts may create objects everywhere but from second level (e.g. \"vis.0\" or \"javascript.0\").": "Eksperci mogą tworzyć obiekty wszędzie poza drugim poziomem (np. „Vis.0” lub „javascript.0”)."
 }

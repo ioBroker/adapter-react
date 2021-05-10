@@ -255,5 +255,17 @@
     "ra_Refresh tree": "Обновить дерево",
     "ra_Expand all nodes": "Развернуть все узлы",
     "ra_Deselect all": "Убрать выбор везде",
-    "ra_Select all": "Выбрать все"
+    "ra_Select all": "Выбрать все",
+    "ra_%s object(s) processed": "Объектов обработано: %s",
+    "ra_Invalid structure": "Неверная структура",
+    "ra_%s was imported": "%s был импортирован",
+    "ra_Failed to open JSON File": "Не удалось открыть файл JSON",
+    "ra_Only following structures of objects are available:": "Доступны только следующие структуры объектов:",
+    "ra_Folder → State": "Папка → Состояние",
+    "ra_Folder → Channel → State": "Папка → Канал → Состояние",
+    "ra_Folder → Device → Channel → State": "Папка → Устройство → Канал → Состояние",
+    "ra_Device → Channel → State": "Устройство → Канал → Состояние",
+    "ra_Channel → State": "Канал → Состояние",
+    "ra_Non-experts may create new objects only in \"0_userdata.0\" or \"alias.0\".": "Не-эксперты могут создавать новые объекты только в «0_userdata.0» или «alias.0».",
+    "ra_The experts may create objects everywhere but from second level (e.g. \"vis.0\" or \"javascript.0\").": "Эксперты могут создавать объекты везде, кроме второго уровня (например, «vis.0» или «javascript.0»)."
 }
