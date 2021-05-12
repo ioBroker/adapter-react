@@ -605,7 +605,7 @@ In dialogs the OK button is first (on the left) and the cancel button is last (o
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 1.6.16 (2021-05-12)
 * (bluefox) Updated the CRON dialog 
 
 ### 1.6.15 (2021-05-10)
