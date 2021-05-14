@@ -987,7 +987,7 @@ class Utils {
         }
     }
 
-    // Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+    // Big thanks to: https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
     /**
      * Invert the given color
      * @param {string} hex Color in the format '#rrggbb' or '#rgb' (or without hash)
@@ -1415,6 +1415,25 @@ class Utils {
             }
         }
         return states;
+    }
+
+    /**
+     * Get svg file as text
+     * @param {string} url URL of SVG file
+     * @returns {object} Promise with "data:image..."
+     */
+    static getSvg(url) {
+        return fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                return new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = function() { // do not optimize this function. "this" is important.
+                        resolve(this.result);
+                    };
+                    reader.readAsDataURL(blob);
+                });
+            }) ;
     }
 }
 

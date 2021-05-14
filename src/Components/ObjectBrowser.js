@@ -195,7 +195,6 @@ const styles = theme => ({
         lineHeight: ROW_HEIGHT + 'px',
         verticalAlign: 'top',
         userSelect: 'none',
-        cursor: 'pointer',
         width: '100%',
         '&:hover': {
             background: `${theme.palette.primary.main} !important`,
@@ -203,6 +202,9 @@ const styles = theme => ({
         },
         whiteSpace: 'nowrap',
         flexWrap: 'nowrap',
+    },
+    tableRowNoDragging: {
+        cursor: 'pointer',
     },
     tableRowAlias: {
         height: ROW_HEIGHT + 10,
@@ -486,7 +488,7 @@ const styles = theme => ({
     },
 
     filteredOut: {
-        opacity: 0.3
+        opacity: 0.5
     },
     filterInput: {
         marginTop: 0,
@@ -615,6 +617,12 @@ const styles = theme => ({
     '@media screen and (max-width: 430px)': {
 
     },
+    draggable: {
+        cursor: 'copy',
+    },
+    nonDraggable: {
+        cursor: 'no-drop',
+    }
 });
 
 function generateFile(filename, obj) {
@@ -654,7 +662,7 @@ function binarySearch(list, find, _start, _end) {
     }
 }
 
-function applyFilter(item, filters, lang, objects, context, counter, customFilter) {
+function applyFilter(item, filters, lang, objects, context, counter, customFilter, selectedTypes) {
     let filteredOut = false;
     if (!context) {
         context = {};
@@ -740,6 +748,9 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
         if (!filteredOut && context.type) {
             filteredOut = !(data.obj && data.obj.type && data.obj.type === context.type);
         }
+        if (!filteredOut && selectedTypes) {
+            filteredOut = !(data.obj && data.obj.type && selectedTypes.includes(data.obj.type));
+        }
         if (!filteredOut && context.custom) {
             if (common) {
                 filteredOut = !common.custom || !common.custom[context.custom];
@@ -752,7 +763,7 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
     data.hasVisibleChildren = false;
     if (item.children) {
         item.children.forEach(_item => {
-            const visible = applyFilter(_item, filters, lang, objects, context, counter, customFilter);
+            const visible = applyFilter(_item, filters, lang, objects, context, counter, customFilter, selectedTypes);
             if (visible) {
                 data.hasVisibleChildren = true;
             }
@@ -1565,6 +1576,8 @@ class ObjectBrowser extends Component {
             aclEveryone_write_state:  props.t('ra_aclEveryone_write_state'),
         };
 
+        this.levelPadding = props.levelPadding || ITEM_LEVEL;
+
         this.calculateColumnsVisibility();
 
         props.socket.getObjects(true, true)
@@ -1575,9 +1588,11 @@ class ObjectBrowser extends Component {
                 this.systemConfig.common.defaultNewAcl.owner = this.systemConfig.common.defaultNewAcl.owner || 'system.user.admin';
                 this.systemConfig.common.defaultNewAcl.ownerGroup = this.systemConfig.common.defaultNewAcl.ownerGroup || 'system.group.administrator';
                 if (typeof this.systemConfig.common.defaultNewAcl.state !== 'number') {
+                    // TODO: may be convert here from string
                     this.systemConfig.common.defaultNewAcl.state = 0x664;
                 }
                 if (typeof this.systemConfig.common.defaultNewAcl.object !== 'number') {
+                    // TODO: may be convert here from string
                     this.systemConfig.common.defaultNewAcl.state = 0x664;
                 }
 
@@ -1608,7 +1623,7 @@ class ObjectBrowser extends Component {
                 let node = this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
 
                 // If selected ID is not visible, reset filter
-                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, props.customFilter)) {
+                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, props.customFilter, props.types)) {
                     // reset filter
                     this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
                         this.setState({ loaded: true }, () =>
@@ -1770,7 +1785,13 @@ class ObjectBrowser extends Component {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={() => this.setState({ error: '' })} color="primary" autoFocus><IconCheck className={this.props.classes.buttonIcon} />{this.props.t('ra_Ok')}</Button>
+                <Button
+                    variant="contained"
+                    onClick={() => this.setState({ error: '' })}
+                    color="primary"
+                    autoFocus
+                    startIcon={<IconCheck />}
+                >{this.props.t('ra_Ok')}</Button>
             </DialogActions>
         </Dialog> : null;
     }
@@ -1983,9 +2004,12 @@ class ObjectBrowser extends Component {
                     </List>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({ columnsSelectorShow: false })} color="primary">
-                        <IconClose className={this.props.classes.buttonIcon} />{this.texts['close']}
-                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ columnsSelectorShow: false })}
+                        color="primary"
+                        startIcon={<IconClose />}
+                    >{this.texts['close']}</Button>
                 </DialogActions>
             </Dialog>
         }
@@ -2716,7 +2740,7 @@ class ObjectBrowser extends Component {
                 <DialogActions>
                     <Button variant="contained" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(true))}>{this.props.t('All objects')}</Button>
                     <Button variant="contained" autoFocus color="primary" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(false))}>{this.props.t('Only selected')}</Button>
-                    <Button variant="contained" onClick={() => this.setState({showExportDialog: false})}>{this.props.t('Cancel')}</Button>
+                    <Button variant="contained" onClick={() => this.setState({showExportDialog: false})} startIcon={<IconClose/>}>{this.props.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         }
@@ -3556,8 +3580,9 @@ class ObjectBrowser extends Component {
                         onClick={() => this.onColumnsEditCustomDialogClose(true)}
                         disabled={!this.state.customColumnDialogValueChanged}
                         color="primary"
+                        startIcon={<IconCheck /> }
                     >
-                        <IconCheck className={this.props.classes.buttonIcon} /> {this.props.t('ra_Update')}
+                        {this.props.t('ra_Update')}
                     </Button>
                     <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
                 </DialogActions>
@@ -3707,7 +3732,7 @@ class ObjectBrowser extends Component {
 
         const typeImg = (obj && obj.type && ITEM_IMAGES[obj.type]) || <div className="itemIcon" />;
 
-        const paddingLeft = ITEM_LEVEL * item.data.level;
+        const paddingLeft = this.levelPadding * item.data.level;
 
         if (item.data.lang !== this.state.lang) {
             const { rooms, per } = findRoomsForObject(this.info, id, this.state.lang);
@@ -3810,7 +3835,15 @@ class ObjectBrowser extends Component {
             container
             direction="row"
             wrap="nowrap"
-            className={Utils.clsx(classes.tableRow, alias && classes.tableRowAlias, readWriteAlias && classes.tableRowAliasReadWrite, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected, this.state.selectedNonObject === id && classes.itemSelected)}
+            className={Utils.clsx(
+                classes.tableRow,
+                !this.props.dragEnabled && classes.tableRowNoDragging,
+                alias && classes.tableRowAlias,
+                readWriteAlias && classes.tableRowAliasReadWrite,
+                !item.data.visible && classes.filteredOut,
+                this.state.selected.includes(id) && classes.itemSelected,
+                this.state.selectedNonObject === id && classes.itemSelected
+            )}
             key={id}
             id={id}
             onClick={() => this.onSelect(id)}
@@ -3925,7 +3958,12 @@ class ObjectBrowser extends Component {
         let leaf = this.renderLeaf(root, isExpanded, classes, counter);
         let DragWrapper = this.props.DragWrapper;
         if (this.props.dragEnabled) {
-            leaf = <DragWrapper key={root.data.id} item={root}>{leaf}</DragWrapper>;
+            if (root.data.visible) {
+                leaf = <DragWrapper key={root.data.id} item={root} className={classes.draggable}>{leaf}</DragWrapper>;
+            } else {
+                // change cursor
+                leaf = <div key={root.data.id} className={classes.nonDraggable}>{leaf}</div>
+            }
         }
         root.data.id && items.push(leaf);
 
@@ -4257,6 +4295,7 @@ class ObjectBrowser extends Component {
         const ObjectBrowserEditObject = this.props.objectBrowserEditObject;
 
         return <ObjectBrowserEditObject
+            key={this.state.editObjectDialog}
             obj={this.objects[this.state.editObjectDialog]}
             roleArray={this.info.roles}
             objects={this.objects}
@@ -4267,6 +4306,10 @@ class ObjectBrowser extends Component {
             dialogName={this.props.dialogName}
             t={this.props.t}
             expertMode={this.state.filter.expertMode}
+            onNewObject={obj =>
+                this.props.socket.setObject(obj._id, obj)
+                    .then(() => this.setState({ editObjectDialog: obj._id }, () => this.onSelect(obj._id)))
+                    .catch(e => this.showError('Cannot write object: ' + e))}
             onClose={obj => {
                 this.setState({ editObjectDialog: '' });
                 if (obj) {
@@ -4328,7 +4371,7 @@ class ObjectBrowser extends Component {
         if (this.lastAppliedFilter !== jsonFilter && this.objects && this.root) {
             const counter = { count: 0 };
 
-            applyFilter(this.root, this.state.filter, this.state.lang, this.objects, null, counter, this.props.customFilter);
+            applyFilter(this.root, this.state.filter, this.state.lang, this.objects, null, counter, this.props.customFilter, this.props.types);
 
             if (counter.count < 500 && !this.state.expandAllVisible) {
                 setTimeout(() => this.setState({ expandAllVisible: true }));
@@ -4412,6 +4455,7 @@ ObjectBrowser.propTypes = {
     disableColumnSelector: PropTypes.bool,
     isFloatComma: PropTypes.bool,
     dateFormat: PropTypes.string,
+    levelPadding: PropTypes.number,
 
     // components
     objectCustomDialog: PropTypes.oneOfType([

@@ -856,7 +856,7 @@ class Connection {
         }
 
         this._promises['adapter_' + adapter] = new Promise((resolve, reject) =>
-            this._socket.emit('getAdapterInstances', adapter, (err, instances) =>
+            this._socket.emit('getAdapters', adapter, (err, instances) =>
                 err ? reject(err) : resolve(instances)));
 
         return this._promises['adapter_' + adapter];
@@ -1637,9 +1637,10 @@ class Connection {
      * @param {string} host The host name.
      * @param {string} cmd The command.
      * @param {string} cmdId The command ID.
+     * @param {number} cmdTimeout Timeout of command in ms
      * @returns {Promise<void>}
      */
-    cmdExec(host, cmd, cmdId) {
+    cmdExec(host, cmd, cmdId, cmdTimeout) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
@@ -1652,16 +1653,16 @@ class Connection {
         }
 
         return new Promise((resolve, reject) => {
-            let timeout = setTimeout(() => {
+            let timeout = cmdTimeout && setTimeout(() => {
                 if (timeout) {
                     timeout = null;
                     reject('cmdExec timeout');
                 }
-            }, this.props.cmdTimeout);
+            }, cmdTimeout);
 
             this._socket.emit('cmdExec', host, cmdId, cmd, null, err => {
-                if (timeout) {
-                    clearTimeout(timeout);
+                if (!cmdTimeout || timeout) {
+                    timeout && clearTimeout(timeout);
                     timeout = null;
                     if (err) {
                         reject(err);
@@ -1718,6 +1719,10 @@ class Connection {
                                 reject('readBaseSettings timeout');
                             }
                         }, this.props.cmdTimeout);
+
+                        if (host.startsWith('system.host.')) {
+                            host = host.replace(/^system\.host\./, '');
+                        }
 
                         this._socket.emit('sendToHost', host, 'readBaseSettings', null, data => {
                             if (timeout) {

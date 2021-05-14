@@ -44,6 +44,11 @@ class GenericApp extends Router {
         query.trim().split('&').filter(t => t.trim()).forEach(b => {
             const parts = b.split('=');
             args[parts[0]] = parts.length === 2 ? parts[1] : true;
+            if (args[parts[0]] === 'true') {
+                args[parts[0]] = true;
+            } else if (args[parts[0]] === 'false') {
+                args[parts[0]] = false;
+            }
         });
 
         // extract instance from URL
@@ -51,7 +56,8 @@ class GenericApp extends Router {
         // extract adapter name from URL
         const tmp = window.location.pathname.split('/');
         this.adapterName = settings?.adapterName || props.adapterName || window.adapterName || tmp[tmp.length - 2] || 'iot';
-        this.instanceId  = 'system.adapter.' + this.adapterName + '.' + this.instance;
+        this.instanceId  = `system.adapter.${this.adapterName}.${this.instance}`;
+        this.newReact = args.newReact === true; // it is admin5
 
         const location = Router.getLocation();
         location.tab = location.tab || window.localStorage.getItem(this.adapterName + '-adapter') || '';
@@ -618,6 +624,7 @@ class GenericApp extends Router {
         if (this.state.bottomButtons) {
             return <SaveCloseButtons
                 theme={this.state.theme}
+                newReact={this.newReact}
                 noTextOnButtons={this.state.width === 'xs' || this.state.width === 'sm' || this.state.width === 'md'}
                 changed={this.state.changed}
                 onSave={(isClose) => this.onSave(isClose)}

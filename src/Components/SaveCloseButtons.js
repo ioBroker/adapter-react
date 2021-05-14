@@ -31,9 +31,9 @@ class SaveCloseButtons extends React.Component {
     constructor(props) {
         super(props);
         try {
-            this.isIFrame = window.self !== window.top;
+            this.isIFrame = !props.newReact && window.self !== window.top;
         } catch (e) {
-            this.isIFrame = true;
+            this.isIFrame = !props.newReact;
         }
     }
 
@@ -97,6 +97,7 @@ SaveCloseButtons.propTypes = {
     error: PropTypes.bool,
     onSave: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
+    newReact: PropTypes.bool,
 };
 
 /** @type {typeof SaveCloseButtons} */

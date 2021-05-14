@@ -605,6 +605,9 @@ In dialogs the OK button is first (on the left) and the cancel button is last (o
 -->
 
 ## Changelog
+### 1.6.17 (2021-05-14)
+* (bluefox) Updated save buttons on the bottom
+
 ### 1.6.16 (2021-05-12)
 * (bluefox) Updated the CRON dialog 
 

@@ -449,7 +449,9 @@ class FileBrowser extends Component {
             errorText: '',
             modalEditOfAccess: false,
             backgroundImage,
-            queueLength: 0
+            queueLength: 0,
+            loadAllFolders: false,
+            allFoldersLoaded: false,
         };
 
         this.imagePrefix = this.props.imagePrefix || './files/';
@@ -460,19 +462,19 @@ class FileBrowser extends Component {
 
         this.browseList = [];
         this.browseListRunning = false;
-
-        this.loadFolders();
+        this.initialReadFinished = false;
     }
 
     static getDerivedStateFromProps(props, state) {
         if (props.expertMode !== undefined && props.expertMode !== state.expertMode) {
-            return { expertMode: props.expertMode };
+            return { expertMode: props.expertMode, loadAllFolders: !state.allFoldersLoaded && props.expertMode };
         } else {
             return null;
         }
     }
 
     loadFolders() {
+        this.initialReadFinished = false;
         return this.browseFolder('/')
             .then(folders => {
                 return this.state.viewType === TABLE ?
@@ -496,7 +498,8 @@ class FileBrowser extends Component {
                 } else {
                     this.scrollToSelected();
                 }
-            }));
+                this.initialReadFinished = true;
+            }))
     }
 
     scrollToSelected() {
@@ -508,11 +511,13 @@ class FileBrowser extends Component {
 
     componentDidMount() {
         this.mounted = true;
-        this.scrollToSelected();
+        this.loadFolders();
     }
 
     componentWillUnmount() {
         this.mounted = false;
+        this.browseList = null;
+        this.browseListRunning = false;
     }
 
     browseFolders(foldersList, _newFolders, _resolve) {
@@ -529,20 +534,22 @@ class FileBrowser extends Component {
             _resolve(_newFolders);
         } else {
             this.browseFolder(foldersList.shift(), _newFolders)
-                .then(() => setTimeout(() => this.browseFolders(foldersList, _newFolders, _resolve), 0))
+                .then(()  => setTimeout(() => this.browseFolders(foldersList, _newFolders, _resolve), 0))
                 .catch(() => setTimeout(() => this.browseFolders(foldersList, _newFolders, _resolve), 0))
         }
     }
 
     readDirSerial(adapter, relPath) {
         return new Promise((resolve, reject) => {
-            this.browseList.push({resolve, reject, adapter, relPath});
-            !this.browseListRunning && this.processBrowseList();
+            if (this.browseList) { // if component still mounted
+                this.browseList.push({resolve, reject, adapter, relPath});
+                !this.browseListRunning && this.processBrowseList();
+            }
         });
     }
 
     processBrowseList(level) {
-        if (!this.browseListRunning && this.browseList.length) {
+        if (!this.browseListRunning && this.browseList && this.browseList.length) {
             this.browseListRunning = true;
             if (this.browseList.length > 10) {
                 // not too often
@@ -556,41 +563,54 @@ class FileBrowser extends Component {
             this.browseList[0].processing = true;
             this.props.socket.readDir(this.browseList[0].adapter, this.browseList[0].relPath)
                 .then(files => {
-                    const item = this.browseList.shift();
-                    const resolve = item.resolve;
-                    item.resolve = null;
-                    item.reject  = null;
-                    item.adapter = null;
-                    item.relPath = null;
-                    resolve(files);
-                    this.browseListRunning = false;
-                    if (this.browseList.length) {
-                        if (level < 5) {
-                            this.processBrowseList(level + 1);
+                    if (this.browseList) { // if component still mounted
+                        const item = this.browseList.shift();
+                        if (item) {
+                            const resolve = item.resolve;
+                            item.resolve = null;
+                            item.reject  = null;
+                            item.adapter = null;
+                            item.relPath = null;
+                            resolve(files);
+                            this.browseListRunning = false;
+                            if (this.browseList.length) {
+                                if (level < 5) {
+                                    this.processBrowseList(level + 1);
+                                } else {
+                                    setTimeout(() => this.processBrowseList(0), 0);
+                                }
+                            } else {
+                                this.setState({queueLength: 0});
+                            }
                         } else {
-                            setTimeout(() => this.processBrowseList(0), 0);
+                            this.setState({queueLength: 0});
                         }
-                    } else {
-                        this.setState({queueLength: 0});
                     }
+
                 })
                 .catch(e => {
-                    const item = this.browseList.shift();
-                    const reject = item.reject;
-                    item.resolve = null;
-                    item.reject  = null;
-                    item.adapter = null;
-                    item.relPath = null;
-                    reject(e);
-                    this.browseListRunning = false;
-                    if (this.browseList.length) {
-                        if (level < 5) {
-                            this.processBrowseList(level + 1);
+                    if (this.browseList) { // if component still mounted
+                        const item = this.browseList.shift();
+                        if (item) {
+                            const reject = item.reject;
+                            item.resolve = null;
+                            item.reject = null;
+                            item.adapter = null;
+                            item.relPath = null;
+                            reject(e);
+                            this.browseListRunning = false;
+                            if (this.browseList.length) {
+                                if (level < 5) {
+                                    this.processBrowseList(level + 1);
+                                } else {
+                                    setTimeout(() => this.processBrowseList(0), 0);
+                                }
+                            } else {
+                                this.setState({queueLength: 0});
+                            }
                         } else {
-                            setTimeout(() => this.processBrowseList(0), 0);
+                            this.setState({queueLength: 0});
                         }
-                    } else {
-                        this.setState({queueLength: 0});
                     }
                 });
         }
@@ -599,7 +619,8 @@ class FileBrowser extends Component {
     browseFolder(folderId, _newFolders, _checkEmpty) {
         if (!_newFolders) {
             _newFolders = {};
-            Object.keys(this.state.folders).forEach(folder => _newFolders[folder] = this.state.folders[folder]);
+            Object.keys(this.state.folders).forEach(folder =>
+                _newFolders[folder] = this.state.folders[folder]);
         }
 
         if (_newFolders[folderId]) {
@@ -622,13 +643,24 @@ class FileBrowser extends Component {
                     let userData = null;
 
                     // load only adapter.admin and not other meta files like hm-rpc.0.devices.blablabla
-                    objs = objs.filter(obj => obj._id.split('.').length <= 2);
+                    objs = objs.filter(obj => {
+                        if (!this.state.expertMode) {
+                            return obj._id === '0_userdata.0' || obj._id === 'vis.0';
+                        } else {
+                            return obj._id.split('.').length <= 2;
+                        }
+                    });
+
+                    // remember, that all folders are loaded
+                    if (this.state.expertMode) {
+                        this.setState({allFoldersLoaded: true, loadFolders: false});
+                    }
 
                     objs.forEach(obj => {
                         const item = {
                             id:     obj._id,
                             name:   obj._id,
-                            title: (obj.common && obj.common.name) || obj._id,
+                            title:  (obj.common && obj.common.name) || obj._id,
                             meta:   true,
                             from:   obj.from,
                             ts:     obj.ts,
@@ -658,7 +690,7 @@ class FileBrowser extends Component {
                         return _newFolders;
                     }
                 })
-                .catch(e => window.alert('Cannot read meta items: ' + e));
+                .catch(e => this.initialReadFinished && window.alert('Cannot read meta items: ' + e));
         } else {
             const parts   = folderId.split('/');
             const level   = parts.length;
@@ -688,13 +720,15 @@ class FileBrowser extends Component {
 
                     if (!_checkEmpty) {
                         return Promise.all(_folders.filter(item => item.folder).map(item => this.browseFolder(item.id, _newFolders, true)))
-                            .then(() => _newFolders)
+                            .then(() => _newFolders);
                     } else {
                         return _newFolders;
                     }
                 })
                 .catch(e => {
-                    window.alert(`Cannot read ${adapter}${relPath ? '/' + relPath : ''}: ${e}`)
+                    this.initialReadFinished && window.alert(`Cannot read ${adapter}${relPath ? '/' + relPath : ''}: ${e}`);
+                    _newFolders[folderId] = [];
+                    return _newFolders;
                 });
         }
     }
@@ -745,7 +779,11 @@ class FileBrowser extends Component {
         }
     }
 
-    select(id, e) {
+    select(id, e, cb) {
+        if (typeof e === 'function') {
+            cb = e;
+            e = null;
+        }
         e && e.stopPropagation();
         this.lastSelect = Date.now();
         window.localStorage.setItem('files.selected', id);
@@ -760,6 +798,7 @@ class FileBrowser extends Component {
                     this.props.onSelect('');
                 }
             }
+            cb && cb();
         });
     }
 
@@ -774,7 +813,7 @@ class FileBrowser extends Component {
             style={this.state.viewType === TABLE ? { marginLeft: padding, width: 'calc(100% - ' + padding + 'px' } : {}}
             onClick={e => this.state.viewType === TABLE ? this.select(item.id, e) : this.changeFolder(e, item.id)}
             onDoubleClick={e => this.state.viewType === TABLE && this.toggleFolder(item, e)}
-            title={item.title && typeof item.title === 'object' ? item.title[this.props.lang] : item.title || null}
+            title={item.title && typeof item.title === 'object' ? item.title[this.props.lang] || item.title.end || '' : item.title || null}
             className={Utils.clsx(
                 'browserItem',
                 this.props.classes['item' + this.state.viewType],
@@ -1134,7 +1173,7 @@ class FileBrowser extends Component {
                 title={this.props.t('ra_Reload files')}
                 className={this.props.classes.menuButton}
                 color={'inherit'}
-                aria-label="filter empty"
+                aria-label="reload files"
                 onClick={() => this.setState({ folders: {} }, () => this.loadFolders())}
             ><RefreshIcon /></IconButton>
             {this.props.allowCreateFolder ? <IconButton
@@ -1171,10 +1210,16 @@ class FileBrowser extends Component {
 
     findItem(id, folders) {
         folders = folders || this.state.folders;
+        if (!folders) {
+            return null;
+        }
         const parts = id.split('/');
         parts.pop();
-        const parentFolder = parts.join('/');
-        return folders[parentFolder || '/'].find(item => item.id === id);
+        const parentFolder = parts.join('/') || '/';
+        if (!folders[parentFolder]) {
+            return null;
+        }
+        return folders[parentFolder].find(item => item.id === id);
     }
 
     renderInputDialog() {
@@ -1198,8 +1243,9 @@ class FileBrowser extends Component {
                         const folders = {};
                         Object.keys(this.state.folders).forEach(folder => folders[folder] = this.state.folders[folder]);
                         const parent = this.findItem(parentFolder);
+                        const id = parentFolder + '/' + name;
                         folders[parentFolder].push({
-                            id: parentFolder + '/' + name,
+                            id: id,
                             level: parent.level + 1,
                             name,
                             folder: true,
@@ -1208,13 +1254,15 @@ class FileBrowser extends Component {
 
                         folders[parentFolder].sort(sortFolders);
 
-                        folders[parentFolder + '/' + name] = [];
+                        folders[id] = [];
                         const expanded = [...this.state.expanded];
                         if (!expanded.includes(parentFolder)) {
                             expanded.push(parentFolder);
                             expanded.sort();
                         }
-                        this.setState({ addFolder: false, folders, expanded });
+                        window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+                        this.setState({ addFolder: false, folders, expanded }, () =>
+                            this.select(id));
                     } else {
                         this.setState({ addFolder: false });
                     }
@@ -1246,8 +1294,9 @@ class FileBrowser extends Component {
 
     findFirstFolder(id) {
         let parentFolder = id;
+        let item = this.findItem(parentFolder);
         // find folder
-        if (!this.findItem(parentFolder).folder) {
+        if (item && !item.folder) {
             const parts = parentFolder.split('/');
             parts.pop();
             parentFolder = '';
@@ -1287,8 +1336,8 @@ class FileBrowser extends Component {
                                 if (!parentFolder) {
                                     return window.alert(this.props.t('ra_Invalid parent folder!'));
                                 }
-
-                                this.uploadFile(parentFolder + '/' + file.name, reader.result)
+                                const id = parentFolder + '/' + file.name;
+                                this.uploadFile(id, reader.result)
                                     .then(() => {
                                         if (!--count) {
                                             const folders = {};
@@ -1299,7 +1348,17 @@ class FileBrowser extends Component {
                                             });
                                             this.setState({ uploadFile: false, folders }, () =>
                                                 this.browseFolders([...this.state.expanded], folders)
-                                                    .then(folders => this.setState({ folders })));
+                                                    .then(folders => {
+                                                        // open current folder
+                                                        const expanded = [...this.state.expanded];
+                                                        if (!expanded.includes(parentFolder)) {
+                                                            expanded.push(parentFolder);
+                                                            expanded.sort();
+                                                            window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+                                                        }
+                                                        this.setState({ folders, expanded }, () =>
+                                                            this.select(id))
+                                                    }));
                                         }
                                     });
                             };
@@ -1331,7 +1390,33 @@ class FileBrowser extends Component {
     deleteRecursive(id) {
         const item = this.findItem(id);
         if (item.folder) {
-            return Promise.all(this.state.folders[id].map(item => this.deleteRecursive(item.id)));
+            return (this.state.folders[id] ? Promise.all(this.state.folders[id].map(item =>
+                    this.deleteRecursive(item.id))) : Promise.resolve())
+                .then(() => {
+                    // If it is folder of second level
+                    if (item.level >= 1) {
+                        const parts = id.split('/');
+                        const adapter = parts.shift();
+                        this.props.socket.deleteFolder(adapter, parts.join('/'))
+                            .then(() => {
+                                // remove this folder
+                                const folders = JSON.parse(JSON.stringify(this.state.folders));
+                                delete folders[item.id];
+                                // delete folder from parent item
+                                const parentId = getParentDir(item.id);
+                                const parentFolder = folders[parentId];
+                                if (parentFolder) {
+                                    const pos = parentFolder.indexOf(parentFolder.find(f => f.id === item.id));
+                                    if (pos !== -1) {
+                                        parentFolder.splice(pos, 1);
+                                    }
+
+                                    this.select(parentId, () =>
+                                        this.setState({folders}));
+                                }
+                            });
+                    }
+                });
         } else {
             const parts = id.split('/');
             const adapter = parts.shift();
@@ -1350,7 +1435,14 @@ class FileBrowser extends Component {
         this.setState({ deleteItem: '' }, () =>
             this.deleteRecursive(deleteItem)
                 .then(() => {
-                    let parentFolder = this.findFirstFolder(deleteItem);
+                    const pos = this.state.expanded.indexOf(deleteItem);
+                    if (pos !== -1) {
+                        const expanded = [...this.state.expanded];
+                        expanded.splice(pos, 1);
+                        window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+                        this.setState({ expanded });
+                    }
+                    /*let parentFolder = this.findFirstFolder(deleteItem);
                     const folders = {};
                     Object.keys(this.state.folders).forEach(name => {
                         if (name !== parentFolder && !name.startsWith(parentFolder + '/')) {
@@ -1359,7 +1451,7 @@ class FileBrowser extends Component {
                     });
                     this.setState({ folders }, () =>
                         this.browseFolders([...this.state.expanded], folders)
-                            .then(folders => this.setState({ folders })));
+                            .then(folders => this.setState({ folders })));*/
                 })
         );
     }
@@ -1486,6 +1578,17 @@ class FileBrowser extends Component {
         if (!this.props.ready) {
             return <LinearProgress key={this.props.key ? this.props.key + '_c' : 'c'} />;
         }
+
+        if (this.state.loadAllFolders && !this.foldersLoading) {
+            this.foldersLoading = true;
+            setTimeout(() => {
+                this.setState({loadAllFolders: false, folders: {}}, () => {
+                    this.foldersLoading = false;
+                    this.loadFolders();
+                });
+            }, 300);
+        }
+
 
         return <div key={this.props.key} style={this.props.style} className={Utils.clsx(this.props.classes.root, this.props.className)}>
             {this.props.showToolbar ? this.renderToolbar() : null}
