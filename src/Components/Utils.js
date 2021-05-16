@@ -640,26 +640,34 @@ class Utils {
      * @returns {string | JSX.Element[]}
      */
     static renderTextWithA(text) {
-        let m = text.match(/<a [^<]+<\/a>/);
+        let m = text.match(/<a [^<]+<\/a>|<br\/?>/);
         if (m) {
             const result = [];
             let key = 1;
             do {
-                let href = m[0].match(/href="([^"]+)"/) || m[0].match(/href='([^']+)'/);
-                let target = m[0].match(/target="([^"]+)"/) || m[0].match(/target='([^']+)'/);
-                let rel = m[0].match(/rel="([^"]+)"/) || m[0].match(/rel='([^']+)'/);
-                const title = m[0].match(/>([^<]*)</);
-
                 const p = text.split(m[0]);
                 p[0] && result.push(<span key={'a' + (key++)}>{p[0]}</span>);
-                // eslint-disable-next-line
-                result.push(<a key={'a' + (key++)} href={href ? href[1] : ''} target={target ? target[1] : '_blank'} rel={rel ? rel[1] : ''}>{title ? title[1] : ''}</a>);
+
+                if (m[0].startsWith('<br')) {
+                   result.push(<br key={'a' + (key++)} />);
+                } else {
+                    let href = m[0].match(/href="([^"]+)"/) || m[0].match(/href='([^']+)'/);
+                    let target = m[0].match(/target="([^"]+)"/) || m[0].match(/target='([^']+)'/);
+                    let rel = m[0].match(/rel="([^"]+)"/) || m[0].match(/rel='([^']+)'/);
+                    const title = m[0].match(/>([^<]*)</);
+
+                    // eslint-disable-next-line
+                    result.push(<a key={'a' + (key++)} href={href ? href[1] : ''} target={target ? target[1] : '_blank'} rel={rel ? rel[1] : ''}>{title ? title[1] : ''}</a>);
+                }
+
                 text = p[1];
-                m = text && text.match(/<a [^<]+<\/a>/);
+
+                m = text && text.match(/<a [^<]+<\/a>|<br\/?>/);
                 if (!m) {
                     p[1] && result.push(<span key={'a' + (key++)}>{p[1]}</span>);
                 }
             } while (m);
+
             return result;
         } else {
             return text;
@@ -1006,7 +1014,8 @@ class Utils {
             hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
         }
         if (hex.length !== 6) {
-            throw new Error('Invalid HEX color.');
+            console.warn('Cannot invert color: ' + hex);
+            return hex;
         }
         let r = parseInt(hex.slice(0, 2), 16);
         let g = parseInt(hex.slice(2, 4), 16);
