@@ -315,7 +315,7 @@ class Connection {
             }
 
             // Read system configuration
-            return this.getCompactSystemConfig()
+            return this.getSystemConfig()
                 .then(data => {
                     if (this.doNotLoadACL) {
                         if (this.loaded) {

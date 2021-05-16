@@ -605,6 +605,9 @@ In dialogs the OK button is first (on the left) and the cancel button is last (o
 -->
 
 ## Changelog
+### 1.6.20 (2021-05-16)
+* (bluefox) Make it admin4 compatible
+
 ### 1.6.19 (2021-05-16)
 * (bluefox) Fixed the load of system configuration
 
