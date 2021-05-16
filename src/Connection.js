@@ -350,7 +350,6 @@ class Connection {
                                 this.props.onReady && this.props.onReady(this.objects);
                             });
                     } else {
-                        this.objects = {'system.config': data};
                         this.onProgress(PROGRESS.READY);
                         this.props.onReady && this.props.onReady(this.objects);
                     }

@@ -322,16 +322,7 @@ class GenericApp extends Router {
      * @returns {Promise<ioBroker.OtherObject>}
      */
     getSystemConfig() {
-        if (this._systemConfig) {
-            return Promise.resolve(this._systemConfig);
-        }
-        if (this.socket.objects && this.socket.objects['system.config']) {
-            return Promise.resolve(this.socket.objects['system.config']);
-        } else {
-            // @ts-ignore
-            return this.socket.getObject('system.config')
-                .then(obj => obj?.common || {});
-        }
+        return this.socket.getSystemConfig();
     }
 
     /**

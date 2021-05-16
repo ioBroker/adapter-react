@@ -605,6 +605,9 @@ In dialogs the OK button is first (on the left) and the cancel button is last (o
 -->
 
 ## Changelog
+### 1.6.19 (2021-05-16)
+* (bluefox) Fixed the load of system configuration
+
 ### 1.6.18 (2021-05-16)
 * (bluefox) Added the rendering of `<br>` too in texts
 
