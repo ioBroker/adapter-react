@@ -2582,7 +2582,8 @@ class ObjectBrowser extends Component {
                 const en = {
                     _id: this.objects[_id]._id,
                     common: JSON.parse(JSON.stringify(this.objects[_id].common)),
-                    native: this.objects[_id].native
+                    native: this.objects[_id].native,
+                    type: 'enum',
                 };
                 if (en.common) {
                     delete en.common.members;
@@ -2694,11 +2695,12 @@ class ObjectBrowser extends Component {
                 }
             }
 
-           return result;
+            return result;
         } else {
             return [];
         }
     }
+
     _exportObjects(isAll) {
         if (isAll) {
             generateFile('allObjects.json', this.objects);
@@ -2966,7 +2968,7 @@ class ObjectBrowser extends Component {
                 </Tooltip>}
 
                 {this.props.objectAddBoolean ?
-                    (<Tooltip title={this.toolTipObjectCreating()}>
+                    <Tooltip title={this.toolTipObjectCreating()}>
                         <div>
                             <IconButton disabled={!allowObjectCreation} onClick={() =>
                                 this.setState({ modalNewObj: true })}
@@ -2975,7 +2977,7 @@ class ObjectBrowser extends Component {
                             </IconButton>
                         </div>
                     </Tooltip>
-                    ) : null
+                    : null
                 }
 
                 {this.props.objectImportExport &&
@@ -3876,6 +3878,7 @@ class ObjectBrowser extends Component {
                 </Grid>
                 <Grid
                     item
+                    title={id}
                     className={classes.cellIdSpan}
                     style={{
                         background: invertBackground,
@@ -3900,7 +3903,7 @@ class ObjectBrowser extends Component {
                     {iconItem}
                 </Grid>
                 <div style={{ color: checkColor }}>
-                    <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={(e) => this.onCopy(e, id)} />
+                    <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={e => this.onCopy(e, id)} />
                 </div>
             </Grid>
             {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data?.title) || ''}</div> : null}
@@ -4038,17 +4041,17 @@ class ObjectBrowser extends Component {
         if (columnsAuto) {
             this.columnsVisibility = {
                 id:          SCREEN_WIDTHS[this.props.width].idWidth,
-                name:        this.visibleCols.includes('name')        ? WIDTHS.name        : 0,
-                type:        this.visibleCols.includes('type')        ? WIDTHS.type        : 0,
-                role:        this.visibleCols.includes('role')        ? WIDTHS.role        : 0,
-                room:        this.visibleCols.includes('room')        ? WIDTHS.room        : 0,
-                func:        this.visibleCols.includes('func')        ? WIDTHS.func        : 0,
-                changedFrom: this.visibleCols.includes('changedFrom') ? WIDTHS.changedFrom : 0,
-                qualityCode: this.visibleCols.includes('qualityCode') ? WIDTHS.qualityCode : 0,
-                timestamp:   this.visibleCols.includes('timestamp')   ? WIDTHS.timestamp   : 0,
-                lastChange:  this.visibleCols.includes('lastChange')  ? WIDTHS.lastChange  : 0,
-                val:         this.visibleCols.includes('val')         ? WIDTHS.val         : 0,
-                buttons:     this.visibleCols.includes('buttons')     ? WIDTHS.buttons     : 0,
+                name:        this.visibleCols.includes('name')        ? WIDTHS.name         || 0 : 0,
+                type:        this.visibleCols.includes('type')        ? WIDTHS.type         || 0 : 0,
+                role:        this.visibleCols.includes('role')        ? WIDTHS.role         || 0 : 0,
+                room:        this.visibleCols.includes('room')        ? WIDTHS.room         || 0 : 0,
+                func:        this.visibleCols.includes('func')        ? WIDTHS.func         || 0 : 0,
+                changedFrom: this.visibleCols.includes('changedFrom') ? WIDTHS.changedFrom  || 0 : 0,
+                qualityCode: this.visibleCols.includes('qualityCode') ? WIDTHS.qualityCode  || 0 : 0,
+                timestamp:   this.visibleCols.includes('timestamp')   ? WIDTHS.timestamp    || 0 : 0,
+                lastChange:  this.visibleCols.includes('lastChange')  ? WIDTHS.lastChange   || 0 : 0,
+                val:         this.visibleCols.includes('val')         ? WIDTHS.val          || 0 : 0,
+                buttons:     this.visibleCols.includes('buttons')     ? WIDTHS.buttons      || 0 : 0,
             };
 
             if (this.columnsVisibility.name) {
@@ -4089,11 +4092,11 @@ class ObjectBrowser extends Component {
         } else {
             this.columnsVisibility = {
                 id:   columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
-                name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS[this.props.width].widths.name : 0,
-                type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS[this.props.width].widths.type : 0,
-                role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS[this.props.width].widths.role : 0,
-                room: columns.includes('room') ? columnsWidths.room || WIDTHS.room || SCREEN_WIDTHS[this.props.width].widths.room : 0,
-                func: columns.includes('func') ? columnsWidths.func || WIDTHS.func || SCREEN_WIDTHS[this.props.width].widths.func : 0
+                name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS[this.props.width].widths.name || 0 : 0,
+                type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS[this.props.width].widths.type || 0 : 0,
+                role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS[this.props.width].widths.role || 0 : 0,
+                room: columns.includes('room') ? columnsWidths.room || WIDTHS.room || SCREEN_WIDTHS[this.props.width].widths.room || 0 : 0,
+                func: columns.includes('func') ? columnsWidths.func || WIDTHS.func || SCREEN_WIDTHS[this.props.width].widths.func || 0 : 0
             };
             let widthSum = this.columnsVisibility.id; // id is always visible
             if (this.columnsVisibility.name) {
@@ -4358,10 +4361,13 @@ class ObjectBrowser extends Component {
         />;
     }
 
-    extendObject = (id, data) => {
-        return this.props.socket.extendObject(id, data, error =>
-            error && window.alert(error));
-    }
+    extendObject = (id, data) =>
+        this.props.socket.extendObject(id, data)
+            .catch(error => window.alert(error));
+
+    setObject = (id, data) =>
+        this.props.socket.setObject(id, data)
+            .catch(error => window.alert(error));
 
     /**
      * The rendering method of this component.

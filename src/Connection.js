@@ -68,6 +68,7 @@ class Connection {
         this.loadTimer = null;
         this.loadCounter = 0;
         this.certPromise = null;
+        this.admin5only = this.props.admin5only || false;
 
         /** @type {((connected: boolean) => void)[]} */
         this.onConnectionHandlers = [];
@@ -315,7 +316,7 @@ class Connection {
             }
 
             // Read system configuration
-            return this.getSystemConfig()
+            return (this.admin5only ? this.getCompactSystemConfig() : this.getSystemConfig())
                 .then(data => {
                     if (this.doNotLoadACL) {
                         if (this.loaded) {

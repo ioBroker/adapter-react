@@ -649,7 +649,7 @@ class Utils {
                 p[0] && result.push(<span key={'a' + (key++)}>{p[0]}</span>);
 
                 if (m[0].startsWith('<br')) {
-                   result.push(<br key={'a' + (key++)} />);
+                    result.push(<br key={'a' + (key++)} />);
                 } else {
                     let href = m[0].match(/href="([^"]+)"/) || m[0].match(/href='([^']+)'/);
                     let target = m[0].match(/target="([^"]+)"/) || m[0].match(/target='([^']+)'/);
