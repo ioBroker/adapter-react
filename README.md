@@ -605,7 +605,7 @@ In dialogs the OK button is first (on the left) and the cancel button is last (o
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 1.6.22 (2021-05-24)
 * (bluefox) Fixed the object subscription
 * (bluefox) Fixed the encryption and decryption of the native fields
 
