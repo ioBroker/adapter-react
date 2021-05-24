@@ -268,5 +268,6 @@
   "ra_Channel → State": "Канал → Состояние",
   "ra_Non-experts may create new objects only in \"0_userdata.0\" or \"alias.0\".": "Не-эксперты могут создавать новые объекты только в «0_userdata.0» или «alias.0».",
   "ra_The experts may create objects everywhere but from second level (e.g. \"vis.0\" or \"javascript.0\").": "Эксперты могут создавать объекты везде, кроме второго уровня (например, «vis.0» или «javascript.0»).",
-  "ra_expertMode": "Экспертный режим"
+  "ra_expertMode": "Экспертный режим",
+  "ra_On weekdays": "На выходных"
 }

@@ -15,6 +15,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 
+import Utils from '../Components/Utils';
 import I18n from '../i18n';
 import ObjectBrowser from '../Components/ObjectBrowser';
 
@@ -26,9 +27,19 @@ const styles = theme => ({
     dialog: {
         height: '95%'
     },
+    dialogMobile: {
+        padding: 4,
+        width: '100%',
+        maxWidth: '100%',
+        maxHeight: 'calc(100% - 16px)',
+        height: '100%'
+    },
     content: {
         height: '100%',
         overflow: 'hidden'
+    },
+    contentMobile: {
+        padding: '8px 4px'
     },
     titleRoot: {
         whiteSpace: 'nowrap',
@@ -90,7 +101,8 @@ class SelectID extends React.Component {
 
         this.state =  {
             selected,
-            name: ''
+            name: '',
+            isMobile: window.innerWidth < 800
         };
     }
 
@@ -130,13 +142,13 @@ class SelectID extends React.Component {
             disableBackdropClick
             maxWidth={false}
             disableEscapeKeyDown
-            classes={{paper: this.props.classes.dialog}}
+            classes={{paper: Utils.clsx(this.props.classes.dialog, this.props.classes.dialogMobile)}}
             fullWidth={true}
             open={true}
             aria-labelledby="selectid-dialog-title"
         >
             <DialogTitle id="selectid-dialog-title" classes={{root: this.props.classes.titleRoot}}>{ title }</DialogTitle>
-            <DialogContent className={this.props.classes.content}>
+            <DialogContent className={Utils.clsx(this.props.classes.content, this.props.classes.contentMobile)}>
                 <ObjectBrowser
                     foldersFirst={ this.props.foldersFirst }
                     imagePrefix={ this.props.imagePrefix || this.props.prefix } // prefix is for back compatibility

@@ -571,9 +571,6 @@ const styles = theme => ({
     enumCheckbox: {
         minWidth: 0,
     },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
     backgroundDef: {
         backgroundColor: theme.palette.background.default
     },
@@ -889,7 +886,7 @@ function buildTree(objects, options) {
                 info.enums.push(id);
             } else if (obj.type === 'enum') {
                 info.enums.push(id);
-            } else if (obj.type === 'instance' && common && common.supportCustoms) {
+            } else if (obj.type === 'instance' && common && (common.supportCustoms || common.adminUI?.custom)) {
                 info.hasSomeCustoms = true;
                 info.customs.push(id.substring('system.adapter.'.length));
             }
@@ -1392,6 +1389,8 @@ const SCREEN_WIDTHS = {
     },
 };
 
+let objectsAlreadyLoaded = false;
+
 /**
  * @extends {React.Component<import('./types').ObjectBrowserProps>}
  */
@@ -1513,7 +1512,6 @@ class ObjectBrowser extends Component {
             toast: '',
             lang: props.lang,
             scrollBarWidth: 16,
-            hasSomeCustoms: false,
             customDialog,
             editObjectDialog: '',
             enumDialog: null,
@@ -1579,8 +1577,15 @@ class ObjectBrowser extends Component {
         this.levelPadding = props.levelPadding || ITEM_LEVEL;
 
         this.calculateColumnsVisibility();
+    }
 
-        props.socket.getObjects(true, true)
+    loadAllObjects(update) {
+        const props = this.props;
+
+        return new Promise(resolve => this.setState({updating: true}, () => resolve()))
+            .then(() => this.props.objectsWorker ?
+                this.props.objectsWorker.getObjects(update) :
+                props.socket.getObjects(update, true))
             .then(objects => {
                 this.systemConfig = objects['system.config'] || {};
                 this.systemConfig.common = this.systemConfig.common || {};
@@ -1615,34 +1620,10 @@ class ObjectBrowser extends Component {
                     this.objects = objects;
                 }
 
-                const { info, root } = buildTree(this.objects, this.props);
-                this.root = root;
-                this.info = info;
-
-                // Show first selected item
-                let node = this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
-
-                // If selected ID is not visible, reset filter
-                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, props.customFilter, props.types)) {
-                    // reset filter
-                    this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
-                        this.setState({ loaded: true }, () =>
-                            this.expandAllSelected(() =>
-                                this.onAfterSelect()));
-                    });
-                } else {
-                    this.setState({ loaded: true }, () =>
-                        this.expandAllSelected(() =>
-                            this.onAfterSelect()));
-                }
-            });
-
-        // read default history
-        props.socket.getCompactSystemConfig()
-            .then(config => {
-                this.defaultHistory = config && config.common && config.common.defaultHistory;
+                // read default history
+                this.defaultHistory = this.systemConfig.common.defaultHistory;
                 if (this.defaultHistory) {
-                    return props.socket.getState('system.adapter.' + this.defaultHistory + '.alive')
+                    props.socket.getState('system.adapter.' + this.defaultHistory + '.alive')
                         .then(state => {
                             if (!state || !state.val) {
                                 this.defaultHistory = '';
@@ -1650,11 +1631,34 @@ class ObjectBrowser extends Component {
                         })
                         .catch(e => window.alert('Cannot get state: ' + e));
                 }
+
+                return this.getAdditionalColumns();
             })
-            .then(() => this.getAdditionalColumns())
             .then(columnsForAdmin => {
                 this.calculateColumnsVisibility(null, null, columnsForAdmin);
-                this.setState({ columnsForAdmin });
+
+                const { info, root } = buildTree(this.objects, this.props);
+                this.root = root;
+                this.info = info;
+
+                // Show first selected item
+                let node = this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
+
+                this.lastAppliedFilter = null;
+
+                // If selected ID is not visible, reset filter
+                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, props.customFilter, props.types)) {
+                    // reset filter
+                    this.setState({ filter: Object.assign({}, DEFAULT_FILTER), columnsForAdmin }, () => {
+                        this.setState({ loaded: true, updating: false }, () =>
+                            this.expandAllSelected(() =>
+                                this.onAfterSelect()));
+                    });
+                } else {
+                    this.setState({ loaded: true, updating: false, columnsForAdmin }, () =>
+                        this.expandAllSelected(() =>
+                            this.onAfterSelect()));
+                }
             })
             .catch(e => this.showError(e));
     }
@@ -1727,14 +1731,27 @@ class ObjectBrowser extends Component {
      * Called when component is mounted.
      */
     componentDidMount() {
-        this.props.socket.subscribeObject('*', this.onObjectChange);
+        this.loadAllObjects(!objectsAlreadyLoaded)
+            .then(() => {
+                if (this.props.objectsWorker) {
+                    this.props.objectsWorker.registerHandler(this.onObjectChange);
+                } else {
+                    this.props.socket.subscribeObject('*', this.onObjectChange);
+                }
+
+                objectsAlreadyLoaded = true;
+            });
     }
 
     /**
      * Called when component is unmounted.
      */
     componentWillUnmount() {
-        this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        if (this.props.objectsWorker) {
+            this.props.objectsWorker.unregisterHandler(this.onObjectChange, true);
+        } else {
+            this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        }
 
         // remove all subscribes
         this.subscribes.forEach(pattern => {
@@ -1743,26 +1760,23 @@ class ObjectBrowser extends Component {
         });
 
         this.subscribes = [];
+        this.objects = {};
     }
 
     /**
      * Called when component is mounted.
      */
-    async refreshComponent() {
-        try {
-            await this.props.socket.unsubscribeObject('*', this.onObjectChange);
-        } catch (e) {
-            window.alert('Cannot unsubscribe object: ' + e);
-        }
-
+    refreshComponent() {
         // remove all subscribes
-        this.subscribes.forEach(async pattern => {
+        this.subscribes.forEach(pattern => {
             console.log('- unsubscribe ' + pattern);
-            await this.props.socket.unsubscribeState(pattern, this.onStateChange);
+            this.props.socket.unsubscribeState(pattern, this.onStateChange);
         });
 
         this.subscribes = [];
-        await this.props.socket.subscribeObject('*', this.onObjectChange);
+
+        this.loadAllObjects(true)
+            .then(() => console.log('updated!'));
     }
 
     /**
@@ -2159,29 +2173,57 @@ class ObjectBrowser extends Component {
      * @param {import('./types').OldObject} oldObj
      */
     onObjectChange = (id, obj, oldObj) => {
-        console.log('> objectChange ' + id);
+        let newState;
 
-        this.objects = this.objects || [];
+        if (Array.isArray(id)) {
+            id.forEach(event => {
+                console.log('> objectChange ' + event.id);
 
-        if (id.startsWith('system.adapter.') && obj && obj.type === 'adapter') {
-            let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
-            this.parseObjectForAdmins(columnsForAdmin, obj);
-            if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
-                this.setState({ columnsForAdmin });
+                if (event.id.startsWith('system.adapter.') && event.obj && event.obj.type === 'adapter') {
+                    let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
+
+                    this.parseObjectForAdmins(columnsForAdmin, event.obj);
+
+                    if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
+                        newState= { columnsForAdmin };
+                    }
+                }
+                if (this.objects[id]) {
+                    if (obj) {
+                        this.objects[id] = obj;
+                    } else {
+                        delete this.objects[id];
+                    }
+                } else if (this.objects[id]) {
+                    delete this.objects[id];
+                }
+            });
+        } else {
+            console.log('> objectChange ' + id);
+            this.objects = this.objects || [];
+
+            if (id.startsWith('system.adapter.') && obj && obj.type === 'adapter') {
+                let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
+                this.parseObjectForAdmins(columnsForAdmin, obj);
+                if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
+                    newState = { columnsForAdmin };
+                }
             }
-        }
 
-        if (this.objects[id]) {
-            if (obj) {
-                this.objects[id] = obj;
-            } else {
+            if (this.objects[id]) {
+                if (obj) {
+                    this.objects[id] = obj;
+                } else {
+                    delete this.objects[id];
+                }
+            } else if (this.objects[id]) {
                 delete this.objects[id];
             }
-        } else if (this.objects[id]) {
-            delete this.objects[id];
         }
 
-        if (!this.objectsUpdateTimer) {
+        newState && this.setState(newState);
+
+        if (!this.objectsUpdateTimer && this.objects) {
             this.objectsUpdateTimer = setTimeout(() => {
                 this.objectsUpdateTimer = null;
                 const { info, root } = buildTree(this.objects, this.props);
@@ -2202,12 +2244,10 @@ class ObjectBrowser extends Component {
      * @param {string} id
      */
     subscribe(id) {
-        if (this.subscribes.indexOf(id) === -1) {
+        if (!this.subscribes.includes(id)) {
             this.subscribes.push(id);
             console.log('+ subscribe ' + id);
-            if (!this.pausedSubscribes) {
-                this.props.socket.subscribeState(id, this.onStateChange);
-            }
+            !this.pausedSubscribes && this.props.socket.subscribeState(id, this.onStateChange);
         }
     }
 
@@ -2895,41 +2935,43 @@ class ObjectBrowser extends Component {
             }}>
 
                 <Tooltip title={this.props.t('ra_Refresh tree')}>
-                    <IconButton onClick={() => this.refreshComponent()}>
-                        <RefreshIcon />
-                    </IconButton>
+                    <div>
+                        <IconButton onClick={() => this.refreshComponent()} disabled={this.state.updating}>
+                            <RefreshIcon />
+                        </IconButton>
+                    </div>
                 </Tooltip>
                 {this.props.showExpertButton &&
-                    <Tooltip title={this.props.t('ra_expertMode')}>
-                        <IconButton
-                            key="expertMode"
-                            color={this.state.filter.expertMode ? 'secondary' : 'default'}
-                            onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
-                        >
-                            <IconExpert />
-                        </IconButton>
-                    </Tooltip>
+                <Tooltip title={this.props.t('ra_expertMode')}>
+                    <IconButton
+                        key="expertMode"
+                        color={this.state.filter.expertMode ? 'secondary' : 'default'}
+                        onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                    >
+                        <IconExpert />
+                    </IconButton>
+                </Tooltip>
                 }
                 {!this.props.disableColumnSelector &&
-                    <Tooltip title={this.props.t('ra_Configure visible columns')}>
-                        <IconButton
-                            key="columnSelector"
-                            color={this.state.columnsAuto ? 'primary' : 'default'}
-                            onClick={() => this.setState({ columnsSelectorShow: true })}
-                        >
-                            <IconColumns />
-                        </IconButton>
-                    </Tooltip>
+                <Tooltip title={this.props.t('ra_Configure visible columns')}>
+                    <IconButton
+                        key="columnSelector"
+                        color={this.state.columnsAuto ? 'primary' : 'default'}
+                        onClick={() => this.setState({ columnsSelectorShow: true })}
+                    >
+                        <IconColumns />
+                    </IconButton>
+                </Tooltip>
                 }
                 {this.state.expandAllVisible &&
-                    <Tooltip title={this.props.t('ra_Expand all nodes')}>
-                        <IconButton
-                            key="expandAll"
-                            onClick={() => this.onExpandAll()}
-                        >
-                            <IconOpen />
-                        </IconButton>
-                    </Tooltip>
+                <Tooltip title={this.props.t('ra_Expand all nodes')}>
+                    <IconButton
+                        key="expandAll"
+                        onClick={() => this.onExpandAll()}
+                    >
+                        <IconOpen />
+                    </IconButton>
+                </Tooltip>
                 }
                 <Tooltip title={this.props.t('ra_Collapse all nodes')}>
                     <IconButton
@@ -2981,51 +3023,51 @@ class ObjectBrowser extends Component {
                 }
 
                 {this.props.objectImportExport &&
-                    <Tooltip title={this.props.t('ra_Add objects tree from JSON file')}>
-                        <IconButton onClick={() => {
-                            const input = document.createElement('input');
-                            input.setAttribute('type', 'file');
-                            input.setAttribute('id', 'files');
-                            input.setAttribute('opacity', 0);
-                            input.addEventListener('change', e => this.handleJsonUpload(e), false);
-                            input.click();
-                        }}>
-                            <PublishIcon />
-                        </IconButton>
-                    </Tooltip>
+                <Tooltip title={this.props.t('ra_Add objects tree from JSON file')}>
+                    <IconButton onClick={() => {
+                        const input = document.createElement('input');
+                        input.setAttribute('type', 'file');
+                        input.setAttribute('id', 'files');
+                        input.setAttribute('opacity', 0);
+                        input.addEventListener('change', e => this.handleJsonUpload(e), false);
+                        input.click();
+                    }}>
+                        <PublishIcon />
+                    </IconButton>
+                </Tooltip>
                 }
                 {this.props.objectImportExport && (!!this.state.selected.length || this.state.selectedNonObject) &&
-                    <Tooltip title={this.props.t('ra_Save objects tree as JSON file')}>
-                        <IconButton onClick={() => this.setState({showExportDialog: this._getSelectedIdsForExport().length})}>
-                            <PublishIcon style={{ transform: 'rotate(180deg)' }} />
-                        </IconButton>
-                    </Tooltip>
+                <Tooltip title={this.props.t('ra_Save objects tree as JSON file')}>
+                    <IconButton onClick={() => this.setState({showExportDialog: this._getSelectedIdsForExport().length})}>
+                        <PublishIcon style={{ transform: 'rotate(180deg)' }} />
+                    </IconButton>
+                </Tooltip>
                 }
             </div>
             {!!this.props.objectBrowserEditObject && <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>}
             {this.props.objectEditBoolean &&
-                <Tooltip title={this.props.t('ra_Edit custom config')}>
-                    <IconButton onClick={() => {
-                        // get all visible states
-                        const ids = getVisibleItems(this.root, 'state', this.objects);
+            <Tooltip title={this.props.t('ra_Edit custom config')}>
+                <IconButton onClick={() => {
+                    // get all visible states
+                    const ids = getVisibleItems(this.root, 'state', this.objects);
 
-                        if (ids.length) {
-                            this.pauseSubscribe(true);
+                    if (ids.length) {
+                        this.pauseSubscribe(true);
 
-                            if (ids.length === 1) {
-                                window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
-                                this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
-                            }
-                            this.setState({ customDialog: ids });
-                        } else {
-                            this.setState({ toast: this.props.t('ra_please select object') });
+                        if (ids.length === 1) {
+                            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
+                            this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
                         }
-                    }}>
-                        <BuildIcon />
-                    </IconButton>
-                </Tooltip>
+                        this.setState({ customDialog: ids });
+                    } else {
+                        this.setState({ toast: this.props.t('ra_please select object') });
+                    }
+                }}>
+                    <BuildIcon />
+                </IconButton>
+            </Tooltip>
             }
         </div>;
     }
@@ -3586,7 +3628,11 @@ class ObjectBrowser extends Component {
                     >
                         {this.props.t('ra_Update')}
                     </Button>
-                    <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.onColumnsEditCustomDialogClose()}
+                        startIcon={<IconClose />}
+                    >{this.props.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         } else {
@@ -3748,7 +3794,7 @@ class ObjectBrowser extends Component {
 
         const checkbox =
             this.props.multiSelect &&
-                this.objects[id] && (!this.props.types || this.props.types.includes(this.objects[id].type)) ?
+            this.objects[id] && (!this.props.types || this.props.types.includes(this.objects[id].type)) ?
                 <Checkbox
                     className={classes.checkBox}
                     checked={this.state.selected.includes(id)}
@@ -3919,7 +3965,7 @@ class ObjectBrowser extends Component {
                 <>
                     {this.columnsVisibility.changedFrom ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.changedFrom }} title={newValueTitle.join('\n')}>{checkVisibleObjectType && this.states[id]?.from ? newValue : null}</div> : null}
                     {this.columnsVisibility.qualityCode ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.qualityCode }} title={q || ''}>{q}</div> : null}
-                    {this.columnsVisibility.timestamp   ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat) : null}</div> : null}
+                    {this.columnsVisibility.timestamp   ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.timestamp  }}>{checkVisibleObjectType && this.states[id]?.ts ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat) : null}</div> : null}
                     {this.columnsVisibility.lastChange  ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat) : null}</div> : null}
                 </>
             }
@@ -4491,6 +4537,9 @@ ObjectBrowser.propTypes = {
     ]),
     types: PropTypes.array,   // optional ['state', 'instance', 'channel']
     columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
+
+    objectsWorker: PropTypes.object,  // optional cache of objects
+
     dragSettings: PropTypes.object,
     DragWrapper: PropTypes.func,
     dragEnabled: PropTypes.bool,

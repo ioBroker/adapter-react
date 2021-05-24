@@ -156,7 +156,7 @@ class GenericApp extends Router {
                             .then(() => {
                                 if (obj) {
                                     this.common = obj && obj.common;
-                                    this.onPrepareLoad(obj.native); // decode all secrets
+                                    this.onPrepareLoad(obj.native, obj.encryptedNative); // decode all secrets
                                     this.savedNative = JSON.parse(JSON.stringify(obj.native));
                                     this.setState({native: obj.native, loaded: true, expertMode: this.getExpertMode()}, () =>
                                         this.onConnectionReady && this.onConnectionReady());
@@ -407,10 +407,18 @@ class GenericApp extends Router {
      * Gets called after the settings are loaded.
      * You may override this if needed.
      * @param {Record<string, any>} settings
+     * @param {string[]} encryptedNative optional list of fields to be decrypted
      */
-    onPrepareLoad(settings) {
+    onPrepareLoad(settings, encryptedNative) {
         // here you can encode values
         this.encryptedFields && this.encryptedFields.forEach(attr => {
+            if (settings[attr]) {
+                settings[attr] = this.decrypt(settings[attr]);
+            }
+        });
+        encryptedNative && encryptedNative.forEach(attr => {
+            this.encryptedFields = this.encryptedFields || [];
+            !this.encryptedFields.includes(attr) && this.encryptedFields.push(attr);
             if (settings[attr]) {
                 settings[attr] = this.decrypt(settings[attr]);
             }

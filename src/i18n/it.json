@@ -255,5 +255,6 @@
   "ra_Channel → State": "Canale → Stato",
   "ra_Non-experts may create new objects only in \"0_userdata.0\" or \"alias.0\".": "I non esperti possono creare nuovi oggetti solo in \"0_userdata.0\" o \"alias.0\".",
   "ra_The experts may create objects everywhere but from second level (e.g. \"vis.0\" or \"javascript.0\").": "Gli esperti possono creare oggetti ovunque ma dal secondo livello (es. \"Vis.0\" o \"javascript.0\").",
-  "ra_expertMode": "Modalità esperto"
+  "ra_expertMode": "Modalità esperto",
+  "ra_On weekdays": "Nei giorni della settimana"
 }

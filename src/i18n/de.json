@@ -255,7 +255,7 @@
   "ra_Refresh tree": "Baum aktualisieren",
   "ra_Expand all nodes": "Alle Knoten aufklappen",
   "ra_Deselect all": "Alles abwählen",
-  "ra_Select all": "Alle auswählen ",
+  "ra_Select all": "Alle auswählen",
   "ra_%s object(s) processed": "%s Objekt(e) verarbeitet",
   "ra_Invalid structure": "Ungültige Struktur",
   "ra_%s was imported": "%s wurde importiert",
@@ -268,5 +268,6 @@
   "ra_Channel → State": "Kanal → Status",
   "ra_Non-experts may create new objects only in \"0_userdata.0\" or \"alias.0\".": "Nicht-Experten dürfen neue Objekte nur in \"0_userdata.0\" oder \"alias.0\" erstellen.",
   "ra_The experts may create objects everywhere but from second level (e.g. \"vis.0\" or \"javascript.0\").": "Die Experten können Objekte überall erstellen, außer auf der zweiten Ebene (z. B. \"vis.0\" oder \"javascript.0\").",
-  "ra_expertMode": "Expertenmodus"
+  "ra_expertMode": "Expertenmodus",
+  "ra_On weekdays": "An Wochentagen"
 }

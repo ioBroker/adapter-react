@@ -268,5 +268,6 @@
   "ra_Channel → State": "Channel → State",
   "ra_Non-experts may create new objects only in \"0_userdata.0\" or \"alias.0\".": "Non-experts may create new objects only in \"0_userdata.0\" or \"alias.0\".",
   "ra_The experts may create objects everywhere but from second level (e.g. \"vis.0\" or \"javascript.0\").": "The experts may create objects everywhere but from second level (e.g. \"vis.0\" or \"javascript.0\").",
-  "ra_expertMode": "Expert mode"
+  "ra_expertMode": "Expert mode",
+  "ra_On weekdays": "On weekdays"
 }
