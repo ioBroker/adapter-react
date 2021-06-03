@@ -1,7 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import IconNoIcon from '../assets/no_icon.svg';
-import PropTypes from 'prop-types';
 
 function getElementFromSource(src) {
     const svgContainer = document.createElement('div');
@@ -42,7 +42,7 @@ function serializeAttrs(map) {
  * @property {string} [imagePrefix] The image prefix (default: './files/')
  * @property {string} [className] The CSS class name.
  * @property {boolean} [showError] Show image errors (or just show no image)?
- * 
+ *
  * @extends {React.Component<ImageProps>}
  */
 class Image extends React.Component {

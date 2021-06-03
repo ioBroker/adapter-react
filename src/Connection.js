@@ -455,7 +455,7 @@ class Connection {
     subscribeObject(id, cb) {
         if (!this.objectsSubscribes[id]) {
             let reg = id.replace(/\./g, '\\.').replace(/\*/g, '.*');
-            if (reg.indexOf('*') === -1) {
+            if (!reg.includes('*')) {
                 reg += '$';
             }
             this.objectsSubscribes[id] = {reg: new RegExp(reg), cbs: []};
@@ -1197,7 +1197,7 @@ class Connection {
      * Get the log files (only for admin connection).
      * @returns {Promise<string[]>}
      */
-    getLogsFiles() {
+    getLogsFiles(host) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
@@ -1205,7 +1205,7 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise((resolve, reject) =>
-            this._socket.emit('readLogs', (err, files) =>
+            this._socket.emit('readLogs', host, (err, files) =>
                 err ? reject(err) : resolve(files)));
     }
 

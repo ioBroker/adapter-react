@@ -256,5 +256,7 @@
   "ra_Non-experts may create new objects only in \"0_userdata.0\" or \"alias.0\".": "Les non-experts ne peuvent créer de nouveaux objets que dans \"0_userdata.0\" ou \"alias.0\".",
   "ra_The experts may create objects everywhere but from second level (e.g. \"vis.0\" or \"javascript.0\").": "Les experts peuvent créer des objets partout mais à partir du deuxième niveau (par exemple \"vis.0\" ou \"javascript.0\").",
   "ra_expertMode": "Mode expert",
-  "ra_On weekdays": "En semaine"
+  "ra_On weekdays": "En semaine",
+  "ra_Drop the files here...": "Déposez le fichier ici...",
+  "ra_Drag 'n' drop some files here, or click to select files": "Glissez-déposez des fichiers ici, ou cliquez pour sélectionner des fichiers"
 }

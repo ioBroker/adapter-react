@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2020 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2021 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -23,6 +23,8 @@ gulp.task('copy', () => Promise.all([
     gulp.src(['src/Components/*.css']).pipe(gulp.dest('dist/Components')),
     gulp.src(['src/Components/*.css']).pipe(gulp.dest('dist/Components')),
     gulp.src(['src/Components/assets/*.*']).pipe(gulp.dest('dist/Components/assets')),
+    gulp.src(['src/assets/devices/*.*']).pipe(gulp.dest('dist/assets/devices')),
+    gulp.src(['src/assets/rooms/*.*']).pipe(gulp.dest('dist/assets/rooms')),
     new Promise(resolve => {
         const package_ = require('./package.json');
         const packageSrc = require('./src/package.json');
@@ -45,9 +47,7 @@ gulp.task('typedefs', () => {
 
 const babelOptions = {
     presets: ['@babel/preset-env', '@babel/preset-react'],
-    plugins: [
-        '@babel/plugin-proposal-class-properties'
-    ]
+    plugins: ['@babel/plugin-proposal-class-properties']
 };
 
 gulp.task('compile', gulp.parallel('copy',
@@ -84,7 +84,7 @@ gulp.task('compile', gulp.parallel('copy',
 
         gulp.src(['src/i18n/*.json'])
             .pipe(gulp.dest('dist/i18n')),
-        ])
+    ])
 ));
 
 gulp.task('default', gulp.series('compile'));

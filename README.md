@@ -599,12 +599,21 @@ class MyComponent {
 ## Usability
 In dialogs the OK button is first (on the left) and the cancel button is last (on the right)
 
+## Used icons
+This project uses icons from [Flaticon](https://www.flaticon.com/).
+
+ioBroker GmbH has a valid license for all of used icons.
+The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
+
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
 
 ## Changelog
+### 1.6.23 (2021-06-03)
+* (bluefox) Added the icon selector component
+
 ### 1.6.22 (2021-05-24)
 * (bluefox) Fixed the object subscription
 * (bluefox) Fixed the encryption and decryption of the native fields

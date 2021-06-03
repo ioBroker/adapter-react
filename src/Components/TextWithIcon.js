@@ -20,7 +20,6 @@ const styles = theme => ({
         height: 16,
         marginRight: 8,
         verticalAlign: 'middle',
-        // marginTop: -2
     },
     text: {
         display: 'inline-block',

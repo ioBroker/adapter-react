@@ -256,5 +256,7 @@
   "ra_Non-experts may create new objects only in \"0_userdata.0\" or \"alias.0\".": "非专家只能在“ 0_userdata.0”或“ alias.0”中创建新对象。",
   "ra_The experts may create objects everywhere but from second level (e.g. \"vis.0\" or \"javascript.0\").": "专家可以在任何地方创建对象，但要从第二层开始（例如“ vis.0”或“ javascript.0”）。",
   "ra_expertMode": "专家模式",
-  "ra_On weekdays": "在工作日"
+  "ra_On weekdays": "在工作日",
+  "ra_Drop the files here...": "把文件放在这里...",
+  "ra_Drag 'n' drop some files here, or click to select files": "将一些文件拖放到此处，或单击以选择文件"
 }
