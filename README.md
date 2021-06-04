@@ -611,6 +611,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 1.6.24 (2021-06-04)
+* (bluefox) Added the clear button to the CRON dialog
+
 ### 1.6.23 (2021-06-03)
 * (bluefox) Added the icon selector component
 

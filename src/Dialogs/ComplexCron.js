@@ -10,6 +10,7 @@ import Dialog from '@material-ui/core/Dialog';
 
 import IconOk from '@material-ui/icons/Check';
 import IconCancel from '@material-ui/icons/Cancel';
+import IconClear from '@material-ui/icons/Delete';
 
 import ComplexCron from '../Components/ComplexCron';
 
@@ -26,9 +27,6 @@ const styles = theme => ({
     },
     dialogPaper: {
         height: 'calc(100% - 96px)'
-    },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
     }
 });
 
@@ -59,6 +57,11 @@ class DialogComplexCron extends React.Component {
         this.props.onClose();
     }
 
+    handleClear() {
+        this.props.onOk(false);
+        this.props.onClose();
+    }
+
     render() {
         return <Dialog
             disableBackdropClick
@@ -78,8 +81,9 @@ class DialogComplexCron extends React.Component {
                 />
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={() => this.handleOk()} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{this.props.ok || I18n.t('ra_Ok')}</Button>
-                <Button variant="contained" onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{this.props.cancel || I18n.t('ra_Cancel')}</Button>
+                {!!this.props.clearButton && <Button variant="contained" onClick={() => this.handleClear()} startIcon={<IconClear />}>{this.props.clear || I18n.t('ra_Clear')}</Button>}
+                <Button variant="contained" onClick={() => this.handleOk()} color="primary" startIcon={<IconOk />}>{this.props.ok || I18n.t('ra_Ok')}</Button>
+                <Button variant="contained" onClick={() => this.handleCancel()} startIcon={<IconCancel />}>{this.props.cancel || I18n.t('ra_Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }
@@ -94,8 +98,8 @@ DialogComplexCron.propTypes = {
     cancel: PropTypes.string,
     ok: PropTypes.string,
     simple: PropTypes.bool,
-    language: PropTypes.string
-
+    language: PropTypes.string,
+    clearButton: PropTypes.bool,
 };
 
 export default withStyles(styles)(DialogComplexCron);

@@ -258,5 +258,6 @@
   "ra_expertMode": "专家模式",
   "ra_On weekdays": "在工作日",
   "ra_Drop the files here...": "把文件放在这里...",
-  "ra_Drag 'n' drop some files here, or click to select files": "将一些文件拖放到此处，或单击以选择文件"
+  "ra_Drag 'n' drop some files here, or click to select files": "将一些文件拖放到此处，或单击以选择文件",
+  "ra_Clear": "删除"
 }
