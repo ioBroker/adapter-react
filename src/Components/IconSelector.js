@@ -40,7 +40,7 @@ class IconSelector extends Component {
             const names = [];
 
             if (!this.props.icons) {
-                let templates = this.props.onlyRooms || (this.props.onlyRooms === undefined && this.props.onlyDevices === undefined) ? rooms : null;
+                let templates = this.props.onlyRooms || (!this.props.onlyRooms && !this.props.onlyDevices) ? rooms : null;
 
                 const promises = [];
                 if (templates) {
@@ -69,7 +69,7 @@ class IconSelector extends Component {
                     });
                 }
 
-                templates = this.props.onlyDevices || (this.props.onlyRooms === undefined && this.props.onlyDevices === undefined) ? devices : null;
+                templates = this.props.onlyDevices || (!this.props.onlyRooms && !this.props.onlyDevices) ? devices : null;
                 if (templates) {
                     const offset = promises.length;
                     templates && templates.forEach(item => {

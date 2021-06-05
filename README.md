@@ -611,6 +611,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 1.6.25 (2021-06-05)
+* (bluefox) Fixed the icon selector component
+* (UncleSamSwiss) Added @material-ui/icons dependency.
+
 ### 1.6.24 (2021-06-04)
 * (bluefox) Added the clear button to the CRON dialog
 
