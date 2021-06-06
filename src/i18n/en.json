@@ -272,5 +272,6 @@
   "ra_On weekdays": "On weekdays",
   "ra_Drop the files here...": "Drop the file here...",
   "ra_Drag 'n' drop some files here, or click to select files": "Drag 'n' drop some files here, or click to select files",
-  "ra_Clear": "Delete"
+  "ra_Clear": "Delete",
+  "ra_Clear icon": "Clear icon"
 }

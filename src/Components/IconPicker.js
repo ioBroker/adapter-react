@@ -11,6 +11,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import IconSelector from './IconSelector';
 import Icon from './Icon';
 import I18n from '../i18n';
+import Utils from './Utils';
 
 /**
  * @typedef {object} IconPickerProps
@@ -31,8 +32,8 @@ let IconPicker = function (props) {
     const useStyles = makeStyles(theme => ({
         formContainer : {
             display: 'flex',
-            justifyContent:'center',
-            alignItems:'center'
+            justifyContent: 'left',
+            alignItems: 'center'
         },
         formControl : {
             display: 'flex',
@@ -48,18 +49,21 @@ let IconPicker = function (props) {
         },
         dragField: {
             textAlign: 'center',
-            display: 'inline-block',
-            height: 90,
-            width: 240,
+            display: 'table',
+            minHeight: 90,
+            width: 'calc(100% - 60px)',
             border: '2px dashed #777',
             borderRadius: 10,
-            marginTop: 12,
-            padding: 4
+            padding: 4,
         },
         formIcon : {
             margin: 10,
             opacity: 0.6
         },
+        text: {
+            display: 'table-cell',
+            verticalAlign: 'middle',
+        }
     }));
 
     const classes = useStyles();
@@ -80,42 +84,45 @@ let IconPicker = function (props) {
     return <div className={classes.formContainer}>
         {IconCustom ? <IconCustom className={ classes.formIcon }/> : null}
         <FormControl className={classes.formControl} style={{padding: 3}}>
-            <InputLabel shrink>
-                { props.t(props.label)}
+            <InputLabel shrink classes={{root: props.customClasses?.label}}>
+                { I18n.t(props.label)}
             </InputLabel>
             <div className={ classes.formContainer }>
                 {props.value ?
                     <div className={ classes.divContainer }>
-                        <Icon alt="" className={props.previewClassName} src={props.value}/>
-                        <IconButton
+                        <Icon alt="" className={Utils.clsx(props.previewClassName, props.customClasses?.icon)} src={props.value}/>
+                        {!props.disabled && <IconButton
                             style={{verticalAlign: 'top'}}
+                            title={I18n.t('ra_Clear icon')}
                             size="small"
                             onClick={() => props.onChange('')}
                         >
                             <ClearIcon/>
-                        </IconButton>
+                        </IconButton>}
                     </div>
                     :
-                    <IconSelector
+                    (!props.disabled && <IconSelector
                         icons={props.icons}
                         onlyRooms={props.onlyRooms}
                         onlyDevices={props.onlyDevices}
                         onSelect={base64 => props.onChange(base64)}
                         t={I18n.t}
                         lang={I18n.getLanguage()}
-                    />
+                    />)
                 }
 
-                <div {...getRootProps()}
-                     className={classes.dragField}
-                     style={isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'}}>
+                {!props.disabled && <div
+                    {...getRootProps()}
+                    className={classes.dragField}
+                    style={isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'}}
+                >
                     <input {...getInputProps()} />
                     {
                         isDragActive ?
-                            <p>{I18n.t('ra_Drop the files here...')}</p> :
-                            <p>{I18n.t(`ra_Drag 'n' drop some files here, or click to select files`)}</p>
+                            <span className={classes.text}>{I18n.t('ra_Drop the files here...')}</span> :
+                            <span className={classes.text}>{I18n.t(`ra_Drag 'n' drop some files here, or click to select files`)}</span>
                     }
-                </div>
+                </div>}
             </div>
         </FormControl>
     </div>;
@@ -124,10 +131,11 @@ let IconPicker = function (props) {
 IconPicker.propTypes = {
     previewClassName: PropTypes.string,
     icon: PropTypes.object,
-    classes: PropTypes.object,
+    customClasses: PropTypes.object,
     label: PropTypes.string,
     name: PropTypes.string,
     value: PropTypes.any,
+    disabled: PropTypes.bool,
     onChange: PropTypes.func,
 
     icons: PropTypes.array,

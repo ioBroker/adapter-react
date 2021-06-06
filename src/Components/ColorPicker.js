@@ -71,7 +71,7 @@ const styles = theme => ({
  *
  * @typedef {object} ColorPickerProps
  * @property {boolean} [disabled] Set to true to disable the color picker.
- * @property {Color} [color] The selected color.
+ * @property {Color} [value] The currently selected color.
  * @property {(rgba: string) => void} [onChange] The color change callback.
  * @property {string} [name] The name.
  * @property {React.CSSProperties} [style] Additional styling for this component.
@@ -88,7 +88,7 @@ class ColorPicker extends React.Component {
         super(props);
         this.state = {
             displayColorPicker: false,
-            color: this.props.color,
+            color: this.props.value || this.props.color,
         };
     }
 
@@ -98,10 +98,10 @@ class ColorPicker extends React.Component {
      * @param {{ color: Color; }} state
      */
     static getDerivedStateFromProps(props, state) {
-        const pColor = ColorPicker.getColor(props.color);
+        const pColor = ColorPicker.getColor(props.value || props.color);
         const sColor = ColorPicker.getColor(state.color);
         if (pColor !== sColor) {
-            return {color: props.color}
+            return {color: props.value || props.color}
         } else {
             return null;
         }
@@ -213,7 +213,7 @@ class ColorPicker extends React.Component {
 
 ColorPicker.propTypes = {
     disabled: PropTypes.bool,
-    color: PropTypes.string,
+    value: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     name: PropTypes.string,
     style: PropTypes.object,

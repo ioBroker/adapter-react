@@ -185,8 +185,10 @@ class IconSelector extends Component {
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.setState({opened: false})} color="primary" autoFocus
-                            startIcon={<CloseIcon />}
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({opened: false})}
+                        startIcon={<CloseIcon />}
                     >
                         {this.props.t('Close')}
                     </Button>

@@ -611,6 +611,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 1.6.26 (2021-06-06)
+* (bluefox) Fixed the icon selector component
+
 ### 1.6.25 (2021-06-05)
 * (bluefox) Fixed the icon selector component
 * (UncleSamSwiss) Added @material-ui/icons dependency.
