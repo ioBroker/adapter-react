@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2020 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2021 bluefox <dogafox@gmail.com>
  *
  * Licensed under the Creative Commons Attribution-NonCommercial License, Version 4.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,11 +66,10 @@ const styles = theme => ({
  * @property {number} g The green component of the color (0-255).
  * @property {number} b The blue component of the color (0-255).
  * @property {number} a The alpha component of the color (0-255).
- * 
+ *
  * @typedef {string | Rgb | { rgb: Rgb }} Color Definition of a color.
- * 
+ *
  * @typedef {object} ColorPickerProps
- * @property {string} [key] The key to identify this component.
  * @property {boolean} [disabled] Set to true to disable the color picker.
  * @property {Color} [color] The selected color.
  * @property {(rgba: string) => void} [onChange] The color change callback.
@@ -78,7 +77,7 @@ const styles = theme => ({
  * @property {React.CSSProperties} [style] Additional styling for this component.
  * @property {string} [className] The CSS class name.
  * @property {boolean} [openAbove] Open the color picker above the field?
- * 
+ *
  * @extends {React.Component<ColorPickerProps>}
  */
 class ColorPicker extends React.Component {
@@ -150,7 +149,7 @@ class ColorPicker extends React.Component {
 
     /**
      * Convert rgb() or rgba() format to hex format #rrggbb.
-     * @param {string} rgb 
+     * @param {string} rgb
      * @returns {string}
      */
     static rgb2hex(rgb){
@@ -173,36 +172,36 @@ class ColorPicker extends React.Component {
     render() {
         const color = ColorPicker.getColor(this.state.color);
         let style = {};
+
         if (this.state.displayColorPicker && this.props.openAbove) {
             style = {
                 top: -241,
-            }
+            };
         }
+
         return <div
-            key={this.props.key}
             style={Object.assign({}, this.props.style || {}, {position: 'relative'})}
             className={ this.props.className || ''}
         >
             <TextField
                 disabled={this.props.disabled}
                 id="name"
-                style={{width: 'calc(100% - 80px)'}}
+                style={color ? {width: 'calc(100% - 80px)'} : {width: 'calc(100% - 54px)', marginRight: 8}}
                 label={this.props.name || 'color'}
                 value={color}
                 margin="dense"
                 classes={{root: this.props.classes.textDense}}
                 onChange={e => this.handleChange(e.target.value)}
             />
-            <IconButton
+            {color ? <IconButton
                 disabled={this.props.disabled}
                 onClick={() => this.handleChange('')}
                 size="small"
                 className={this.props.classes.delButton}
                 style={color ? {} : {opacity: 0, cursor: 'default'}}
-            ><IconDelete/></IconButton>
+            ><IconDelete/></IconButton> : null}
             <div className={this.props.classes.swatch} onClick={() => this.handleClick()}>
-                <div className={this.props.classes.color}
-                     style={{background: color}} />
+                <div className={this.props.classes.color} style={{background: color}} />
             </div>
             { this.state.displayColorPicker && !this.props.disabled ? <div className={this.props.classes.popover} style={style}>
                 <div className={this.props.classes.cover} onClick={() => this.handleClose()}/>
@@ -213,7 +212,6 @@ class ColorPicker extends React.Component {
 }
 
 ColorPicker.propTypes = {
-    key: PropTypes.string,
     disabled: PropTypes.bool,
     color: PropTypes.string,
     onChange: PropTypes.func.isRequired,
