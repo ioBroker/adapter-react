@@ -1590,10 +1590,10 @@ class FileBrowser extends Component {
         }
 
 
-        return <div key={this.props.key} style={this.props.style} className={Utils.clsx(this.props.classes.root, this.props.className)}>
+        return <div style={this.props.style} className={Utils.clsx(this.props.classes.root, this.props.className)}>
             {this.props.showToolbar ? this.renderToolbar() : null}
             {this.state.viewType === TILE ? this.renderPath() : null}
-            <div key="items" className={Utils.clsx(this.props.classes.filesDiv, this.props.classes['filesDiv' + this.state.viewType])}>
+            <div className={Utils.clsx(this.props.classes.filesDiv, this.props.classes['filesDiv' + this.state.viewType])}>
                 {this.state.viewType === TABLE ? this.renderItems('/') : this.renderItems(this.state.currentDir || '/')}
             </div>
             {this.props.allowUpload ? this.renderInputDialog() : null}
@@ -1617,7 +1617,6 @@ FileBrowser.defaultProps = {
 }
 
 FileBrowser.propTypes = {
-    key: PropTypes.string,
     style: PropTypes.object,
     className: PropTypes.string,
     t: PropTypes.func,

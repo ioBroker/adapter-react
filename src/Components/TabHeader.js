@@ -11,10 +11,8 @@ import Grid from '@material-ui/core/Grid';
  * @extends {React.Component<TabHeaderProps>}
  */
 class TabHeader extends React.Component {
-
     render() {
         return <Grid
-            key={this.props.key}
             item
             container
             alignItems="center"
@@ -25,7 +23,6 @@ class TabHeader extends React.Component {
 }
 
 TabHeader.propTypes = {
-    key: PropTypes.string,
 };
 
 export default TabHeader;

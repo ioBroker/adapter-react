@@ -26,13 +26,10 @@ const styles = {
  * @extends {React.Component<TabContentProps>}
  */
 class TabContent extends React.Component {
-
     render() {
-
         const { classes } = this.props;
 
         return <Grid
-            key={this.props.key}
             item
             className={ Utils.clsx(classes.root, {[classes.overflowAuto]: this.props.overflow === 'auto'}) }
         >
@@ -42,7 +39,6 @@ class TabContent extends React.Component {
 }
 
 TabContent.propTypes = {
-    key: PropTypes.string,
     overflow: PropTypes.string
 };
 

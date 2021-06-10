@@ -19,7 +19,7 @@ const styles = theme => ({
  * @property {number} [size] The size in pixels of this loader.
  * @property {string} [themeType] The chosen theme type.
  * @property {string} [theme] The chosen theme.
- * 
+ *
  * @extends {React.Component<LoaderProps>}
  */
 class Loader extends React.Component {
@@ -33,7 +33,7 @@ class Loader extends React.Component {
 
     render() {
         const theme = this.props.themeType || this.props.theme || 'light';
-        return <div key={this.props.key} className={'logo-back logo-background-' + theme}>
+        return <div className={'logo-back logo-background-' + theme}>
             <div className="logo-div" style={{width: this.size, height: this.size}}>
                 <div className={'logo-top logo-background-' + theme} style={{left: '37%'}}/>
                 <div className={'logo-top logo-background-' + theme} style={{left: '57%'}}/>
@@ -53,7 +53,6 @@ class Loader extends React.Component {
 }
 
 Loader.propTypes = {
-    key: PropTypes.string,
     size: PropTypes.number,
     themeType: PropTypes.string
 };

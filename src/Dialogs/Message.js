@@ -35,7 +35,6 @@ class DialogMessage extends React.Component {
 
     render() {
         return <Dialog
-            key={this.props.key}
             open={true}
             maxWidth="sm"
             fullWidth={true}
@@ -57,7 +56,6 @@ class DialogMessage extends React.Component {
 }
 
 DialogMessage.propTypes = {
-    key: PropTypes.string,
     onClose: PropTypes.func,
     title: PropTypes.string,
     text: PropTypes.string,

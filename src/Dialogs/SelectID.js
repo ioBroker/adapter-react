@@ -138,7 +138,6 @@ class SelectID extends React.Component {
         }
 
         return <Dialog
-            key={this.props.key}
             disableBackdropClick
             maxWidth={false}
             disableEscapeKeyDown

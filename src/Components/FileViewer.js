@@ -60,7 +60,7 @@ function getFileExtension(fileName) {
  * @property {boolean} [expertMode] Is expert mode enabled? (default: false)
  * @property {() => void} onClose Callback when the viewer is closed.
  * @property {string} href The URL to the file to be displayed.
- * 
+ *
  * @extends {React.Component<FileViewerProps>}
  */
 class FileViewer extends React.Component {
@@ -121,7 +121,6 @@ class FileViewer extends React.Component {
 
     render() {
         return <Dialog
-            key={this.props.key}
             className={ this.props.classes.dialog }
             open={ this.props.href }
             onClose={ () => this.props.onClose() }
@@ -149,7 +148,6 @@ class FileViewer extends React.Component {
 }
 
 FileViewer.propTypes = {
-    key: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string,
     expertMode: PropTypes.bool,

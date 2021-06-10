@@ -87,7 +87,6 @@ class DialogConfirm extends React.Component {
         }
 
         return <Dialog
-            key={this.props.key}
             disableBackdropClick
             disableEscapeKeyDown
             open={true}
@@ -121,7 +120,6 @@ class DialogConfirm extends React.Component {
 }
 
 DialogConfirm.propTypes = {
-    key: PropTypes.string,
     onClose: PropTypes.func,
     title: PropTypes.string,
     text: PropTypes.string,

@@ -35,6 +35,11 @@ class GenericApp extends Router {
      * @param {import('./types').GenericAppSettings | undefined} settings
      */
     constructor(props, settings) {
+        if (window.io && window.location.port === '3000') {
+            delete window.io;
+            window.io = new window.SocketClient();
+        }
+
         super(props);
 
         printPrompt();
@@ -65,16 +70,16 @@ class GenericApp extends Router {
         const themeInstance = this.createTheme();
 
         this.state = {
-            selectedTab: window.localStorage.getItem(this.adapterName + '-adapter') || '',
+            selectedTab:    window.localStorage.getItem(this.adapterName + '-adapter') || '',
             selectedTabNum: -1,
-            native: {},
-            errorText: '',
-            changed: false,
-            connected: false,
-            loaded: false,
+            native:         {},
+            errorText:      '',
+            changed:        false,
+            connected:      false,
+            loaded:         false,
             isConfigurationError: '',
             expertMode:     false,
-            toast: '',
+            toast:          '',
             theme:          themeInstance,
             themeName:      this.getThemeName(themeInstance),
             themeType:      this.getThemeType(themeInstance),

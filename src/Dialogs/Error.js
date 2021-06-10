@@ -44,31 +44,29 @@ class DialogError extends React.Component {
 
     render() {
         return <Dialog
-                key={this.props.key}
-                open={true}
-                maxWidth="sm"
-                fullWidth={true}
-                onClose={() => this.handleOk()}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle className={this.props.classes.titleBackground}
-                             classes={{root: this.props.classes.titleColor}}
-                             id="alert-dialog-title">{this.props.title || I18n.t('ra_Error')}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {this.props.text || I18n.t('ra_Unknown error!')}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('ra_Ok')}</Button>
-                </DialogActions>
-            </Dialog>;
+            open={true}
+            maxWidth="sm"
+            fullWidth={true}
+            onClose={() => this.handleOk()}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle className={this.props.classes.titleBackground}
+                         classes={{root: this.props.classes.titleColor}}
+                         id="alert-dialog-title">{this.props.title || I18n.t('ra_Error')}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {this.props.text || I18n.t('ra_Unknown error!')}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="contained" onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('ra_Ok')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 
 DialogError.propTypes = {
-    key: PropTypes.string,
     onClose: PropTypes.func,
     title: PropTypes.string,
     text: PropTypes.oneOfType([

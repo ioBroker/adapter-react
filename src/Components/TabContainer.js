@@ -33,11 +33,9 @@ const styles = {
 class TabContainer extends React.Component {
 
     render() {
-
         const { classes } = this.props;
 
         return <Paper
-            key={this.props.key}
             elevation={ !isNaN(this.props.elevation) ? this.props.elevation : 1 }
             className={ Utils.clsx(classes.root, {[classes.overflowHidden]: this.props.overflow !== 'visible'}) }
         >
@@ -54,7 +52,6 @@ class TabContainer extends React.Component {
 }
 
 TabContainer.propTypes = {
-    key: PropTypes.string,
     elevation: PropTypes.number,
     overflow: PropTypes.string
 };

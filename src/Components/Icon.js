@@ -96,12 +96,12 @@ class Icon extends React.Component {
         if (this.props.src) {
             if (typeof this.props.src === 'string') {
                 if (this.props.src.length < 3) {
-                    return <span style={this.props.style || {}} className={ Utils.clsx(this.props.className, 'iconOwn') }>{this.props.src}</span>; // utf-8 char
+                    return <span title={this.props.title || undefined} style={this.props.style || {}} className={ Utils.clsx(this.props.className, 'iconOwn') }>{this.props.src}</span>; // utf-8 char
                 } else {
                     if (this.props.src.startsWith('data:image/svg')) {
-                        return <SVG src={this.props.src} className={ Utils.clsx(this.props.className, 'iconOwn') } width={this.props.style?.width || 28} height={this.props.style?.height || this.props.style?.width || 28} style={this.props.style || {}}/>;
+                        return <SVG title={this.props.title || undefined} src={this.props.src} className={ Utils.clsx(this.props.className, 'iconOwn') } width={this.props.style?.width || 28} height={this.props.style?.height || this.props.style?.width || 28} style={this.props.style || {}}/>;
                     } else {
-                        return <img style={this.props.style || {}} className={ Utils.clsx(this.props.className, 'iconOwn') } src={ this.props.src } alt="" />;
+                        return <img title={this.props.title || undefined} style={this.props.style || {}} className={ Utils.clsx(this.props.className, 'iconOwn') } src={ this.props.src } alt="" />;
                     }
                 }
             } else {
@@ -114,9 +114,9 @@ class Icon extends React.Component {
 }
 
 Icon.propTypes = {
-    key: PropTypes.string,
     color: PropTypes.string,
-    src: PropTypes.string,
+    title: PropTypes.string,
+    src: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     className: PropTypes.string,
     imagePrefix: PropTypes.string,
 };
