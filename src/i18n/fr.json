@@ -260,5 +260,6 @@
   "ra_Drop the files here...": "Déposez le fichier ici...",
   "ra_Drag 'n' drop some files here, or click to select files": "Glissez-déposez des fichiers ici, ou cliquez pour sélectionner des fichiers",
   "ra_Clear": "Effacer",
-  "ra_Clear icon": "Effacer l'icône"
+  "ra_Clear icon": "Effacer l'icône",
+  "ra_none": "rien"
 }

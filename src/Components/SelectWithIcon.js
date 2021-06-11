@@ -4,8 +4,9 @@ import { withStyles } from '@material-ui/core/styles';
 
 import {FormControl, InputLabel, MenuItem, Select} from '@material-ui/core';
 
-import Icon from '@iobroker/adapter-react/Components/Icon';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Icon from './Icon';
+import Utils from './Utils';
+import I18n from '../i18n';
 
 const styles = theme => ({
     different: {
@@ -26,17 +27,25 @@ class SelectWithIcon extends Component {
             this.wordDifferent = this.props.t(this.props.different);
         }
 
-        let list = [];
-        if (Array.isArray(this.props.list)) {
+        let list;
+        if (Array.isArray(this.props.list || this.props.options)) {
             list = this.props.list.map(obj => ({
-                name: Utils.getObjectNameFromObj(obj, this.props.lang).replace('system.group.', ''),
+                name: Utils.getObjectNameFromObj(obj, this.props.lang)
+                    .replace('system.group.', '')
+                    .replace('system.user.', '')
+                    .replace('enum.rooms.', '')
+                    .replace('enum.functions.', ''),
                 value: obj._id,
                 icon: obj.common?.icon,
                 color: obj.common?.color,
             }))
         } else {
-            Object.values(this.props.list).map(obj => ({
-                name: Utils.getObjectNameFromObj(obj, this.props.lang).replace('system.group.', ''),
+            list = Object.values(this.props.list || this.props.options).map(obj => ({
+                name: Utils.getObjectNameFromObj(obj, this.props.lang)
+                    .replace('system.group.', '')
+                    .replace('system.user.', '')
+                    .replace('enum.rooms.', '')
+                    .replace('enum.functions.', ''),
                 value: obj._id,
                 icon: obj.common?.icon,
                 color: obj.common?.color,
@@ -45,6 +54,10 @@ class SelectWithIcon extends Component {
 
         if (this.props.different && this.props.value === this.props.different) {
             list.unshift({value: this.props.different, name: this.wordDifferent});
+        }
+
+        if (this.props.allowNone) {
+            list.unshift({value: '', name: I18n.t('ra_none')});
         }
 
         this.state = {
@@ -61,44 +74,59 @@ class SelectWithIcon extends Component {
                 backgroundColor: Utils.getInvertedColor(item?.color, this.props.themeType)
             };
 
-        return <FormControl fullWidth={!!this.props.fullWidth} style={this.props.style} className={this.props.className}>
-            <InputLabel>{this.props.label}</InputLabel>
-            <Select
-                disabled={this.props.disabled}
-                value={this.props.value}
-                renderValue={value => <span>{item?.icon ? <Icon src={item?.icon} className={this.props.classes.icon} /> : null}{item?.name}</span>}
-                classes={{root: this.props.value === this.props.different ? this.props.classes.different : ''}}
-                style={style}
-                onChange={el => {
-                    if (this.props.different && el.target.value !== this.props.different) {
-                        let pos = null;
-                        for (let i = 0; i < this.state.list.length; i++) {
-                            if (this.state.list[i].value === this.props.different) {
-                                pos = i;
-                                break;
-                            }
-                        }
-                        if (pos !== null) {
-                            const list = Utils.clone(this.state.list);
-                            list.splice(pos, 1);
-                            return this.setState({list}, () => this.props.onChange(el.target.value));
+        if (this.props.dense && this.props.style) {
+            Object.assign(style, this.props.style);
+        }
+
+        const select = <Select
+            disabled={this.props.disabled}
+            value={this.props.value}
+            inputProps={this.props.inputProps}
+            renderValue={value => <span>{item?.icon ? <Icon src={item?.icon} className={this.props.classes.icon} /> : null}{item?.name}</span>}
+            classes={{root: Utils.clsx(
+                this.props.value === this.props.different ? this.props.classes.different : '',
+                this.props.dense ? this.props.className : ''
+            )}}
+            style={style}
+            onChange={el => {
+                if (this.props.different && el.target.value !== this.props.different) {
+                    let pos = null;
+                    for (let i = 0; i < this.state.list.length; i++) {
+                        if (this.state.list[i].value === this.props.different) {
+                            pos = i;
+                            break;
                         }
                     }
+                    if (pos !== null) {
+                        const list = Utils.clone(this.state.list);
+                        list.splice(pos, 1);
+                        return this.setState({list}, () => this.props.onChange(el.target.value));
+                    }
+                }
 
-                    this.props.onChange(this.props.removePrefix ? el.target.value.replace(this.props.removePrefix, '') : el.target.value);
-                }}
+                this.props.onChange(this.props.removePrefix ? el.target.value.replace(this.props.removePrefix, '') : el.target.value);
+            }}
+        >
+            {this.state.list.map(el => <MenuItem
+                className={this.props.different && el.value === this.props.different ? this.props.classes.different : ''}
+                style={this.props.different && el.value === this.props.different ? {} : { color: el.color || undefined, backgroundColor: Utils.getInvertedColor(el.color, this.props.themeType) }}
+                key={el.value}
+                value={el.value}
             >
-                {this.state.list.map(el => <MenuItem
-                    className={this.props.different && el.value === this.props.different ? this.props.classes.different : ''}
-                    style={this.props.different && el.value === this.props.different ? {} : { color: el.color || undefined, backgroundColor: Utils.getInvertedColor(el.color, this.props.themeType) }}
-                    key={el.value}
-                    value={el.value}
-                >
-                    {el.icon ? <Icon src={el.icon} className={this.props.classes.icon} /> : null}
-                    {el.name}
-                </MenuItem>)}
-            </Select>
-        </FormControl>;
+                {el.icon ? <Icon src={el.icon} className={this.props.classes.icon} /> : null}
+                {el.name}
+            </MenuItem>)}
+        </Select>;
+
+        if (this.props.dense) {
+            return select;
+        } else {
+            return <FormControl fullWidth={!!this.props.fullWidth} style={this.props.style} className={this.props.className}>
+                <InputLabel>{this.props.label}</InputLabel>
+                {select}
+            </FormControl>;
+
+        }
     }
 }
 
@@ -110,12 +138,15 @@ SelectWithIcon.propTypes = {
     onChange: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
     list: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+    options: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     label: PropTypes.string,
     different: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     fullWidth: PropTypes.bool,
     className: PropTypes.string,
     style: PropTypes.object,
     removePrefix: PropTypes.string,
+    allowNone: PropTypes.bool,
+    inputProps: PropTypes.object,
 };
 
 export default withStyles(styles)(SelectWithIcon);

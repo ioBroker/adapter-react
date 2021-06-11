@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import Icon from '@iobroker/adapter-react/Components/Icon';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Icon from './Icon';
+import Utils from './Utils';
 
 const styles = theme => ({
     div: {
@@ -33,9 +33,10 @@ const TextWithIcon = props => {
     let prefix = props.removePrefix || '';
 
     if (typeof item === 'string') {
+        const list = props.list || props.options;
         if (props.list) {
-            if (Array.isArray(props.list)) {
-                const _item = props.list.find(obj => obj._id === prefix + item)
+            if (Array.isArray(list)) {
+                const _item = list.find(obj => obj._id === prefix + item);
                 if (_item) {
                     item = {
                         name: Utils.getObjectNameFromObj(_item, props.lang).replace('system.group.', ''),
@@ -49,12 +50,12 @@ const TextWithIcon = props => {
                         value: prefix + item,
                     };
                 }
-            } else if (props.list[prefix + item]) {
+            } else if (list[prefix + item]) {
                 item = {
-                    name: Utils.getObjectNameFromObj(props.list[prefix + item], props.lang).replace('system.group.', ''),
-                    value: props.list[prefix + item]._id,
-                    icon: props.list[prefix + item].common?.icon,
-                    color: props.list[prefix + item].common?.color,
+                    name: Utils.getObjectNameFromObj(list[prefix + item], props.lang).replace('system.group.', ''),
+                    value: list[prefix + item]._id,
+                    icon: list[prefix + item].common?.icon,
+                    color: list[prefix + item].common?.color,
                 };
             } else {
                 item = {
@@ -75,7 +76,11 @@ const TextWithIcon = props => {
         };
     } else {
         item = {
-            name: Utils.getObjectNameFromObj(item, props.lang).replace('system.group.', ''),
+            name: Utils.getObjectNameFromObj(item, props.lang)
+                .replace('system.group.', '')
+                .replace('system.user.', '')
+                .replace('enum.rooms.', '')
+                .replace('enum.functions.', ''),
             value: item._id,
             icon: item.common?.icon,
             color: item.common?.color,
@@ -99,6 +104,7 @@ TextWithIcon.propTypes = {
     themeType: PropTypes.string,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     list: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+    options: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     className: PropTypes.string,
     style: PropTypes.object,
     title: PropTypes.string,

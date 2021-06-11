@@ -260,5 +260,6 @@
   "ra_Drop the files here...": "Trascina qui il file...",
   "ra_Drag 'n' drop some files here, or click to select files": "Trascina e rilascia alcuni file qui o fai clic per selezionare i file",
   "ra_Clear": "Elimina",
-  "ra_Clear icon": "Cancella icona"
+  "ra_Clear icon": "Cancella icona",
+  "ra_none": "nessuna"
 }

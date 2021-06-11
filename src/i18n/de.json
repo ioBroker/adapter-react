@@ -273,5 +273,6 @@
   "ra_Drop the files here...": "Datei hier ablegen...",
   "ra_Drag 'n' drop some files here, or click to select files": "Die Datei hierher ziehen und ablegen, oder klicken, um die Datei auszuwählen",
   "ra_Clear": "Löschen",
-  "ra_Clear icon": "Symbol löschen"
+  "ra_Clear icon": "Symbol löschen",
+  "ra_none": "kein"
 }

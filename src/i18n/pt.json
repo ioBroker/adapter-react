@@ -260,5 +260,6 @@
   "ra_Drop the files here...": "Solte o arquivo aqui ...",
   "ra_Drag 'n' drop some files here, or click to select files": "Arraste e solte alguns arquivos aqui ou clique para selecionar arquivos",
   "ra_Clear": "Excluir",
-  "ra_Clear icon": "Ícone de limpeza"
+  "ra_Clear icon": "Ícone de limpeza",
+  "ra_none": "Nenhum"
 }
