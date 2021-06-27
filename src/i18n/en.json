@@ -274,5 +274,6 @@
   "ra_Drag 'n' drop some files here, or click to select files": "Drag 'n' drop some files here, or click to select files",
   "ra_Clear": "Delete",
   "ra_Clear icon": "Clear icon",
-  "ra_none": "none"
+  "ra_none": "none",
+  "ra_Select predefined icon": "Select predefined icon"
 }

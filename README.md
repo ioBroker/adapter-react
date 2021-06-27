@@ -611,6 +611,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 1.6.29 (2021-06-27)
+* (bluefox) Corrected translations
+
 ### 1.6.28 (2021-06-11)
 * (bluefox) Corrected the "Select with icon" component
 

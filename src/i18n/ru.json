@@ -274,5 +274,6 @@
   "ra_Drag 'n' drop some files here, or click to select files": "Перетащите сюда несколько файлов или щелкните, чтобы выбрать файлы",
   "ra_Clear": "Удалить",
   "ra_Clear icon": "Очистить значок",
-  "ra_none": "ничего"
+  "ra_none": "ничего",
+  "ra_Select predefined icon": "Выберите предопределенный значок"
 }

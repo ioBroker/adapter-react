@@ -261,5 +261,6 @@
   "ra_Drag 'n' drop some files here, or click to select files": "Arrastre y suelte algunos archivos aquí, o haga clic para seleccionar archivos",
   "ra_Clear": "Borrar",
   "ra_Clear icon": "Icono claro",
-  "ra_none": "ninguno"
+  "ra_none": "ninguno",
+  "ra_Select predefined icon": "Seleccionar icono predefinido"
 }

@@ -261,5 +261,6 @@
   "ra_Drag 'n' drop some files here, or click to select files": "Przeciągnij i upuść kilka plików tutaj lub kliknij, aby wybrać pliki",
   "ra_Clear": "Kasować",
   "ra_Clear icon": "Wyczyść ikonę",
-  "ra_none": "Żaden"
+  "ra_none": "Żaden",
+  "ra_Select predefined icon": "Wybierz predefiniowaną ikonę"
 }

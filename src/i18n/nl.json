@@ -261,5 +261,6 @@
   "ra_Drag 'n' drop some files here, or click to select files": "Sleep enkele bestanden hierheen, of klik om bestanden te selecteren",
   "ra_Clear": "Verwijderen",
   "ra_Clear icon": "Pictogram wissen",
-  "ra_none": "geen"
+  "ra_none": "geen",
+  "ra_Select predefined icon": "Selecteer voorgedefinieerd pictogram"
 }

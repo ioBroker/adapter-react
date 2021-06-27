@@ -261,5 +261,6 @@
   "ra_Drag 'n' drop some files here, or click to select files": "将一些文件拖放到此处，或单击以选择文件",
   "ra_Clear": "删除",
   "ra_Clear icon": "清除图标",
-  "ra_none": "没有任何"
+  "ra_none": "没有任何",
+  "ra_Select predefined icon": "选择预定义图标"
 }
