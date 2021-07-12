@@ -494,6 +494,9 @@ const styles = theme => ({
     filteredOut: {
         opacity: 0.5
     },
+    filteredParentOut: {
+        opacity: 0.3
+    },
     filterInput: {
         marginTop: 0,
         marginBottom: 0
@@ -775,18 +778,24 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
         });
     }
 
-    const visible = data.visible || data.hasVisibleChildren;
-    if (counter && visible) {
+    //const visible = data.visible || data.hasVisibleChildren;
+    data.sumVisibility = data.visible || data.hasVisibleChildren || data.hasVisibleParent;
+    if (counter && data.sumVisibility) {
         counter.count++;
     }
 
-    return visible;
+    // show all children of visible object with opacity 0.5
+    if (data.id && data.sumVisibility && item.children) {
+        item.children.forEach(_item => _item.data.hasVisibleParent = true);
+    }
+
+    return data.visible || data.hasVisibleChildren;
 }
 
 function getVisibleItems(item, type, objects, _result) {
     _result = _result || [];
     const data = item.data;
-    if (data.visible || data.hasVisibleChildren) {
+    if (data.sumVisibility) {
         data.id && objects[data.id] && (!type || objects[data.id].type === type) && _result.push(data.id);
         item.children?.forEach(_item =>
             getVisibleItems(_item, type, objects, _result));
@@ -2553,7 +2562,7 @@ class ObjectBrowser extends Component {
         expanded = expanded || [];
 
         root.children && root.children.forEach(item => {
-            if (item.data.hasVisibleChildren) {
+            if (item.data.sumVisibility) {
                 expanded.push(item.data.id);
                 this.onExpandAll(item, expanded);
             }
@@ -2586,7 +2595,7 @@ class ObjectBrowser extends Component {
         if (depth > 0) {
             if (root.children) {
                 root.children.forEach(item => {
-                    if (item.data.visible || item.data.hasVisibleChildren) {
+                    if (item.data.sumVisibility) {
                         if (!binarySearch(expanded, item.data.id)) {
                             expanded.push(item.data.id);
                             expanded.sort();
@@ -3922,6 +3931,7 @@ class ObjectBrowser extends Component {
                 alias && classes.tableRowAlias,
                 readWriteAlias && classes.tableRowAliasReadWrite,
                 !item.data.visible && classes.filteredOut,
+                item.data.hasVisibleParent && !item.data.visible && !item.data.hasVisibleChildren && classes.filteredParentOut,
                 this.state.selected.includes(id) && classes.itemSelected,
                 this.state.selectedNonObject === id && classes.itemSelected
             )}
@@ -4041,7 +4051,7 @@ class ObjectBrowser extends Component {
         let leaf = this.renderLeaf(root, isExpanded, classes, counter);
         let DragWrapper = this.props.DragWrapper;
         if (this.props.dragEnabled) {
-            if (root.data.visible || root.data.hasVisibleChildren) {
+            if (root.data.sumVisibility) {
                 leaf = <DragWrapper key={root.data.id} item={root} className={classes.draggable}>{leaf}</DragWrapper>;
             } else {
                 // change cursor
@@ -4057,7 +4067,7 @@ class ObjectBrowser extends Component {
                 root.children && items.push(root.children.map(item => {
                     // do not render too many items in column editor mode
                     if (!this.state.columnsSelectorShow || counter.count < 15) {
-                        if (item.data.visible || item.data.hasVisibleChildren) {
+                        if (item.data.sumVisibility) {
                             return this.renderItem(item, undefined, classes, counter);
                         }
                     }
@@ -4069,7 +4079,7 @@ class ObjectBrowser extends Component {
                     if (item.children) {
                         // do not render too many items in column editor mode
                         if (!this.state.columnsSelectorShow || counter.count < 15) {
-                            if (item.data.visible || item.data.hasVisibleChildren) {
+                            if (item.data.sumVisibility) {
                                 return this.renderItem(item, undefined, classes, counter);
                             }
                         }
@@ -4082,7 +4092,7 @@ class ObjectBrowser extends Component {
                     if (!item.children) {
                         // do not render too many items in column editor mode
                         if (!this.state.columnsSelectorShow || counter.count < 15) {
-                            if (item.data.visible || item.data.hasVisibleChildren) {
+                            if (item.data.sumVisibility) {
                                 return this.renderItem(item, undefined, classes, counter);
                             }
                         }

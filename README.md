@@ -611,6 +611,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 1.6.31 (2021-07-12)
+* (bluefox) Changed the filter of objects
+
 ### 1.6.30 (2021-06-30)
 * (bluefox) Corrected the export of objects in object list
 

@@ -18,8 +18,8 @@ export const PROGRESS = {
     READY: 3
 };
 
-export const PERMISSION_ERROR = 'permissionError';
-export const NOT_CONNECTED = 'notConnectedError';
+const PERMISSION_ERROR = 'permissionError';
+const NOT_CONNECTED    = 'notConnectedError';
 
 export const ERRORS = {
     PERMISSION_ERROR,
@@ -885,12 +885,12 @@ class Connection {
             cb && cb();
         } else {
             let obj = objs.pop();
-            this.delObject(obj._id)
-                .then(() => {
-                    obj._id = obj.newId;
-                    delete obj.newId;
-                    return this.setObject(obj._id, obj)
-                })
+            let oldId = obj._id;
+            obj._id = obj.newId;
+            delete obj.newId;
+
+            this.setObject(obj._id, obj)
+                .then(() => this.delObject(oldId))
                 .then(() => setTimeout(() => this._renameGroups(objs, cb), 0))
                 .catch(err => cb && cb(err));
         }
@@ -928,7 +928,8 @@ class Connection {
                                     obj.common.name = newName;
                                 }
 
-                                return this.setObject(obj._id, obj);
+                                return this.setObject(obj._id, obj)
+                                    .then(() => this.delObject(id));
                             }
                         });
                 }
