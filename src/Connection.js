@@ -39,7 +39,7 @@ class Connection {
 
         this.props.protocol   = this.props.protocol || window.location.protocol;
         this.props.host       = this.props.host     || window.location.hostname;
-        this.props.port       = this.props.port     || (window.location.port === '3000' ? 8081 : window.location.port);
+        this.props.port       = this.props.port     || (window.location.port === '3000' ? (Connection.isWeb() ? 8082 : 8081) : window.location.port);
         this.props.ioTimeout  = Math.max(this.props.ioTimeout  || 20000, 20000);
         this.props.cmdTimeout = Math.max(this.props.cmdTimeout || 5000, 5000);
 
@@ -85,7 +85,7 @@ class Connection {
      * @returns {boolean} True if running in a web adapter or in a socketio adapter.
      */
     static isWeb() {
-        return window.socketUrl !== undefined;
+        return window.adapterName === 'material' || window.socketUrl !== undefined;
     }
 
     /**

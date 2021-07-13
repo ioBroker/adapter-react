@@ -35,9 +35,15 @@ class GenericApp extends Router {
      * @param {import('./types').GenericAppSettings | undefined} settings
      */
     constructor(props, settings) {
-        if (window.io && window.location.port === '3000') {
-            delete window.io;
-            window.io = new window.SocketClient();
+        // Remove `!Connection.isWeb() && window.adapterName !== 'material'` when iobroker.socket will support native ws
+        if (!Connection.isWeb() && window.io && window.location.port === '3000') {
+            try {
+                const io = new window.SocketClient();
+                delete window.io;
+                window.io = io;
+            } catch (e) {
+                // ignore
+            }
         }
 
         super(props);
