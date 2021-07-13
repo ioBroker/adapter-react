@@ -1,6 +1,6 @@
 {
   "name": "@iobroker/adapter-react",
-  "version": "1.6.31",
+  "version": "2.0.0",
   "description": "React classes to develop admin interfaces for ioBroker with react.",
   "author": {
     "name": "bluefox",
@@ -9,7 +9,9 @@
   "scripts": {
     "prepublishOnly": "echo \"Error: publish from dist directory and write gulp\" && exit 1",
     "build": "gulp",
-    "release": "release-script"
+    "release": "release-script",
+    "release-minor": "release-script minor",
+    "release-major": "release-script major"
   },
   "repository": {
     "type": "git",

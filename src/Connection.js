@@ -429,10 +429,17 @@ class Connection {
                     .then(base64 => cb(id, base64))
                     .catch(e => console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(e)}`));
             } else {
-                this._socket.emit('getForeignStates', id, (err, states) => {
-                    err && console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(err)}`);
-                    states && Object.keys(states).forEach(id => cb(id, states[id]));
-                });
+                if (Connection.isWeb()) {
+                    this._socket.emit('getStates', id, (err, states) => {
+                        err && console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(err)}`);
+                        states && Object.keys(states).forEach(id => cb(id, states[id]));
+                    });
+                } else {
+                    this._socket.emit('getForeignStates', id, (err, states) => {
+                        err && console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(err)}`);
+                        states && Object.keys(states).forEach(id => cb(id, states[id]));
+                    });
+                }
             }
         }
     }
@@ -1850,9 +1857,15 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
-        return new Promise((resolve, reject) =>
-            this._socket.emit('getForeignStates', pattern || '*', (err, states) =>
-                err ? reject(err) : resolve(states)));
+        if (Connection.isWeb()) {
+            return new Promise((resolve, reject) =>
+                this._socket.emit('getStates', pattern || '*', (err, states) =>
+                    err ? reject(err) : resolve(states)));
+        } else {
+            return new Promise((resolve, reject) =>
+                this._socket.emit('getForeignStates', pattern || '*', (err, states) =>
+                    err ? reject(err) : resolve(states)));
+        }
     }
 
     /**

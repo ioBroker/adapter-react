@@ -611,6 +611,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 2.0.0 (2021-07-13)
+* (bluefox) Breaking change: Update @material-ui/core to 4.12.x
+* (bluefox) Fix getForeignObjects for web
+
 ### 1.6.31 (2021-07-12)
 * (bluefox) Changed the filter of objects
 
