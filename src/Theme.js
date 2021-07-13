@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@material-ui/core/styles';
 
 import orange from '@material-ui/core/colors/orange';
 
@@ -10,14 +10,13 @@ const step = (16 - 5) / 23 / 100;
  * @returns {{r: number, g: number, b: number}}
  */
 function toInt(hex) {
-
     const rgb = {
         r: 0,
         g: 0,
         b: 0
     };
 
-    if(hex.length === 7) {
+    if (hex.length === 7) {
         rgb.r = parseInt(hex.substr(1, 2), 16);
         rgb.g = parseInt(hex.substr(3, 2), 16);
         rgb.b = parseInt(hex.substr(5, 2), 16);
@@ -239,7 +238,7 @@ const Theme = type => {
         }
     };
 
-    return createMuiTheme(theme);
+    return createTheme(theme);
 };
 
 export default Theme;
