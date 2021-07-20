@@ -611,7 +611,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 2.0.2 (2021-07-20)
+### 2.0.3 (2021-07-20)
 * (bluefox) Fixed communication with admin4
 
 ### 2.0.1 (2021-07-13)

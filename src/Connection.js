@@ -20,11 +20,49 @@ export const PROGRESS = {
 
 const PERMISSION_ERROR = 'permissionError';
 const NOT_CONNECTED    = 'notConnectedError';
+const TIMEOUT_FOR_ADMIN4 = 1300;
 
 export const ERRORS = {
     PERMISSION_ERROR,
     NOT_CONNECTED
 };
+
+function fixAdminUI(obj) {
+    if (obj && obj.common && !obj.common.adminUI) {
+        if (obj.common.noConfig) {
+            obj.common.adminUI = obj.common.adminUI || {};
+            obj.common.adminUI.config = 'none';
+        } else if (obj.common.jsonConfig) {
+            obj.common.adminUI = obj.common.adminUI || {};
+            obj.common.adminUI.config = 'json';
+        } else if (obj.common.materialize) {
+            obj.common.adminUI = obj.common.adminUI || {};
+            obj.common.adminUI.config = 'materialize';
+        } else {
+            obj.common.adminUI = obj.common.adminUI || {};
+            obj.common.adminUI.config = 'html';
+        }
+
+        if (obj.common.jsonCustom) {
+            obj.common.adminUI = obj.common.adminUI || {};
+            obj.common.adminUI.custom = 'json';
+        } else if (obj.common.supportCustoms) {
+            obj.common.adminUI = obj.common.adminUI || {};
+            obj.common.adminUI.custom = 'json';
+        }
+
+        if (obj.common.materializeTab && obj.common.adminTab) {
+            obj.common.adminUI = obj.common.adminUI || {};
+            obj.common.adminUI.tab = 'materialize';
+        } else if (obj.common.adminTab) {
+            obj.common.adminUI = obj.common.adminUI || {};
+            obj.common.adminUI.tab = 'html';
+        }
+
+        obj.common.adminUI && console.debug(`Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`);
+    }
+    return obj;
+}
 
 class Connection {
     /**
@@ -844,15 +882,15 @@ class Connection {
                     `system.adapter.${adapter}.\u9999`,
                     'instance'
                 )
-                    .then(items => resolve(Object.keys(items).map(id => items[id])))
+                    .then(items => resolve(Object.keys(items).map(id => fixAdminUI(items[id]))))
                     .catch(e => reject(e));
-            }, 1300);
+            }, TIMEOUT_FOR_ADMIN4);
 
             this._socket.emit('getAdapterInstances', adapter, (err, instances) => {
                 if (timeout) {
                     clearTimeout(timeout);
                     timeout = null;
-                    return err ? reject(err) : resolve(instances)
+                    return err ? reject(err) : resolve(instances);
                 }
             });
         });
@@ -891,9 +929,26 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        this._promises['adapter_' + adapter] = new Promise((resolve, reject) =>
-            this._socket.emit('getAdapters', adapter, (err, instances) =>
-                err ? reject(err) : resolve(instances)));
+        this._promises['adapter_' + adapter] = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                timeout = null;
+                this.getObjectView(
+                    `system.adapter.${adapter}.`,
+                    `system.adapter.${adapter}.\u9999`,
+                    'adapter'
+                )
+                    .then(items => resolve(Object.keys(items).map(id => fixAdminUI(items[id]))))
+                    .catch(e => reject(e));
+            }, TIMEOUT_FOR_ADMIN4);
+
+            this._socket.emit('getAdapters', adapter, (err, adapters) => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    return err ? reject(err) : resolve(adapters);
+                }
+            });
+        });
 
         return this._promises['adapter_' + adapter];
     }
