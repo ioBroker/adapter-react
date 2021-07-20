@@ -836,9 +836,26 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        this._promises['instances_' + adapter] = new Promise((resolve, reject) =>
-            this._socket.emit('getAdapterInstances', adapter, (err, instances) =>
-                err ? reject(err) : resolve(instances)));
+        this._promises['instances_' + adapter] = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                timeout = null;
+                this.getObjectView(
+                    `system.adapter.${adapter}.`,
+                    `system.adapter.${adapter}.\u9999`,
+                    'instance'
+                )
+                    .then(items => resolve(Object.keys(items).map(id => items[id])))
+                    .catch(e => reject(e));
+            }, 1300);
+
+            this._socket.emit('getAdapterInstances', adapter, (err, instances) => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    return err ? reject(err) : resolve(instances)
+                }
+            });
+        });
 
         return this._promises['instances_' + adapter];
     }
