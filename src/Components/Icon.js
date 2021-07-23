@@ -119,6 +119,7 @@ Icon.propTypes = {
     src: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     className: PropTypes.string,
     imagePrefix: PropTypes.string,
+    style: PropTypes.object,
 };
 
 export default Icon;
