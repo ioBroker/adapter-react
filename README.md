@@ -611,6 +611,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 2.0.4 (2021-07-26)
+* (bluefox) Added the formula icon
+
 ### 2.0.3 (2021-07-20)
 * (bluefox) Fixed communication with admin4
 
