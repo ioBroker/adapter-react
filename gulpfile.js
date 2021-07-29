@@ -21,7 +21,7 @@ gulp.task('copy', () => Promise.all([
     gulp.src(['LICENSE']).pipe(gulp.dest('dist')),
     gulp.src(['src/*.css']).pipe(gulp.dest('dist')),
     gulp.src(['src/Components/*.css']).pipe(gulp.dest('dist/Components')),
-    gulp.src(['src/Components/*.css']).pipe(gulp.dest('dist/Components')),
+    gulp.src(['src/Components/**/*.css']).pipe(gulp.dest('dist/Components')),
     gulp.src(['src/Components/assets/*.*']).pipe(gulp.dest('dist/Components/assets')),
     gulp.src(['src/assets/devices/*.*']).pipe(gulp.dest('dist/assets/devices')),
     gulp.src(['src/assets/rooms/*.*']).pipe(gulp.dest('dist/assets/rooms')),
