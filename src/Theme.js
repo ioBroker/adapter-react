@@ -197,6 +197,37 @@ const Theme = type => {
                 }
             }
         };
+    } else if (type === 'PT') {
+        theme = {
+            name: type,
+            palette: {
+                type: 'light',
+                primary: {
+                    main: '#0F99DE'
+                },
+                secondary: {
+                    main: '#88A536'
+                },
+                expert: '#BD1B24'
+            },
+            overrides: {
+                MuiAppBar: {
+                    colorDefault: {
+                        backgroundColor: '#0F99DE'
+                    }
+                },
+                MuiLink: {
+                    root: {
+                        textTransform: 'uppercase',
+                        transition: 'color .3s ease',
+                        color: orange[400],
+                        '&:hover': {
+                            color: orange[300]
+                        }
+                    }
+                }
+            }
+        };
     } else {
         theme = {
             name: type,

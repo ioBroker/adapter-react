@@ -324,9 +324,9 @@ class Connection {
     }
 
     /**
-    * Checks if the socket is connected.
-    * @returns {Promise<void>} Promise resolves if once connected.
-    */
+     * Checks if the socket is connected.
+     * @returns {Promise<void>} Promise resolves if once connected.
+     */
     waitForFirstConnection() {
         return this._waitForFirstConnection;
     }
@@ -367,7 +367,7 @@ class Connection {
             }
 
             // Read system configuration
-            return (this.admin5only ? this.getCompactSystemConfig() : this.getSystemConfig())
+            return (this.admin5only && !window.vendorPrefix ? this.getCompactSystemConfig() : this.getSystemConfig())
                 .then(data => {
                     if (this.doNotLoadACL) {
                         if (this.loaded) {
@@ -2398,8 +2398,8 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
         this._promises.compactAdapters = new Promise((resolve, reject) =>
-            this._socket.emit('getCompactAdapters', (err, systemConfig) =>
-                err ? reject(err) : resolve(systemConfig)));
+            this._socket.emit('getCompactAdapters', (err, adapters) =>
+                err ? reject(err) : resolve(adapters)));
 
         return this._promises.compactAdapters;
     }
@@ -2417,8 +2417,8 @@ class Connection {
         }
 
         this._promises.compactInstances = new Promise((resolve, reject) =>
-            this._socket.emit('getCompactInstances', (err, systemConfig) =>
-                err ? reject(err) : resolve(systemConfig)));
+            this._socket.emit('getCompactInstances', (err, instances) =>
+                err ? reject(err) : resolve(instances)));
 
         return this._promises.compactInstances;
     }
@@ -2554,8 +2554,8 @@ class Connection {
         }
 
         this._promises.hostsCompact = new Promise((resolve, reject) =>
-            this._socket.emit('getCompactHosts', (err, systemConfig) =>
-                err ? reject(err) : resolve(systemConfig)));
+            this._socket.emit('getCompactHosts', (err, hosts) =>
+                err ? reject(err) : resolve(hosts)));
 
         return this._promises.hostsCompact;
     }
