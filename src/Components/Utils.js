@@ -1147,13 +1147,29 @@ class Utils {
         themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
 
         // dark => blue => colored => light => dark
-        const newThemeName = themeName === 'dark' ? 'blue' :
-            (themeName === 'blue' ? 'colored' :
-                (themeName === 'colored' ? 'light' : 'dark'));
+        const themes = Utils.getThemeNames();
+        const pos = themes.indexOf(themeName);
+        let newTheme;
+        if (pos !== -1) {
+            newTheme = themes[(pos + 1) % themes.length];
+        } else {
+            newTheme = themes[0];
+        }
+        Utils.setThemeName(newTheme);
 
-        Utils.setThemeName(newThemeName);
+        return newTheme;
+    }
 
-        return newThemeName;
+    /**
+     * Get the list of themes
+     * @returns {array<string>} list of possible themes
+     */
+    static getThemeNames() {
+        if (window.vendorPrefix) {
+            return [window.vendorPrefix];
+        }
+
+        return ['light', 'dark', 'blue', 'colored'];
     }
 
     /**

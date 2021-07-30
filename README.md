@@ -611,9 +611,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 2.0.7 (2021-07-30)
+* (bluefox) Added list of themes
+
 ### 2.0.6 (2021-07-29)
 * (bluefox) Added the vendor support
-* 
+ 
 ### 2.0.4 (2021-07-26)
 * (bluefox) Added the formula icon
 
