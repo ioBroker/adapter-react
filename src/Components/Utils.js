@@ -1101,7 +1101,7 @@ class Utils {
      * @returns {string}
      */
     static getThemeName(themeName = '') {
-        if (window.vendorPrefix) {
+        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return window.vendorPrefix;
         }
 
@@ -1115,7 +1115,7 @@ class Utils {
      * @returns {'dark' | 'light'}
      */
     static getThemeType(themeName = '') {
-        if (window.vendorPrefix === 'PT') {
+        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return 'light';
         }
 
@@ -1128,7 +1128,7 @@ class Utils {
      * @param {string} themeName
      */
     static setThemeName(themeName) {
-        if (window.vendorPrefix) {
+        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return; // ignore
         }
         window.localStorage.setItem('App.themeName', themeName);
@@ -1141,7 +1141,7 @@ class Utils {
      * @returns {string} the new theme name.
      */
     static toggleTheme(themeName) {
-        if (window.vendorPrefix) {
+        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return window.vendorPrefix;
         }
         themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
@@ -1165,7 +1165,7 @@ class Utils {
      * @returns {array<string>} list of possible themes
      */
     static getThemeNames() {
-        if (window.vendorPrefix) {
+        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return [window.vendorPrefix];
         }
 

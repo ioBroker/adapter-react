@@ -96,7 +96,7 @@ class Icon extends React.Component {
         if (this.props.src) {
             if (typeof this.props.src === 'string') {
                 if (this.props.src.length < 3) {
-                    return <span title={this.props.title || undefined} style={this.props.style || {}} className={ Utils.clsx(this.props.className, 'iconOwn') }>{this.props.src}</span>; // utf-8 char
+                    return <span title={this.props.title || undefined} style={Object.assign({height: 27, marginTop: -8}, this.props.styleUTF8 || this.props.style)} className={ Utils.clsx(this.props.className, 'iconOwn') }>{this.props.src}</span>; // utf-8 char
                 } else {
                     if (this.props.src.startsWith('data:image/svg')) {
                         return <SVG title={this.props.title || undefined} src={this.props.src} className={ Utils.clsx(this.props.className, 'iconOwn') } width={this.props.style?.width || 28} height={this.props.style?.height || this.props.style?.width || 28} style={this.props.style || {}}/>;
@@ -120,6 +120,7 @@ Icon.propTypes = {
     className: PropTypes.string,
     imagePrefix: PropTypes.string,
     style: PropTypes.object,
+    styleUTF8: PropTypes.object,
 };
 
 export default Icon;
