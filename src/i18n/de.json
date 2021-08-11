@@ -275,5 +275,6 @@
   "ra_Clear": "Löschen",
   "ra_Clear icon": "Symbol löschen",
   "ra_none": "kein",
-  "ra_Select predefined icon": "Vordefiniertes Symbol auswählen"
+  "ra_Select predefined icon": "Vordefiniertes Symbol auswählen",
+  "ra_Show lines between rows": "Zeilen zwischen Zeilen anzeigen"
 }

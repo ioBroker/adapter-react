@@ -262,5 +262,6 @@
   "ra_Clear": "Kasować",
   "ra_Clear icon": "Wyczyść ikonę",
   "ra_none": "Żaden",
-  "ra_Select predefined icon": "Wybierz predefiniowaną ikonę"
+  "ra_Select predefined icon": "Wybierz predefiniowaną ikonę",
+  "ra_Show lines between rows": "Pokaż linie między rzędami"
 }

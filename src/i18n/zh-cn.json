@@ -262,5 +262,6 @@
   "ra_Clear": "删除",
   "ra_Clear icon": "清除图标",
   "ra_none": "没有任何",
-  "ra_Select predefined icon": "选择预定义图标"
+  "ra_Select predefined icon": "选择预定义图标",
+  "ra_Show lines between rows": "显示行之间的线"
 }

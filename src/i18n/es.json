@@ -262,5 +262,6 @@
   "ra_Clear": "Borrar",
   "ra_Clear icon": "Icono claro",
   "ra_none": "ninguno",
-  "ra_Select predefined icon": "Seleccionar icono predefinido"
+  "ra_Select predefined icon": "Seleccionar icono predefinido",
+  "ra_Show lines between rows": "Mostrar líneas entre filas"
 }

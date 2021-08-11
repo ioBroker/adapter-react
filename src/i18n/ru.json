@@ -275,5 +275,6 @@
   "ra_Clear": "Удалить",
   "ra_Clear icon": "Очистить значок",
   "ra_none": "ничего",
-  "ra_Select predefined icon": "Выберите предопределенный значок"
+  "ra_Select predefined icon": "Выберите предопределенный значок",
+  "ra_Show lines between rows": "Показать линии между строками"
 }

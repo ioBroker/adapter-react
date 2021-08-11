@@ -262,5 +262,6 @@
   "ra_Clear": "Effacer",
   "ra_Clear icon": "Effacer l'icône",
   "ra_none": "rien",
-  "ra_Select predefined icon": "Sélectionnez l'icône prédéfinie"
+  "ra_Select predefined icon": "Sélectionnez l'icône prédéfinie",
+  "ra_Show lines between rows": "Afficher les lignes entre les lignes"
 }

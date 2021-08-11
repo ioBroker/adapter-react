@@ -275,5 +275,6 @@
   "ra_Clear": "Delete",
   "ra_Clear icon": "Clear icon",
   "ra_none": "none",
-  "ra_Select predefined icon": "Select predefined icon"
+  "ra_Select predefined icon": "Select predefined icon",
+  "ra_Show lines between rows": "Show lines between rows"
 }

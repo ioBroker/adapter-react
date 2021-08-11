@@ -262,5 +262,6 @@
   "ra_Clear": "Verwijderen",
   "ra_Clear icon": "Pictogram wissen",
   "ra_none": "geen",
-  "ra_Select predefined icon": "Selecteer voorgedefinieerd pictogram"
+  "ra_Select predefined icon": "Selecteer voorgedefinieerd pictogram",
+  "ra_Show lines between rows": "Toon lijnen tussen rijen"
 }

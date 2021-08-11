@@ -186,8 +186,8 @@ const styles = theme => ({
     tableDiv: {
         paddingTop: 0,//theme.spacing(1),
         paddingLeft: 0,
-        width: 'calc(100% - ' + theme.spacing(1) + 'px)',
-        height: 'calc(100% - ' + 38 + 'px)',
+        width: `calc(100% - ${theme.spacing(1)}px)`,
+        height: `calc(100% - 38px)`,
         overflow: 'auto'
     },
     tableRow: {
@@ -203,6 +203,9 @@ const styles = theme => ({
         },
         whiteSpace: 'nowrap',
         flexWrap: 'nowrap',
+    },
+    tableRowLines: {
+        borderBottom: `1px solid ${theme.palette.type === 'dark' ? '#8888882e' : '#8888882e'}`,
     },
     tableRowNoDragging: {
         cursor: 'pointer',
@@ -504,7 +507,7 @@ const styles = theme => ({
     selectIcon: {
         width: 24,
         height: 24,
-        paddingRight: 4
+        marginRight: 4
     },
     selectNone: {
         opacity: 0.5,
@@ -1564,6 +1567,7 @@ class ObjectBrowser extends Component {
             columnsEditCustomDialog: null,
             customColumnDialogValueChanged: false,
             showExportDialog: false,
+            linesEnabled: window.localStorage.getItem(`${props.dialogName || 'App'}.lines`) === 'true',
         };
 
         this.edit = {};
@@ -1997,6 +2001,14 @@ class ObjectBrowser extends Component {
                         }} />}
                         label={this.props.t('ra_Folders always first')}
                     />
+                    <FormControlLabel
+                        className={this.props.classes.switchColumnAuto}
+                        control={<Switch checked={this.state.linesEnabled} onChange={() => {
+                            window.localStorage.setItem((this.props.dialogName || 'App') + '.lines', this.state.linesEnabled ? 'false' : 'true');
+                            this.setState({ linesEnabled: !this.state.linesEnabled });
+                        }} />}
+                        label={this.props.t('ra_Show lines between rows')}
+                    />
                     <Typography classes={{ root: this.props.classes.dialogColumnsLabel }}>{this.props.t('ra_Transparent dialog')}</Typography>
                     <Slider classes={{ root: this.props.classes.width100 }} value={this.state.columnsDialogTransparent} min={20} max={100} step={10} onChange={(event, newValue) =>
                         this.setState({ columnsDialogTransparent: newValue })
@@ -2222,17 +2234,18 @@ class ObjectBrowser extends Component {
                     this.parseObjectForAdmins(columnsForAdmin, event.obj);
 
                     if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
-                        newState= { columnsForAdmin };
+                        newState = { columnsForAdmin };
                     }
                 }
-                if (this.objects[id]) {
-                    if (obj) {
-                        this.objects[id] = obj;
+                this.objects = this.objects || [];
+                if (this.objects[event.id]) {
+                    if (event.obj) {
+                        this.objects[event.id] = event.obj;
                     } else {
-                        delete this.objects[id];
+                        delete this.objects[event.id];
                     }
-                } else if (this.objects[id]) {
-                    delete this.objects[id];
+                } else if (this.objects[event.id]) {
+                    delete this.objects[event.id];
                 }
             });
         } else {
@@ -3927,6 +3940,7 @@ class ObjectBrowser extends Component {
             wrap="nowrap"
             className={Utils.clsx(
                 classes.tableRow,
+                this.state.linesEnabled && classes.tableRowLines,
                 !this.props.dragEnabled && classes.tableRowNoDragging,
                 alias && classes.tableRowAlias,
                 readWriteAlias && classes.tableRowAliasReadWrite,
