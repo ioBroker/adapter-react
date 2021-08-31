@@ -108,6 +108,10 @@ class App extends GenericApp {
         if (extendedProps.socket.port === 3000) {
             extendedProps.socket.port = 8081;
         }
+        
+        // allow to manage GenericApp the sentry initialisation or do not set the sentryDSN if no sentry available
+        extendedProps.sentryDSN = 'https://yyy@sentry.iobroker.net/xx';
+        
         super(extendedProps);
     }
     ...
@@ -423,7 +427,7 @@ const styles = theme => ({
         height: 'calc(100% - 48px)',
     },
 });
-class MyConmponent extends Component {
+class MyComponent extends Component {
    constructor(props) {
       super(props);
       
@@ -611,6 +615,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 2.0.10 (2021-08-31)
+* (bluefox) Allowed the managing sentry settings
+
 ### 2.0.9 (2021-08-11)
 * (bluefox) Updated the objects browser
  

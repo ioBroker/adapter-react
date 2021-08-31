@@ -1,7 +1,8 @@
 import React from 'react';
 import Connection, {PROGRESS} from './Connection';
-import * as Sentry from '@sentry/browser';
 import PropTypes from 'prop-types';
+import * as Sentry from '@sentry/browser';
+import * as SentryIntegrations from '@sentry/integrations';
 
 import DialogError from './Dialogs/Error';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -120,6 +121,8 @@ class GenericApp extends Router {
 
         this.encryptedFields = props.encryptedFields || settings?.encryptedFields || [];
 
+        this.sentryDSN = (settings && settings.sentryDSN) || props.sentryDSN;
+
         this.socket = new Connection({
             ...(props?.socket || settings?.socket),
             name: this.adapterName,
@@ -144,32 +147,54 @@ class GenericApp extends Router {
                         this._systemConfig = obj?.common || {};
                         return this.socket.getObject(this.instanceId);
                     })
-                    .then(obj => {
+                    .then(instanceObj => {
                         let waitPromise;
 
+                        const sentryEnabled =
+                            this._systemConfig.diag !== 'none' &&
+                            instanceObj &&
+                            instanceObj.common &&
+                            instanceObj.common.name &&
+                            instanceObj.common.version &&
+                            !instanceObj.common.disableDataReporting &&
+                            window.location.host !== 'localhost:3000';
+
+                        // activate sentry plugin
+                        if (!this.sentryStarted && this.sentryDSN && sentryEnabled) {
+                            this.sentryStarted = true;
+
+                            Sentry.init({
+                                dsn: this.sentryDSN,
+                                release: `iobroker.${instanceObj.common.name}@${instanceObj.common.version}`,
+                                integrations: [
+                                    new SentryIntegrations.Dedupe()
+                                ]
+                            });
+                        }
+
                         // read UUID and init sentry with it.
-                        if (!this.sentryInited) {
+                        // for backward compatibility it will be processed separately from above logic: some adapters could still have this.sentryDSN as undefined
+                        if (!this.sentryInited && sentryEnabled) {
                             this.sentryInited = true;
 
-                            if (window.location.host !== 'localhost:3000') {
-                                waitPromise = this.socket.getObject('system.meta.uuid')
-                                    .then(uuidObj => {
-                                        if (uuidObj && uuidObj.native && uuidObj.native.uuid) {
-                                            Sentry.configureScope(scope =>
-                                                scope.setUser({id: uuidObj.native.uuid}));
-                                        }
-                                    });
-                            }
+                            waitPromise = this.socket.getObject('system.meta.uuid')
+                                .then(uuidObj => {
+                                    if (uuidObj && uuidObj.native && uuidObj.native.uuid) {
+                                        Sentry.configureScope(scope =>
+                                            scope.setUser({id: uuidObj.native.uuid}));
+                                    }
+                                });
                         }
+
                         waitPromise = waitPromise || Promise.resolve();
 
                         waitPromise
                             .then(() => {
-                                if (obj) {
-                                    this.common = obj && obj.common;
-                                    this.onPrepareLoad(obj.native, obj.encryptedNative); // decode all secrets
-                                    this.savedNative = JSON.parse(JSON.stringify(obj.native));
-                                    this.setState({native: obj.native, loaded: true, expertMode: this.getExpertMode()}, () =>
+                                if (instanceObj) {
+                                    this.common = instanceObj?.common;
+                                    this.onPrepareLoad(instanceObj.native, instanceObj.encryptedNative); // decode all secrets
+                                    this.savedNative = JSON.parse(JSON.stringify(instanceObj.native));
+                                    this.setState({native: instanceObj.native, loaded: true, expertMode: this.getExpertMode()}, () =>
                                         this.onConnectionReady && this.onConnectionReady());
                                 } else {
                                     console.warn('Cannot load instance settings');
