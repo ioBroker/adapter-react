@@ -615,6 +615,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 2.0.11 (2021-09-02)
+* (bluefox) Added scrollbar in the CRON dialog
+
 ### 2.0.10 (2021-08-31)
 * (bluefox) Allowed the managing sentry settings
 

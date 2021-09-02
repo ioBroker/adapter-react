@@ -31,7 +31,9 @@ const styles = theme => ({
         width: '100%'
     },
     tabContent: {
-        padding: 20
+        padding: 20,
+        height: 'calc(100% - 240px)',
+        overflow: 'auto',
     },
     numberButton: {
         padding: 4,
@@ -395,19 +397,19 @@ class ComplexCron extends React.Component {
                 <Tabs value={this.state.tab} className={this.props.classes.appBar} color="secondary" onChange={(active, tab) =>
                     this.setState({tab})}>
                     {this.state.seconds !== false && <Tab id="sc_seconds" label={I18n.t('sc_seconds')}/>}
-                    <Tab  id="minutes" label={I18n.t('sc_minutes')}/>
-                    <Tab  id="hours" label={I18n.t('sc_hours')}/>
-                    <Tab  id="dates" label={I18n.t('sc_dates')}/>
-                    <Tab  id="months" label={I18n.t('sc_months')}/>
-                    <Tab  id="dows" label={I18n.t('sc_dows')}/>
+                    <Tab id="minutes" label={I18n.t('sc_minutes')}/>
+                    <Tab id="hours" label={I18n.t('sc_hours')}/>
+                    <Tab id="dates" label={I18n.t('sc_dates')}/>
+                    <Tab id="months" label={I18n.t('sc_months')}/>
+                    <Tab id="dows" label={I18n.t('sc_dows')}/>
                 </Tabs>
             </AppBar>
-            {tab === 0 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('seconds', 60)}</div>)}
-            {tab === 1 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('minutes', 60)}</div>)}
-            {tab === 2 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('hours', 24)}</div>)}
-            {tab === 3 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('dates', 31)}</div>)}
-            {tab === 4 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('months', 12)}</div>)}
-            {tab === 5 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('dows', 7)}</div>)}
+            {tab === 0 && <div className={this.props.classes.tabContent}>{this.getPeriodsTab('seconds', 60)}</div>}
+            {tab === 1 && <div className={this.props.classes.tabContent}>{this.getPeriodsTab('minutes', 60)}</div>}
+            {tab === 2 && <div className={this.props.classes.tabContent}>{this.getPeriodsTab('hours', 24)}</div>}
+            {tab === 3 && <div className={this.props.classes.tabContent}>{this.getPeriodsTab('dates', 31)}</div>}
+            {tab === 4 && <div className={this.props.classes.tabContent}>{this.getPeriodsTab('months', 12)}</div>}
+            {tab === 5 && <div className={this.props.classes.tabContent}>{this.getPeriodsTab('dows', 7)}</div>}
         </div>;
     }
 }
