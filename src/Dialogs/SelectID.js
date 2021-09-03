@@ -179,6 +179,7 @@ class SelectID extends React.Component {
                             this.handleOk();
                         }
                     } }
+                    filterFunc={this.props.filterFunc}
                 />
             </DialogContent>
             <DialogActions>
@@ -216,6 +217,9 @@ SelectID.propTypes = {
     multiSelect: PropTypes.bool,
     types: PropTypes.array,   // optional ['state', 'instance', 'channel']
     columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
+
+    filterFunc: PropTypes.func,         // function to filter out all unneccessary objects. It cannot be used together with "types"
+                                        // Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
 };
 
 /** @type {typeof SelectID} */
