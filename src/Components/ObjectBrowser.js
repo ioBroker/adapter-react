@@ -1644,11 +1644,16 @@ class ObjectBrowser extends Component {
 
                 if (typeof props.filterFunc === 'function') {
                     this.objects = {};
-                    Object.keys(objects).forEach(id => {
-                        if (props.filterFunc(objects[id])) {
-                            this.objects[id] = objects[id];
+                    const keys = Object.keys(objects);
+                    for (let k = 0; k < keys.length; k++) {
+                        try {
+                            if (props.filterFunc(objects[keys[k]])) {
+                                this.objects[keys[k]] = objects[keys[k]];
+                            }
+                        } catch (e) {
+                            console.log(`Error by filtering of "${keys[k]}": ${e}`);
                         }
-                    });
+                    }
                 } else
                 if (props.types) {
                     this.objects = {};
@@ -1672,7 +1677,7 @@ class ObjectBrowser extends Component {
                 // read default history
                 this.defaultHistory = this.systemConfig.common.defaultHistory;
                 if (this.defaultHistory) {
-                    props.socket.getState('system.adapter.' + this.defaultHistory + '.alive')
+                    props.socket.getState(`system.adapter.${this.defaultHistory}.alive`)
                         .then(state => {
                             if (!state || !state.val) {
                                 this.defaultHistory = '';
