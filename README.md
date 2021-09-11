@@ -615,6 +615,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 2.0.13 (2021-09-11)
+* (bluefox) Small fix for the saving
+
 ### 2.0.12 (2021-09-03)
 * (bluefox) Allowed to use the filter function for SelectID dialog.
 

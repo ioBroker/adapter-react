@@ -522,14 +522,26 @@ class GenericApp extends Router {
 
                 for (const a in this.state.native) {
                     if (this.state.native.hasOwnProperty(a)) {
-                        oldObj.native[a] = this.state.native[a];
+                        if (this.state.native[a] === null) {
+                            oldObj.native[a] = null;
+                        } else
+                        if (this.state.native[a] !== undefined) {
+                            oldObj.native[a] = JSON.parse(JSON.stringify(this.state.native[a]));
+                        } else {
+                            delete oldObj.native[a];
+                        }
                     }
                 }
 
                 if (this.state.common) {
                     for (const b in this.state.common) {
-                        if (this.state.common.hasOwnProperty(b)) {
-                            oldObj.common[b] = this.state.common[b];
+                        if (this.state.common[b] === null) {
+                            oldObj.common[b] = null;
+                        } else
+                        if (this.state.common[b] !== undefined) {
+                            oldObj.common[b] = JSON.parse(JSON.stringify(this.state.common[b]));
+                        } else {
+                            delete oldObj.common[b];
                         }
                     }
                 }
