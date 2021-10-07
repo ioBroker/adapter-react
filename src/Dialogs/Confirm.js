@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 bluefox <dogafox@gmail.com>
+ * Copyright 2019-2021 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -18,6 +18,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+
+import IconCheck from '@material-ui/icons/Check';
+import IconClose from '@material-ui/icons/Close';
 
 import I18n from '../i18n';
 
@@ -112,8 +115,8 @@ class DialogConfirm extends React.Component {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={() => this.handleOk()} color="primary" autoFocus>{this.props.ok || I18n.t('ra_Ok')}</Button>
-                <Button variant="contained" onClick={() => this.handleCancel()}>{this.props.cancel || I18n.t('ra_Cancel')}</Button>
+                <Button variant="contained" onClick={() => this.handleOk()} color="primary" autoFocus startIcon={<IconCheck />}>{this.props.ok || I18n.t('ra_Ok')}</Button>
+                <Button variant="contained" onClick={() => this.handleCancel()} startIcon={<IconClose />}>{this.props.cancel || I18n.t('ra_Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

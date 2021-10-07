@@ -1,3 +1,9 @@
+/**
+ * Copyright 2018-2021 bluefox <dogafox@gmail.com>
+ *
+ * MIT License
+ *
+ **/
 import React from 'react';
 import Connection, {PROGRESS} from './Connection';
 import PropTypes from 'prop-types';

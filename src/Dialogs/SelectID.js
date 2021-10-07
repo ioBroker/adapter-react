@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2020 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2021 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -14,6 +14,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
+
+import IconCancel from '@material-ui/icons/Cancel';
+import IconOk from '@material-ui/icons/Check';
 
 import Utils from '../Components/Utils';
 import I18n from '../i18n';
@@ -183,8 +186,8 @@ class SelectID extends React.Component {
                 />
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={ () => this.handleOk() } disabled={ !this.state.selected.length } color="primary">{ this.props.ok || I18n.t('ra_Ok') }</Button>
-                <Button variant="contained" onClick={ () => this.handleCancel() }>{ this.props.cancel || I18n.t('ra_Cancel') }</Button>
+                <Button variant="contained" onClick={ () => this.handleOk() } startIcon={<IconOk />} disabled={ !this.state.selected.length } color="primary">{ this.props.ok || I18n.t('ra_Ok') }</Button>
+                <Button variant="contained" onClick={ () => this.handleCancel() } startIcon={<IconCancel />}>{ this.props.cancel || I18n.t('ra_Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }

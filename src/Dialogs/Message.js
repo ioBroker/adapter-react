@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2019 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2021 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -15,6 +15,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+
+import IconClose from '@material-ui/icons/Close';
 
 import I18n from '../i18n';
 
@@ -49,7 +51,7 @@ class DialogMessage extends React.Component {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('ra_Close')}</Button>
+                <Button variant="contained" onClick={() => this.handleOk()} color="primary" autoFocus startIcon={<IconClose />}>{I18n.t('ra_Close')}</Button>
             </DialogActions>
         </Dialog>;
     }

@@ -11,6 +11,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import IconClose from '@material-ui/icons/Close';
+import IconCheck from '@material-ui/icons/Check';
+
 const styles = {
 
 };
@@ -76,8 +79,8 @@ class TextInput extends React.Component {
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" disabled={!this.state.text || this.state.error} onClick={() => this.props.onClose(this.state.text)}
-                        color="primary">{this.props.applyText}</Button>
-                <Button variant="contained" onClick={() => this.props.onClose(null)} >{this.props.cancelText}</Button>
+                        color="primary" startIcon={<IconCheck />}>{this.props.applyText}</Button>
+                <Button variant="contained" onClick={() => this.props.onClose(null)} startIcon={<IconClose />}>{this.props.cancelText}</Button>
             </DialogActions>
         </Dialog>;
     }

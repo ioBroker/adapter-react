@@ -615,6 +615,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Added the theme switch button 
+
 ### 2.0.13 (2021-09-11)
 * (bluefox) Small fix for the saving
 
