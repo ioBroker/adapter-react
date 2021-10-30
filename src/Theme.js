@@ -228,6 +228,42 @@ const Theme = type => {
                 }
             }
         };
+    }  else if (type === 'DX') {
+        theme = {
+            name: type,
+            palette: {
+                type: 'light',
+                primary: {
+                    main: '#F5F5F7'
+                },
+                secondary: {
+                    main: '#a9a9a9'
+                },
+                expert: '#BD1B24',
+                text: {
+                    primary: '#007AFE',
+                    secondary: '#007AFE',
+                    disabled: '#007AFEAA',
+                }
+            },
+            overrides: {
+                MuiAppBar: {
+                    colorDefault: {
+                        backgroundColor: '#a9a9a9'
+                    }
+                },
+                MuiLink: {
+                    root: {
+                        textTransform: 'uppercase',
+                        transition: 'color .3s ease',
+                        color: orange[400],
+                        '&:hover': {
+                            color: orange[300]
+                        }
+                    }
+                }
+            }
+        };
     } else {
         theme = {
             name: type,

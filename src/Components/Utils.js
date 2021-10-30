@@ -88,7 +88,7 @@ class Utils {
      */
     static getObjectName(objects, id, settings, options, isDesc) {
         let item = objects[id];
-        let text;
+        let text = id;
         const attr = isDesc ? 'desc' : 'name';
 
         if (typeof settings === 'string' && !options) {

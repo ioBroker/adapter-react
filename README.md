@@ -615,8 +615,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 2.0.14 (2021-10-30)
 * (bluefox) Added the theme switch button 
+* (bluefox) Added new theme for vendor
 
 ### 2.0.13 (2021-09-11)
 * (bluefox) Small fix for the saving
@@ -632,13 +633,13 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 2.0.9 (2021-08-11)
 * (bluefox) Updated the objects browser
- 
+
 ### 2.0.8 (2021-07-31)
 * (bluefox) Added list of themes
 
 ### 2.0.6 (2021-07-29)
 * (bluefox) Added the vendor support
- 
+
 ### 2.0.4 (2021-07-26)
 * (bluefox) Added the formula icon
 
@@ -697,7 +698,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Updated save buttons on the bottom
 
 ### 1.6.16 (2021-05-12)
-* (bluefox) Updated the CRON dialog 
+* (bluefox) Updated the CRON dialog
 
 ### 1.6.15 (2021-05-10)
 * (UncleSamSwiss) Fixed: Dependencies of produced npm package now contain all required packages
@@ -738,7 +739,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Added CRON dialogs
 
 ### 1.6.3 (2021-03-07)
-* (bluefox) Added "restartController" function  
+* (bluefox) Added "restartController" function
 
 ### 1.6.2 (2021-03-01)
 * (bluefox) Added Icon component.
@@ -754,13 +755,13 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) init sentry with the unique system ID.
 
 ### 1.5.4 (2020-12-19)
-* (bluefox) Added table component 
+* (bluefox) Added table component
 
 ### 1.5.3 (2020-12-13)
 * (bluefox) Corrected error in select ID dialog
 
 ### 1.5.1 (2020-12-12)
-* (bluefox) The confirmation dialog could be suppressed 
+* (bluefox) The confirmation dialog could be suppressed
 
 ### 1.5.0 (2020-12-10)
 * (bluefox) Added the editable table
@@ -769,10 +770,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Better multiple states selection
 
 ### 1.4.10 (2020-11-29)
-* (bluefox) Added errors to the connection class 
+* (bluefox) Added errors to the connection class
 
 ### 1.4.9 (2020-11-23)
-* (bluefox) Corrected the `removeSmartName` function 
+* (bluefox) Corrected the `removeSmartName` function
 
 ### 1.4.8 (2020-11-10)
 * (bluefox) Allow calls like `Utils.getObjectNameFromObj(obj, I18n.getLanguage())`
@@ -788,7 +789,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Optimize the loading
 
 ### 1.4.2 (2020-10-29)
-* (UncleSamSwiss) More JSDoc issues fixed 
+* (UncleSamSwiss) More JSDoc issues fixed
 
 ### 1.4.1 (2020-10-20)
 * (UncleSamSwiss) Made Router generic
@@ -820,4 +821,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
- 
