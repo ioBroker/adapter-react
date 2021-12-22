@@ -174,7 +174,7 @@ class Connection {
             }
         }
 
-        const url = `${protocol}://${host}:${port}`;
+        const url = port ? `${protocol}://${host}:${port}` : `${protocol}://${host}`;
 
         this._socket = window.io.connect(
             url,

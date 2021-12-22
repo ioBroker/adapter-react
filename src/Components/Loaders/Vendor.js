@@ -29,7 +29,7 @@ class LoaderVendor extends React.Component {
 
     render() {
         const theme = this.props.themeType || this.props.theme || 'light';
-        return <div className={'pt-logo-back logo-background-' + theme} style={{
+        return <div className={'vendor-logo-back logo-background-' + theme} style={{
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
