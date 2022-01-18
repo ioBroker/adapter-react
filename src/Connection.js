@@ -123,7 +123,7 @@ class Connection {
      * @returns {boolean} True if running in a web adapter or in a socketio adapter.
      */
     static isWeb() {
-        return window.adapterName === 'material' || window.socketUrl !== undefined;
+        return window.adapterName === 'material' || window.adapterName === 'vis' || window.socketUrl !== undefined;
     }
 
     /**

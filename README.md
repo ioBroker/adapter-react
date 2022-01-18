@@ -615,6 +615,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Added the preparation for vis
+
 ### 2.0.14 (2021-10-30)
 * (bluefox) Added the theme switch button 
 * (bluefox) Added new theme for vendor
