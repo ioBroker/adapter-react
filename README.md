@@ -615,7 +615,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 2.0.16 (2022-01-28)
 * (bluefox) Allowed calling getGroups in web applications too
 
 ### 2.0.15 (2022-01-18)
