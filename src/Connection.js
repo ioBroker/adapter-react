@@ -1350,6 +1350,13 @@ class Connection {
                 err ? reject(err) : resolve(files)));
     }
 
+    /**
+     * Read a file of an adapter.
+     * @param {string} adapter The adapter name.
+     * @param {string} fileName The file name.
+     * @param {boolean} base64 If it must be a base64 format
+     * @returns {Promise<string>}
+     */
     readFile(adapter, fileName, base64) {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
