@@ -1510,9 +1510,6 @@ class Connection {
      * @returns {Promise<ioBroker.Object[]>}
      */
     getGroups(update) {
-        if (Connection.isWeb()) {
-            return Promise.reject('Allowed only in admin');
-        }
         if (!update && this._promises.groups) {
             return this._promises.groups;
         }
