@@ -615,7 +615,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 2.0.17 (2022-01-29)
 * (bluefox) Added logout command
 
 ### 2.0.16 (2022-01-28)
