@@ -2321,6 +2321,7 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
         return new Promise(resolve =>
             this._socket.emit('authEnabled', (isSecure, user) =>
                 resolve(user)));
@@ -2582,6 +2583,20 @@ class Connection {
             .then(obj => obj?.native?.uuid);
 
         return this._promises.uuid;
+    }
+
+    /**
+     * Logout current user
+     * @returns {Promise<null>}
+     */
+    logout() {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('logout', err =>
+                err ? reject(err) : resolve(null)));
     }
 }
 
