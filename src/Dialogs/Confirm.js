@@ -90,12 +90,14 @@ class DialogConfirm extends React.Component {
         }
 
         return <Dialog
-            disableBackdropClick
-            disableEscapeKeyDown
             open={true}
             maxWidth="md"
             fullWidth={true}
-            onClose={() => this.handleCancel()}
+            onClose={(event, reason) => {
+                if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                    this.handleCancel()
+                }
+            }}
             aria-labelledby="confirmation-dialog-title"
             aria-describedby="confirmation-dialog-description"
         >

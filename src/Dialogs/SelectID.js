@@ -141,9 +141,8 @@ class SelectID extends React.Component {
         }
 
         return <Dialog
-            disableBackdropClick
+            onClose={() => {}}
             maxWidth={false}
-            disableEscapeKeyDown
             classes={{paper: Utils.clsx(this.props.classes.dialog, this.props.classes.dialogMobile)}}
             fullWidth={true}
             open={true}

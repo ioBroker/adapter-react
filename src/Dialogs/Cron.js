@@ -74,8 +74,7 @@ class DialogCron extends React.Component {
 
     render() {
         return <Dialog
-            disableBackdropClick
-            disableEscapeKeyDown
+            onClose={() => {}}
             maxWidth="md"
             fullWidth={true}
             classes={{paper: this.props.classes.dialogPaper}}

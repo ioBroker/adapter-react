@@ -615,6 +615,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### 2.0.18 (2022-02-09)
+* (bluefox) Removed deprecated option "disableBackdropClick"
+
 ### 2.0.17 (2022-01-29)
 * (bluefox) Added logout command
 
