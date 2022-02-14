@@ -615,7 +615,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 2.0.19 (2022-02-14)
 * (bluefox) Corrected function `getSvgFromData` in Image object
 
 ### 2.0.18 (2022-02-09)
