@@ -84,7 +84,7 @@ class Image extends React.Component {
     }
 
     getSvgFromData(src) {
-        const len = 'data:image/svg+xml;base64, ';
+        const len = 'data:image/svg+xml;base64,';
         if (!src.startsWith(len)) {
             return null;
         }
