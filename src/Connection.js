@@ -1402,33 +1402,46 @@ class Connection {
     }
 
     /**
+     * Rename a file or folder of an adapter.
+     *
+     * All files in folder will be renamed too.
+     * @param {string} adapter The adapter name.
+     * @param {string} oldName The file name of the file to be renamed.
+     * @param {string} newName The new file name.
+     * @returns {Promise<void>}
+     */
+    rename(adapter, oldName, newName) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('rename', adapter, oldName, newName, err =>
+                err ? reject(err) : resolve()));
+    }
+
+    /**
      * Delete a file of an adapter.
      * @param {string} adapter The adapter name.
      * @param {string} fileName The file name.
      * @returns {Promise<void>}
      */
     deleteFile(adapter, fileName) {
-        if (Connection.isWeb()) {
-            return Promise.reject('Allowed only in admin');
-        }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise((resolve, reject) =>
-            this._socket.emit('deleteFile', adapter, fileName, err =>
+            this._socket.emit('unlink', adapter, fileName, err =>
                 err ? reject(err) : resolve()));
     }
 
     /**
      * Delete a folder of an adapter.
+     * All files in folder will be deleted.
      * @param {string} adapter The adapter name.
      * @param {string} folderName The folder name.
      * @returns {Promise<void>}
      */
     deleteFolder(adapter, folderName) {
-        if (Connection.isWeb()) {
-            return Promise.reject('Allowed only in admin');
-        }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }

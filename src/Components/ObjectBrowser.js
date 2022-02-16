@@ -2104,7 +2104,10 @@ class ObjectBrowser extends Component {
 
                 return columnsForAdmin;
             })
-            .catch(e => window.alert('Cannot get adapters: ' + e));
+            .catch(e => {
+                // window.alert('Cannot get adapters: ' + e);
+                // Object browser in Web has no additional columns
+            });
     }
 
     /**
