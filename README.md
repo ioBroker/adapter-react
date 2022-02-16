@@ -615,6 +615,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Fixed the theme toggle
+
 ### 2.0.20 (2022-02-16)
 * (bluefox) Added rename and delete functions for web applications
 
