@@ -615,7 +615,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 2.0.21 (2022-02-16)
 * (bluefox) Fixed the theme toggle
 
 ### 2.0.20 (2022-02-16)
