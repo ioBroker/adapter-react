@@ -18,6 +18,9 @@
     "type": "git",
     "url": "git+https://github.com/ioBroker/adapter-react.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "iobroker",
     "adapter",
