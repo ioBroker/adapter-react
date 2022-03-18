@@ -611,10 +611,13 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 <!--
 	Placeholder for the next version (at the beginning of the line):
-	### __WORK IN PROGRESS__
+	### **WORK IN PROGRESS**
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (AlCalzone) fix: include transform-runtime babel plugin #28
+
 ### 2.0.21 (2022-02-16)
 * (bluefox) Fixed the theme toggle
 
