@@ -615,7 +615,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 2.0.22 (2022-03-18)
 * (AlCalzone) fix: include transform-runtime babel plugin #28
 
 ### 2.0.21 (2022-02-16)
