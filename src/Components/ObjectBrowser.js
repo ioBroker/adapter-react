@@ -65,6 +65,8 @@ import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import LooksOneIcon from '@material-ui/icons/LooksOne';
 import PressButtonIcon from '@material-ui/icons/RoomService';
+import IconError from '@material-ui/icons/Error';
+import IconDisconnected from '@material-ui/icons/WifiOff';
 
 import IconExpert from '../icons/IconExpert';
 import IconAdapter from '../icons/IconAdapter';
@@ -92,6 +94,12 @@ const ITEM_LEVEL = 16;
 const SMALL_BUTTON_SIZE = 20;
 const COLOR_NAME_SYSTEM = '#ff6d69';
 const COLOR_NAME_SYSTEM_ADAPTER = '#5773ff';
+const COLOR_NAME_ERROR_DARK = '#ff413c';
+const COLOR_NAME_ERROR_LIGHT = '#86211f';
+const COLOR_NAME_CONNECTED_DARK = '#57ff45';
+const COLOR_NAME_CONNECTED_LIGHT = '#098c04';
+const COLOR_NAME_DISCONNECTED_DARK = '#f3ad11';
+const COLOR_NAME_DISCONNECTED_LIGHT = '#6c5008';
 
 const styles = theme => ({
     toolbar: {
@@ -198,7 +206,7 @@ const styles = theme => ({
         userSelect: 'none',
         width: '100%',
         '&:hover': {
-            background: `${theme.palette.primary.main} !important`,
+            background: `${theme.palette.type === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light} !important`,
             color: Utils.invertColor(theme.palette.primary.main, true),
         },
         whiteSpace: 'nowrap',
@@ -302,6 +310,13 @@ const styles = theme => ({
         marginLeft: 5,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        position: 'relative',
+        '& .copyButton': {
+            display: 'none'
+        },
+        '&:hover .copyButton': {
+            display: 'block'
+        }
     },
     cellIdAlias: {
         fontStyle: 'italic',
@@ -392,6 +407,9 @@ const styles = theme => ({
         '&:hover .copyButton': {
             display: 'block'
         }
+    },
+    cellValueFile: {
+        color: '#2837b9'
     },
     cellValueTooltipTitle: {
         fontStyle: 'italic',
@@ -513,7 +531,7 @@ const styles = theme => ({
         opacity: 0.5,
     },
     itemSelected: {
-        background: `${theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark} !important`,
+        background: `${theme.palette.primary.main} !important`,
         color: `${Utils.invertColor(theme.palette.primary.main, true)} !important`,
     },
     header: {
@@ -633,7 +651,31 @@ const styles = theme => ({
         right: 0,
         borderRadius: 20,
         backgroundColor: theme.palette.background.default
-    }
+    },
+    iconDeviceConnected: {
+        color: theme.palette.type === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT,
+        opacity: 0.8,
+        position: 'absolute',
+        top: 4,
+        right: 32,
+        width: 20,
+    },
+    iconDeviceDisconnected: {
+        color: theme.palette.type === 'dark' ? COLOR_NAME_DISCONNECTED_DARK : COLOR_NAME_DISCONNECTED_LIGHT,
+        opacity: 0.8,
+        position: 'absolute',
+        top: 4,
+        right: 32,
+        width: 20,
+    },
+    iconDeviceError: {
+        color: theme.palette.type === 'dark' ? COLOR_NAME_ERROR_DARK : COLOR_NAME_ERROR_LIGHT,
+        opacity: 0.8,
+        position: 'absolute',
+        top: 4,
+        right: 50,
+        width: 20,
+    },
 });
 
 function generateFile(filename, obj) {
@@ -1167,14 +1209,43 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     const isCommon = obj.common;
 
     const valText = {};
-    let v = !state || state.val === null ? '(null)' : (state.val === undefined ? '[undef]' : state.val);
+    let v = (isCommon && isCommon.type === 'file') ? '[file]' : (!state || state.val === null ? '(null)' : (state.val === undefined ? '[undef]' : state.val));
     const type = typeof v;
 
     if (isCommon && isCommon.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
-        if (typeof v === 'string' && v.length === 13) { // warning, this solution only works till Nov 20 2286 18:46:39CET
-            v = parseInt(v, 10);
+        if (v && typeof v === 'string') {
+            if (v.length === 13) { // (length of "1647597254924") warning, this solution only works till Nov 20 2286 18:46:39CET
+                v = new Date(parseInt(v, 10)).toString();
+            } else if (v.length === 10) { // YYYY.MM.DD
+                const parts = v.split(/[-.]/);
+                if (parts.length === 3) {
+                    if (parts[0].length === 4) { // YYYY.MM.DD
+                        v = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) + 1, parseInt(parts[2], 10));
+                    } else if (parts[0].length === 4) { // DD.MM.YYYY
+                        v = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) + 1, parseInt(parts[0], 10));
+                    }
+                } else {
+                    v = new Date(v).toString(); // Let the browser convert it somehow
+                }
+            } else if (v.length === 8) { // YY.MM.DD
+                const parts = v.split(/[-.]/);
+                if (parts.length === 3) {
+                    v = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) + 1, parseInt(parts[2], 10));
+                } else {
+                    v = new Date(v).toString(); // Let the browser convert it somehow
+                }
+            } else {
+                v = new Date(v).toString(); // Let the browser convert it somehow
+            }
+        } else {
+            if (v === null || v === 'null') {
+                v = 'null';
+            } else if (v === undefined) {
+                v = 'undefined';
+            } else {
+                v = v ? new Date(v).toString() : v;
+            }
         }
-        v = v ? new Date(v).toString() : v;
     } else {
         if (type === 'number') {
             v = Math.round(v * 100000000) / 100000000; // remove 4.00000000000000001
@@ -1248,7 +1319,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
         // if not BASE64
         if (!aIcon.startsWith('data:image/')) {
             if (aIcon.includes('.')) {
-                src = imagePrefix + '/adapter/' + objects[_id_].common.name + '/' + aIcon;
+                src = `${imagePrefix}/adapter/${objects[_id_].common.name}/${aIcon}`;
             } else if (aIcon && aIcon.length < 3) {
                 return aIcon; // utf-8
             } else {
@@ -1271,7 +1342,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                     if (cIcon.includes('.')) {
                         let instance;
                         if (objects[id].type === 'instance' || objects[id].type === 'adapter') {
-                            src = imagePrefix + '/adapter/' + common.name + '/' + cIcon;
+                            src = `${imagePrefix}/adapter/${common.name}/${cIcon}`;
                         } else if (id && id.startsWith('system.adapter.')) {
                             instance = id.split('.', 3);
                             if (cIcon[0] === '/') {
@@ -1279,7 +1350,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                             } else {
                                 instance[2] += '/' + cIcon;
                             }
-                            src = imagePrefix + '/adapter/' + instance[2];
+                            src = `${imagePrefix}/adapter/${instance[2]}`;
                         } else {
                             instance = id.split('.', 2);
                             if (cIcon[0] === '/') {
@@ -1287,7 +1358,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                             } else {
                                 instance[0] += '/' + cIcon;
                             }
-                            src = imagePrefix + '/adapter/' + instance[0];
+                            src = `${imagePrefix}/adapter/${instance[0]}`;
                         }
                     } else if (aIcon && aIcon.length < 3) {
                         return aIcon; // utf-8
@@ -1554,6 +1625,7 @@ class ObjectBrowser extends Component {
             scrollBarWidth: 16,
             customDialog,
             editObjectDialog: '',
+            viewFileDialog: '',
             enumDialog: null,
             roleDialog: null,
             modalEmptyId: null,
@@ -1600,6 +1672,9 @@ class ObjectBrowser extends Component {
             stateChangedFrom:         props.t('ra_state_changed_from'), // State changed from
             ownerGroup:               props.t('ra_Owner group'),
             ownerUser:                props.t('ra_Owner user'),
+            deviceError:              props.t('ra_Error'),
+            deviceDisconnected:       props.t('ra_Disconnected'),
+            deviceConnected:          props.t('ra_Connected'),
 
             aclOwner_read_object:     props.t('ra_aclOwner_read_object'),
             aclOwner_read_state:      props.t('ra_aclOwner_read_state'),
@@ -1644,16 +1719,15 @@ class ObjectBrowser extends Component {
 
                 if (typeof props.filterFunc === 'function') {
                     this.objects = {};
-                    const keys = Object.keys(objects);
-                    for (let k = 0; k < keys.length; k++) {
+                    Object.keys(objects).forEach(id => {
                         try {
-                            if (props.filterFunc(objects[keys[k]])) {
-                                this.objects[keys[k]] = objects[keys[k]];
+                            if (props.filterFunc(objects[id])) {
+                                this.objects[id] = objects[id];
                             }
                         } catch (e) {
                             console.log(`Error by filtering of "${keys[k]}": ${e}`);
                         }
-                    }
+                    });
                 } else
                 if (props.types) {
                     this.objects = {};
@@ -2114,10 +2188,9 @@ class ObjectBrowser extends Component {
      * @private
      */
     checkUnsubscribes() {
-        // Remove unused subscribed
+        // Remove unused subscriptions
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
-            !this.recordStates.includes(this.subscribes[i]) &&
-                this.unsubscribe(this.subscribes[i]);
+            !this.recordStates.includes(this.subscribes[i]) && this.unsubscribe(this.subscribes[i]);
         }
         this.recordStates = [];
     }
@@ -2246,7 +2319,7 @@ class ObjectBrowser extends Component {
 
                 if (event.obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(event.obj)) {
                     return;
-                };
+                }
 
                 if (event.id.startsWith('system.adapter.') && event.obj && event.obj.type === 'adapter') {
                     let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
@@ -3280,7 +3353,7 @@ class ObjectBrowser extends Component {
             >
                 <IconDelete className={classes.cellButtonsButtonIcon} />
             </IconButton> : null,
-            this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
+            this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' && item.data.obj.common?.type !== 'file' ? <IconButton
                 className={Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
                 key="custom"
                 size="small"
@@ -3372,15 +3445,18 @@ class ObjectBrowser extends Component {
             return null;
         }
 
+        if (item.data.obj.common?.type === 'file') {
+            return <div className={Utils.clsx(classes.cellValueText, classes.cellValueFile)}>[file]</div>;
+        } else
         if (!this.states[id]) {
             if (item.data.obj.type === 'state') {
-                this.recordStates.push(id);
+                !this.recordStates.includes(id) && this.recordStates.push(id);
                 this.states[id] = { val: null };
                 this.subscribe(id);
             }
             return null;
         } else {
-            this.recordStates.push(id);
+            !this.recordStates.includes(id) && this.recordStates.push(id);
         }
 
         const state = this.states[id];
@@ -3423,6 +3499,7 @@ class ObjectBrowser extends Component {
         if (!this.props.expertMode && item.data.button) {
             val = <PressButtonIcon className={Utils.clsx(this.props.classes.cellValueButton, !this.states[id] || !this.states[id].val ? this.props.classes.cellValueButtonFalse : '')} />;
         }
+
         return <Tooltip
             key="value"
             title={info.valFull}
@@ -3828,7 +3905,8 @@ class ObjectBrowser extends Component {
 
         // icon
         let iconFolder;
-        let itemType = item.data.obj?.type;
+        const obj = item.data.obj;
+        let itemType = obj?.type;
 
         if (item.children || itemType === 'folder' || itemType === 'device' || itemType === 'channel' || itemType === 'meta') {
             iconFolder = isExpanded ? <IconOpen
@@ -3855,7 +3933,7 @@ class ObjectBrowser extends Component {
             }
         }
 
-        const obj = item.data.obj;
+        const common = obj?.common;
 
         const typeImg = (obj && obj.type && ITEM_IMAGES[obj.type]) || <div className="itemIcon" />;
 
@@ -3880,7 +3958,10 @@ class ObjectBrowser extends Component {
                 /> :
                 null;
 
-        const valueEditable = !this.props.notEditable && itemType === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
+        let valueEditable = !this.props.notEditable && itemType === 'state' && (this.props.expertMode || common?.write !== false);
+        if (this.props.objectBrowserViewFile && common?.type === 'file') {
+            valueEditable = true;
+        }
         const enumEditable  = !this.props.notEditable && this.objects[id] && (this.props.expertMode || itemType === 'state' || itemType === 'channel' || itemType === 'device');
         const checkVisibleObjectType = this.state.statesView && (itemType === 'state' || itemType === 'channel' || itemType === 'device');
         let newValue = '';
@@ -3899,56 +3980,58 @@ class ObjectBrowser extends Component {
                 newValueTitle.push(`${this.texts.stateChangedBy} ${user}`);
             }
         }
-        item.data.obj?.from && newValueTitle.push(this.texts.objectChangedFrom + ' ' + item.data.obj.from.replace(/^system\.adapter\.|^system\./, ''));
-        item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
-        item.data.obj?.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + Utils.formatDate(new Date(item.data.obj.ts), this.props.dateFormat));
+        if (obj) {
+            obj.from && newValueTitle.push(this.texts.objectChangedFrom   + ' ' + obj.from.replace(/^system\.adapter\.|^system\./, ''));
+            obj.user && newValueTitle.push(this.texts.objectChangedBy     + ' ' + obj.user.replace(/^system\.user\./, ''));
+            obj.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + Utils.formatDate(new Date(obj.ts), this.props.dateFormat));
+        }
 
-        const readWriteAlias = typeof item.data.obj?.common?.alias?.id === 'object';
+        const readWriteAlias = typeof common?.alias?.id === 'object';
 
-        const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
+        const alias = id.startsWith('alias.') && common?.alias?.id ?
             (readWriteAlias ?
                 <div className={classes.cellIdAliasReadWriteDiv}>
-                    {item.data.obj.common.alias.id.read ? <div
+                    {common.alias.id.read ? <div
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            this.onSelect(item.data.obj.common.alias.id.read);
+                            this.onSelect(common.alias.id.read);
                             setTimeout(() => {
                                 this.expandAllSelected(() =>
-                                    this.scrollToItem(item.data.obj.common.alias.id.read));
+                                    this.scrollToItem(common.alias.id.read));
                             }, 100);
                         }}
                         className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
-                    >←{item.data.obj.common.alias.id.read}</div> : null}
-                    {item.data.obj.common.alias.id.write ? <div
+                    >←{common.alias.id.read}</div> : null}
+                    {common.alias.id.write ? <div
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            this.onSelect(item.data.obj.common.alias.id.write);
+                            this.onSelect(common.alias.id.write);
                             setTimeout(() => {
                                 this.expandAllSelected(() =>
-                                    this.scrollToItem(item.data.obj.common.alias.id.write));
+                                    this.scrollToItem(common.alias.id.write));
                             }, 100);
                         }}
                         className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
-                    >→{item.data.obj.common.alias.id.write}</div> : null}
+                    >→{common.alias.id.write}</div> : null}
                 </div>
                 :
                 <div
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        this.onSelect(item.data.obj.common.alias.id);
+                        this.onSelect(common.alias.id);
                         setTimeout(() => {
                             this.expandAllSelected(() =>
-                                this.scrollToItem(item.data.obj.common.alias.id));
+                                this.scrollToItem(common.alias.id));
                         }, 100);
                     }}
                     className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
-                >→{item.data.obj.common.alias.id}</div>
-            ) : null;
+                >→{common.alias.id}</div>
+        ) : null;
 
-        let checkColor = item.data?.obj?.common?.color;
+        let checkColor = common?.color;
         let invertBackground = 'none';
         if (checkColor && !this.state.selected.includes(id)) {
             invertBackground = Utils.invertColor(checkColor, true);
@@ -3956,6 +4039,68 @@ class ObjectBrowser extends Component {
         if (!checkColor || this.state.selected.includes(id)) {
             checkColor = 'inherit';
         }
+        const icons = [];
+
+        if (common?.statusStates) {
+            let ids = {};
+            Object.keys(common.statusStates).forEach(name => {
+                let _id = common.statusStates[name];
+                if (_id.split('.').length < 3) {
+                    _id = id + '.' + _id;
+                }
+                ids[name] = _id;
+
+                if (!this.states[_id]) {
+                    if (this.objects[_id]?.type === 'state') {
+                        !this.recordStates.includes(_id) && this.recordStates.push(_id);
+                        this.states[_id] = { val: null };
+                        this.subscribe(_id);
+                    }
+                } else {
+                    !this.recordStates.includes(_id) && this.recordStates.push(_id);
+                }
+            });
+            // calculate color
+            // errorId has priority
+            let colorSet = false;
+            if (common.statusStates.errorId && this.states[ids.errorId] && this.states[ids.errorId].val) {
+                checkColor = this.props.themeType === 'dark' ? COLOR_NAME_ERROR_DARK : COLOR_NAME_ERROR_LIGHT;
+                colorSet = true;
+                icons.push(<IconError key="error" title={this.texts.deviceError} className={this.props.classes.iconDeviceError}/>);
+            }
+
+            if (ids.onlineId && this.states[ids.onlineId] && this.states[ids.onlineId].val !== null) {
+                if (!colorSet) {
+                    if (this.states[ids.onlineId].val) {
+                        checkColor = this.props.themeType === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT;
+                        icons.push(<IconConnection key="conn" title={this.texts.deviceError} className={this.props.classes.iconDeviceConnected}/>);
+                    } else {
+                        checkColor = this.props.themeType === 'dark' ? COLOR_NAME_DISCONNECTED_DARK : COLOR_NAME_DISCONNECTED_LIGHT;
+                        icons.push(<IconDisconnected key="disc" title={this.texts.deviceError} className={this.props.classes.iconDeviceDisconnected}/>);
+                    }
+                } else if (this.states[ids.onlineId].val) {
+                    icons.push(<IconConnection key="conn" title={this.texts.deviceError} className={this.props.classes.iconDeviceConnected}/>);
+                } else {
+                    icons.push(<IconDisconnected key="disc" title={this.texts.deviceError} className={this.props.classes.iconDeviceDisconnected}/>);
+                }
+            } else
+            if (ids.offlineId && this.states[ids.offlineId] && this.states[ids.offlineId].val !== null) {
+                if (!colorSet) {
+                    if (this.states[ids.offlineId].val) {
+                        checkColor = this.props.themeType === 'dark' ? COLOR_NAME_DISCONNECTED_DARK : COLOR_NAME_DISCONNECTED_LIGHT;
+                        icons.push(<IconDisconnected key="disc" title={this.texts.deviceError} className={this.props.classes.iconDeviceDisconnected}/>);
+                    } else {
+                        checkColor = this.props.themeType === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT;
+                        icons.push(<IconConnection key="conn" title={this.texts.deviceError} className={this.props.classes.iconDeviceConnected}/>);
+                    }
+                } else if (this.states[ids.offlineId].val) {
+                    icons.push(<IconDisconnected key="disc" title={this.texts.deviceError} className={this.props.classes.iconDeviceDisconnected}/>);
+                } else {
+                    icons.push(<IconConnection key="conn" title={this.texts.deviceError} className={this.props.classes.iconDeviceConnected}/>);
+                }
+            }
+        }
+
         const q = checkVisibleObjectType ? Utils.quality2text(this.states[id]?.q || 0).join(', ') : null;
 
         return <Grid
@@ -4016,6 +4161,7 @@ class ObjectBrowser extends Component {
                 >
                     {item.data.name}
                     {alias}
+                    {icons}
                 </Grid>
                 <div
                     style={{
@@ -4034,12 +4180,17 @@ class ObjectBrowser extends Component {
                 </div>
             </Grid>
 
-            {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data?.title) || ''}</div> : null}
+            {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>
+                {(item.data?.title) || ''}
+                {item.data?.title ? <div style={{ color: checkColor }}>
+                    <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={e => this.onCopy(e, item.data.title)} />
+                </div> : null}
+            </div> : null}
 
             {!this.state.statesView ?
                 <>
                     {this.columnsVisibility.type ? <div className={classes.cellType} style={{ width: this.columnsVisibility.type }}>{typeImg} {obj && obj.type}</div> : null}
-                    {this.columnsVisibility.role ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.role, cursor: this.props.expertMode && enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default' }} onClick={this.props.expertMode && enumEditable && this.props.objectBrowserEditRole ? () => this.setState({ roleDialog: item.data.id }) : undefined}>{obj && obj.common && obj.common.role}</div> : null}
+                    {this.columnsVisibility.role ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.role, cursor: this.props.expertMode && enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default' }} onClick={this.props.expertMode && enumEditable && this.props.objectBrowserEditRole ? () => this.setState({ roleDialog: item.data.id }) : undefined}>{common?.role}</div> : null}
                     {this.columnsVisibility.room ? <div className={`${classes.cellRoom} ${item.data.per ? classes.cellEnumParent : ''}`} style={{ width: this.columnsVisibility.room, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'room', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.rooms}</div> : null}
                     {this.columnsVisibility.func ? <div className={`${classes.cellFunc} ${item.data.pef ? classes.cellEnumParent : ''}`} style={{ width: this.columnsVisibility.func, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'func', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.funcs}</div> : null}
                 </>
@@ -4052,12 +4203,16 @@ class ObjectBrowser extends Component {
                 </>
             }
             {this.adapterColumns.map(it => <div className={classes.cellAdapter} style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{this.renderCustomValue(obj, it, item)}</div>)}
-            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? (item.data.button ? 'grab' : 'text') : 'default' }} onClick={valueEditable ? () => {
-                if (!item.data.obj || !this.states) {
+            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? (common?.type === 'file' ? 'zoom-in' : (item.data.button ? 'grab' : 'text')) : 'default' }} onClick={valueEditable ? () => {
+                if (!obj || !this.states) {
                     return null;
                 }
 
-                // in non expert mode control button directly
+                if (common?.type === 'file') {
+                    return this.setState({viewFileDialog: id});
+                }
+
+                // in non-expert mode control button directly
                 if (!this.props.expertMode && item.data.button) {
                     return this.props.socket.setState(id, true)
                         .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
@@ -4429,6 +4584,7 @@ class ObjectBrowser extends Component {
         if (!this.state.editObjectDialog || !this.props.objectBrowserEditObject) {
             return null;
         }
+
         const ObjectBrowserEditObject = this.props.objectBrowserEditObject;
 
         return <ObjectBrowserEditObject
@@ -4455,6 +4611,28 @@ class ObjectBrowser extends Component {
                 }
             }}
         />
+    }
+
+    /**
+     * @private
+     * @returns {JSX.Element | null}
+     */
+    renderViewObjectFileDialog() {
+        if (!this.state.viewFileDialog || !this.props.objectBrowserViewFile) {
+            return null;
+        }
+        const ObjectBrowserViewFile = this.props.objectBrowserViewFile;
+
+        return <ObjectBrowserViewFile
+            key="viewFile"
+            obj={this.objects[this.state.viewFileDialog]}
+            themeType={this.props.themeType}
+            socket={this.props.socket}
+            dialogName={this.props.dialogName}
+            t={this.props.t}
+            expertMode={this.state.filter.expertMode}
+            onClose={() => this.setState({ viewFileDialog: '' })}
+        />;
     }
 
     /**
@@ -4549,6 +4727,7 @@ class ObjectBrowser extends Component {
                 {this.renderCustomDialog()}
                 {this.renderEditValueDialog()}
                 {this.renderEditObjectDialog()}
+                {this.renderViewObjectFileDialog()}
                 {this.renderEditRoleDialog()}
                 {this.renderEnumDialog()}
                 {this.renderErrorDialog()}
@@ -4614,6 +4793,7 @@ ObjectBrowser.propTypes = {
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
     objectBrowserEditRole: PropTypes.object, // on Edit role
+    objectBrowserViewFile: PropTypes.func, // on view file state
     router: PropTypes.oneOfType([
         PropTypes.object,
         PropTypes.func
@@ -4622,7 +4802,7 @@ ObjectBrowser.propTypes = {
     columns: PropTypes.array,           // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
 
     objectsWorker: PropTypes.object,    // optional cache of objects
-    filterFunc: PropTypes.func,         // function to filter out all unneccessary objects. It cannot be used together with "types"
+    filterFunc: PropTypes.func,         // function to filter out all unnecessary objects. It cannot be used together with "types"
                                         // Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
 
     dragSettings: PropTypes.object,
