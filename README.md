@@ -1,5 +1,5 @@
 # Help ReactJS classes for adapter config
-> :warning: **This package is deprecated!** Please use https://github.com/ioBroker/adapter-react !
+> :warning: **This package is deprecated!** Please use https://github.com/ioBroker/adapter-react-v5 !
 
 ## Getting started
 If you want to create the configuration page with react:
