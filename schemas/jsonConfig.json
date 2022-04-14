@@ -1510,8 +1510,12 @@
               "then": {
                 "properties": {
                   "adapter": {
-                    "description": "Name of the adapter.",
+                    "description": "Name of the adapter. With special name _dataSources you can get all adapters with flag common.getHistory",
                     "type": "string"
+                  },
+                  "all": {
+                    "description": "Add to the options ALL option with value *",
+                    "type": "boolean"
                   },
                   "label": true,
                   "type": true,
@@ -1724,7 +1728,7 @@
             "hideOnlyControl": {
               "description": "If hidden the place will be shown, but no control",
               "type": "boolean"
-            },
+            },            
             "disabled": {
               "description": "JS function that could use 'native.attribute' for calculation",
               "type": "string"
