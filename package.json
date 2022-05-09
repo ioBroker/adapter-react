@@ -1,6 +1,6 @@
 {
   "name": "@iobroker/adapter-react",
-  "version": "2.0.22",
+  "version": "2.1.0",
   "description": "React classes to develop admin interfaces for ioBroker with react.",
   "author": {
     "name": "bluefox",
