@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2021 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2022 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -13,7 +13,6 @@ const typescript = require('gulp-typescript');
 const fs = require('fs');
 
 gulp.task('copy', () => Promise.all([
-    gulp.src(['src/gulpfile.js']).pipe(gulp.dest('dist')),
     gulp.src(['src/**/*.d.ts']).pipe(gulp.dest('dist')),
     gulp.src(['src/vendor/*.*']).pipe(gulp.dest('dist/vendor')),
     gulp.src(['src/assets/*.*']).pipe(gulp.dest('dist/assets')),
@@ -53,24 +52,32 @@ const babelOptions = {
     ]
 };
 
+function handleError (error) {
+    console.log(error.toString());
+    this.emit('end');
+}
+
 gulp.task('compile', gulp.parallel('copy',
     'typedefs',
     () => Promise.all([
         gulp.src(['src/Dialogs/*.js'])
             .pipe(sourcemaps.init())
             .pipe(babel(babelOptions))
+            .on('error', handleError)
             .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest('dist/Dialogs')),
 
         gulp.src(['src/icons/*.js'])
             .pipe(sourcemaps.init())
             .pipe(babel(babelOptions))
+            .on('error', handleError)
             .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest('dist/icons')),
 
         gulp.src(['src/*.js', '!src/gulpfile.js'])
             .pipe(sourcemaps.init())
             .pipe(babel(babelOptions))
+            .on('error', handleError)
             .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest('dist')),
 
@@ -83,6 +90,7 @@ gulp.task('compile', gulp.parallel('copy',
                     '@babel/plugin-transform-runtime'
                 ]
             }))
+             .on('error', handleError)
             .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest('dist/Components')),
 
