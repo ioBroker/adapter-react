@@ -13,7 +13,7 @@ function toInt(hex) {
     const rgb = {
         r: 0,
         g: 0,
-        b: 0
+        b: 0,
     };
 
     if (hex.length === 7) {
@@ -21,7 +21,6 @@ function toInt(hex) {
         rgb.g = parseInt(hex.substr(3, 2), 16);
         rgb.b = parseInt(hex.substr(5, 2), 16);
     } else if (hex.length === 4) {
-
         const r = hex.substr(1, 1);
         const g = hex.substr(2, 1);
         const b = hex.substr(3, 1);
@@ -40,7 +39,7 @@ function toInt(hex) {
  * @returns {string}
  */
 function toHex(int) {
-    return '#' + Math.round(int.r).toString(16) + Math.round(int.g).toString(16) + Math.round(int.b).toString(16);
+    return `#${Math.round(int.r).toString(16)}${Math.round(int.g).toString(16)}${Math.round(int.b).toString(16)}`;
 }
 
 /**
@@ -70,10 +69,10 @@ function getElevations(color, overlay) {
     /** @type {import('@material-ui/core/styles/withStyles').CSSProperties} */
     const elevations = {};
 
-    for(let i = 1; i <= 24; i++) {
-        elevations['elevation' + i] = {
-            backgroundColor: getElevation(color, overlay, i)
-        }
+    for (let i = 1; i <= 24; i++) {
+        elevations[`elevation${i}`] = {
+            backgroundColor: getElevation(color, overlay, i),
+        };
     }
 
     return elevations;

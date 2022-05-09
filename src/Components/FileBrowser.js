@@ -1,5 +1,5 @@
 /**
- * Copyright 2020-2021, bluefox <dogafox@gmail.com>
+ * Copyright 2020-2022, bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -746,7 +746,7 @@ class FileBrowser extends Component {
             if (!item.temp) {
                 return this.browseFolder(item.id)
                     .then(folders => this.setState({ expanded, folders }))
-                    .catch(err => window.alert(err === NOT_FOUND ? this.props.t('re_Cannot find "%s"', item.id) : this.props.t('re_Cannot read "%s"', item.id)));
+                    .catch(err => window.alert(err === NOT_FOUND ? this.props.t('ra_Cannot find "%s"', item.id) : this.props.t('ra_Cannot read "%s"', item.id)));
             } else {
                 this.setState({ expanded });
             }
@@ -808,7 +808,8 @@ class FileBrowser extends Component {
         }
         const Icon = expanded ? IconOpen : IconClosed;
         const padding = this.state.viewType === TABLE ? item.level * this.levelPadding : 0;
-        return <div key={item.id}
+        return <div
+            key={item.id}
             id={item.id}
             style={this.state.viewType === TABLE ? { marginLeft: padding, width: 'calc(100% - ' + padding + 'px' } : {}}
             onClick={e => this.state.viewType === TABLE ? this.select(item.id, e) : this.changeFolder(e, item.id)}
@@ -820,7 +821,8 @@ class FileBrowser extends Component {
                 this.props.classes['itemFolder' + this.state.viewType],
                 this.state.selected === item.id && this.props.classes.itemSelected,
                 item.temp && this.props.classes['itemFolderTemp'],
-            )}>
+            )}
+        >
             <Icon className={this.props.classes['itemFolderIcon' + this.state.viewType]} onClick={this.state.viewType === TABLE ? e => this.toggleFolder(item, e) : undefined} />
 
             <div className={Utils.clsx(this.props.classes['itemName' + this.state.viewType], this.props.classes['itemNameFolder' + this.state.viewType])}
@@ -834,12 +836,13 @@ class FileBrowser extends Component {
                 {this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}
             </Hidden>
             <Hidden xsDown>
-                {this.state.viewType === TABLE && this.props.expertMode && <div className={this.props.classes['itemDeleteButton' + this.state.viewType]} />}
+                {this.state.viewType === TABLE && this.props.expertMode ? <div className={this.props.classes['itemDeleteButton' + this.state.viewType]} /> : null}
             </Hidden>
             {this.state.viewType === TABLE && this.props.allowDownload ? <div className={this.props.classes['itemDownloadButton' + this.state.viewType]} /> : null}
 
             {this.state.viewType === TABLE && this.props.allowDelete && this.state.folders[item.id] && this.state.folders[item.id].length && (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/')) ?
-                <IconButton aria-label="delete"
+                <IconButton
+                    aria-label="delete"
                     onClick={e => {
                         e.stopPropagation();
                         if (this.suppressDeleteConfirm > Date.now()) {
@@ -862,7 +865,7 @@ class FileBrowser extends Component {
         return <div key={this.state.currentDir}
             id={this.state.currentDir}
             onClick={e => this.changeFolder(e)}
-            title={this.props.t('re_Back to %s', getParentDir(this.state.currentDir))}
+            title={this.props.t('ra_Back to %s', getParentDir(this.state.currentDir))}
             className={Utils.clsx(
                 'browserItem',
                 this.props.classes['item' + this.state.viewType],
@@ -1000,7 +1003,8 @@ class FileBrowser extends Component {
             <Hidden xsDown>{this.formatSize(item.size)}</Hidden>
             <Hidden xsDown>{this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}</Hidden>
             <Hidden xsDown>{this.state.viewType === TABLE && this.props.expertMode && this.getEditFile(ext) ?
-                <IconButton aria-label="delete"
+                <IconButton 
+                    aria-label="delete"
                     onClick={(e) => {
                         e.stopPropagation();
                         if (!this.props.onSelect) {
@@ -1032,7 +1036,8 @@ class FileBrowser extends Component {
                 item.id !== USER_DATA &&
                 (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/'))
                 ?
-                <IconButton aria-label="delete"
+                <IconButton
+                    aria-label="delete"
                     onClick={e => {
                         e.stopPropagation();
                         if (this.suppressDeleteConfirm > Date.now()) {
@@ -1070,7 +1075,7 @@ class FileBrowser extends Component {
             if (this.state.viewType === TILE) {
                 const res = [];
                 if (folderId && folderId !== '/') {
-                    res.push(this.renderBackFolder())
+                    res.push(this.renderBackFolder());
                 }
                 this.state.folders[folderId].forEach(item => {
                     if (!this.state.expertMode &&
@@ -1107,7 +1112,7 @@ class FileBrowser extends Component {
 
                         res.push(this.renderFolder(item, expanded));
                         if (this.state.folders[item.id] && expanded) {
-                            res.push(this.renderItems(item.id))
+                            res.push(this.renderItems(item.id));
                         }
                     } else if (
                         (!this.props.filterFiles || this.props.filterFiles.includes(item.ext)) &&
@@ -1195,7 +1200,7 @@ class FileBrowser extends Component {
                 onClick={() =>
                     this.setState({uploadFile: true})}
             ><UploadIcon /></IconButton> : null}
-            <Tooltip title={this.props.t('Background image')}>
+            <Tooltip title={this.props.t('ra_Background image')}>
                 <IconButton
                     color={'inherit'}
                     edge="start"
@@ -1527,7 +1532,7 @@ class FileBrowser extends Component {
                     if (!this.state.folders[folder]) {
                         return this.browseFolder(folder)
                             .then(folders => this.setState({ folders }, () => resolve(true)))
-                            .catch(err => this.setState({ errorText: err === NOT_FOUND ? this.props.t('re_Cannot find "%s"', folder) : this.props.t('re_Cannot read "%s"', folder) }));
+                            .catch(err => this.setState({ errorText: err === NOT_FOUND ? this.props.t('ra_Cannot find "%s"', folder) : this.props.t('ra_Cannot read "%s"', folder) }));
                     } else {
                         return resolve(true);
                     }
@@ -1549,7 +1554,7 @@ class FileBrowser extends Component {
             if (i < parts.length - 1) {
                 return [
                     <div key={this.state.selected + '_' + i} className={this.props.classes.pathDivBreadcrumbDir} onClick={e => this.changeFolder(e, path || '/')}>
-                        {part || this.props.t('re_Root')}
+                        {part || this.props.t('ra_Root')}
                     </div>,
                     <span key={this.state.selected + '_s_' + i} className={this.props.classes.pathDivBreadcrumbSlash}>{'>'}</span>];
             } else {
@@ -1614,14 +1619,14 @@ FileBrowser.defaultProps = {
     objectEditOfAccessControl: false,
     modalNewObject: () => { },
     modalEditOfAccessControl: () => { },
-}
+};
 
 FileBrowser.propTypes = {
     style: PropTypes.object,
     className: PropTypes.string,
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    socket: PropTypes.object,
+    t: PropTypes.func.isRequired,
+    lang: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
     ready: PropTypes.bool,
     expertMode: PropTypes.bool,
     showToolbar: PropTypes.bool,
@@ -1639,7 +1644,7 @@ FileBrowser.propTypes = {
     tileView: PropTypes.bool,
     filterFiles: PropTypes.array, // like ['png', 'svg', 'bmp', 'jpg', 'jpeg']
     filterByType: PropTypes.string, // images, code or txt from FileViewer.EXTENSIONS
-    onSelect: PropTypes.func, // function (id, isDoubleClick)
+    onSelect: PropTypes.func.isRequired, // function (id, isDoubleClick)
 };
 
 /** @type {typeof FileBrowser} */

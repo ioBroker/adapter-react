@@ -63,7 +63,7 @@ class IconSelector extends Component {
 
                         names[i] = template.name;
 
-                        promises.push(Utils.getSvg(image.default)
+                        promises.push(Utils.getSvg(image)
                             .then(icon =>
                                 icons[i] = icon));
                     });
@@ -91,7 +91,7 @@ class IconSelector extends Component {
 
                         names[i + offset] = template.name;
 
-                        promises.push(Utils.getSvg(image.default)
+                        promises.push(Utils.getSvg(image)
                             .then(icon =>
                                 icons[i + offset] = icon));
                     });
@@ -148,36 +148,38 @@ class IconSelector extends Component {
             >...</Button>
             {this.state.opened ? <Dialog onClose={() => this.setState({opened: false})} open={true}>
                 <DialogTitle>{this.props.t('ra_Select predefined icon')}
-                        {this.state.isAnyName ? <TextField
-                            margin="dense"
-                            style={{marginLeft: 20}}
-                            value={this.state.filter}
-                            onChange={e => this.setState({filter: e.target.value.toLowerCase()})}
-                            placeholder={this.props.t('Filter')}
-                            InputProps={{
-                                endAdornment: this.state.filter
-                                    ?
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => this.setState({filter: ''})}>
-                                        <ClearIcon />
-                                    </IconButton>
-                                    :
-                                    undefined,
-                            }}
-                        /> : null}
+                    {this.state.isAnyName ? <TextField
+                        margin="dense"
+                        style={{marginLeft: 20}}
+                        value={this.state.filter}
+                        onChange={e => this.setState({filter: e.target.value.toLowerCase()})}
+                        placeholder={this.props.t('ra_Filter')}
+                        InputProps={{
+                            endAdornment: this.state.filter
+                                ?
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({filter: ''})}>
+                                    <ClearIcon />
+                                </IconButton>
+                                :
+                                undefined,
+                        }}
+                    /> : null}
                 </DialogTitle>
                 <DialogContent>
                     <div style={{width: '100%', textAlign: 'center'}}>
                         {this.state.icons && this.state.icons.map((icon, i) => {
                             if (!this.state.filter || (this.state.names[i] && this.state.names[i].toLowerCase().includes(this.state.filter))) {
-                                return <Tooltip title={this.state.names[i] || ''} key={i}><IconButton
-                                    onClick={() =>
-                                        this.setState({opened: false}, () =>
-                                            this.props.onSelect(icon))}
-                                >
-                                    <Icon src={icon} alt={i} style={{width: 32, height: 32, borderRadius: 5}}/>
-                                </IconButton></Tooltip>;
+                                return <Tooltip title={this.state.names[i] || ''} key={i}>
+                                    <IconButton
+                                        onClick={() =>
+                                            this.setState({opened: false}, () =>
+                                                (this.props.onSelect || this.props.onChange)(icon))}
+                                    >
+                                        <Icon src={icon} alt={i} style={{width: 32, height: 32, borderRadius: 5}}/>
+                                    </IconButton>
+                                </Tooltip>;
                             } else {
                                 return null;
                             }
@@ -190,7 +192,7 @@ class IconSelector extends Component {
                         onClick={() => this.setState({opened: false})}
                         startIcon={<CloseIcon />}
                     >
-                        {this.props.t('Close')}
+                        {this.props.t('ra_Close')}
                     </Button>
                 </DialogActions>
             </Dialog> : null}
@@ -202,7 +204,8 @@ IconSelector.propTypes = {
     icons: PropTypes.array,
     onlyRooms: PropTypes.bool,
     onlyDevices: PropTypes.bool,
-    onSelect: PropTypes.func.isRequired,
+    onSelect: PropTypes.func, // one of onSelect or onChange are required
+    onChange: PropTypes.func,
     t: PropTypes.func.isRequired,
     lang: PropTypes.string.isRequired,
 };

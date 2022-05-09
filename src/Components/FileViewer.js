@@ -43,15 +43,6 @@ export const EXTENSIONS = {
     txt:    ['log', 'txt', 'html', 'css', 'xml'],
 };
 
-function getFileExtension(fileName) {
-    const pos = fileName.lastIndexOf('.');
-    if (pos !== -1) {
-        return fileName.substring(pos + 1).toLowerCase();
-    } else {
-        return null;
-    }
-}
-
 /**
  * @typedef {object} FileViewerProps
  * @property {string} [key] The key to identify this component.
@@ -70,12 +61,12 @@ class FileViewer extends React.Component {
     constructor(props) {
         super(props);
 
-        this.ext = getFileExtension(this.props.href); // todo: replace later with Utils.getFileExtension
+        this.ext = Utils.getFileExtension(this.props.href);
 
         this.state = {
             text: null,
             code: null,
-            copyPossible: EXTENSIONS.code.includes(this.ext) || EXTENSIONS.txt.includes(this.ext)
+            copyPossible: EXTENSIONS.code.includes(this.ext) || EXTENSIONS.txt.includes(this.ext),
         };
 
         if (this.state.copyPossible) {
@@ -83,9 +74,9 @@ class FileViewer extends React.Component {
                 .then(response => response.text())
                 .then(data => {
                     if (EXTENSIONS.txt.includes(this.ext)) {
-                        this.setState({text: data});
+                        this.setState({ text: data });
                     } else if (EXTENSIONS.code.includes(this.ext)) {
-                        this.setState({code: data});
+                        this.setState({ code: data });
                     }
                 });
         }
@@ -100,47 +91,55 @@ class FileViewer extends React.Component {
             return <img
                 onError={ e => {
                     e.target.onerror = null;
-                    e.target.src = NoImage
-                } }
+                    e.target.src = NoImage;
+                }}
                 className={ this.props.classes.img }
-                src={ this.props.href } alt={ this.props.href }/>;
+                src={ this.props.href }
+                alt={ this.props.href }
+            />;
         } else if (this.state.code !== null) {
             return <TextField
                 className={ this.props.classes.textarea }
                 multiline
                 value={ this.state.code }
-                readOnly={true}/>;
+                InputProps={{
+                    readOnly: true,
+                }}
+            />;
         } else  if (this.state.text !== null) {
             return <TextField
                 className={ this.props.classes.textarea }
                 value={ this.state.code }
                 multiline
-                readOnly={true}/>;
+                InputProps={{
+                    readOnly: true,
+                }}
+            />;
         }
     }
 
     render() {
         return <Dialog
             className={ this.props.classes.dialog }
-            open={ this.props.href }
+            open={ !!this.props.href }
             onClose={ () => this.props.onClose() }
-            fullWidth={ true }
-            fullScreen={ true }
+            fullWidth
+            fullScreen={this.props.fullScreen !== undefined ? this.props.fullScreen : true}
             aria-labelledby="form-dialog-title"
         >
-            <DialogTitle id="form-dialog-title">{ this.props.t('View: %s', this.props.href) }</DialogTitle>
+            <DialogTitle id="form-dialog-title">{ this.props.t('ra_View: %s', this.props.href) }</DialogTitle>
             <DialogContent className={ this.props.classes.content }>
-                    { this.getContent() }
+                { this.getContent() }
             </DialogContent>
             <DialogActions>
                 { this.state.copyPossible ? <Button onClick={e => Utils.copyToClipboard(this.state.text || this.state.code, e) } >
                     <CopyIcon />
-                    { this.props.t('Copy content') }
+                    { this.props.t('ra_Copy content') }
                 </Button> : null }
 
                 <Button onClick={() => this.props.onClose()} color="primary">
                     <CloseIcon />
-                    { this.props.t('Close') }
+                    { this.props.t('ra_Close') }
                 </Button>
             </DialogActions>
         </Dialog>;
@@ -149,10 +148,10 @@ class FileViewer extends React.Component {
 
 FileViewer.propTypes = {
     t: PropTypes.func,
-    lang: PropTypes.string,
-    expertMode: PropTypes.bool,
+
     onClose: PropTypes.func,
-    href: PropTypes.string.isRequired
+    href: PropTypes.string.isRequired,
+    fullScreen: PropTypes.bool,
 };
 
 /** @type {typeof FileViewer} */

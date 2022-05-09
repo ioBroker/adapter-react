@@ -11,12 +11,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import I18n from '../i18n';
+
 import IconClose from '@material-ui/icons/Close';
 import IconCheck from '@material-ui/icons/Check';
 
-const styles = {
 
-};
 
 /**
  * @typedef {object} TextInputProps
@@ -42,7 +42,7 @@ class TextInput extends React.Component {
         super(props);
 
         this.state = {
-            text: this.props.input || '',
+            text: this.props.input || this.props.value || '', // input is deprecated
             error: ''
         }
     }
@@ -79,7 +79,7 @@ class TextInput extends React.Component {
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" disabled={!this.state.text || this.state.error} onClick={() => this.props.onClose(this.state.text)}
-                        color="primary" startIcon={<IconCheck />}>{this.props.applyText}</Button>
+                        color="primary" startIcon={<IconCheck />}>{this.props.applyText || I18n.t('ra_Ok')}</Button>
                 <Button variant="contained" onClick={() => this.props.onClose(null)} startIcon={<IconClose />}>{this.props.cancelText}</Button>
             </DialogActions>
         </Dialog>;
@@ -91,14 +91,14 @@ TextInput.propTypes = {
     titleText: PropTypes.string.isRequired,
     promptText: PropTypes.string,
     labelText: PropTypes.string,
-    cancelText: PropTypes.string.isRequired,
-    applyText: PropTypes.string.isRequired,
+    cancelText: PropTypes.string,
+    applyText: PropTypes.string,
     verify: PropTypes.func,
     replace: PropTypes.func,
     type: PropTypes.string, // text, number, password, email
-    input: PropTypes.string,
+    value: PropTypes.string,
 };
 
 /** @type {typeof TextInput} */
-const _export = withWidth()(withStyles(styles)(TextInput));
+const _export = withWidth()(TextInput);
 export default _export;

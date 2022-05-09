@@ -1,5 +1,5 @@
 /***
- * Copyright 2018-2019 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2022 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -20,6 +20,8 @@ class I18n {
      * @type {ioBroker.Languages}
      */
     static lang = window.sysLang || 'en';
+
+    static _disableWarning = false;
 
     /**
      * Set the language to display.
@@ -94,7 +96,7 @@ class I18n {
     /**
      * Translate the given string to the selected language.
      * @param {string} word The (key) word to look up the string.
-     * @param {string[]} args Optional arguments which will replace the first (second, third, ...) occurence of %s
+     * @param {string[]} args Optional arguments which will replace the first (second, third, ...) occurrences of %s
      */
     static t(word, ...args) {
         const translation = I18n.translations[I18n.lang];
@@ -103,13 +105,22 @@ class I18n {
             if (w) {
                 word = w;
             } else {
-                console.log(`Translate: ${word}`);
+                I18n._disableWarning && console.log(`Translate: ${word}`);
             }
         }
         for (const arg of args) {
             word = word.replace('%s', arg);
         }
         return word;
+    }
+
+     /**
+      * Disable warning about non-translated words
+      * Required during development
+      * @param {boolean} disable Do the warning should be disabled
+      */
+    static disableWarning(disable) {
+        I18n._disableWarning = !!disable;
     }
 }
 

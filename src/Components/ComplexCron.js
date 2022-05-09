@@ -416,7 +416,7 @@ class ComplexCron extends React.Component {
 
 ComplexCron.propTypes = {
     cronExpression: PropTypes.string,
-    onChange: PropTypes.func,
+    onChange: PropTypes.func.isRequired,
     language: PropTypes.string,
 };
 

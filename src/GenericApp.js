@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2021 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2022 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -42,8 +42,10 @@ class GenericApp extends Router {
      * @param {import('./types').GenericAppSettings | undefined} settings
      */
     constructor(props, settings) {
+        const ConnectionClass = props.Connection || settings.Connection || Connection;
+
         // Remove `!Connection.isWeb() && window.adapterName !== 'material'` when iobroker.socket will support native ws
-        if (!Connection.isWeb() && window.io && window.location.port === '3000') {
+        if (!ConnectionClass.isWeb() && window.io && window.location.port === '3000') {
             try {
                 const io = new window.SocketClient();
                 delete window.io;
@@ -129,7 +131,7 @@ class GenericApp extends Router {
 
         this.sentryDSN = (settings && settings.sentryDSN) || props.sentryDSN;
 
-        this.socket = new Connection({
+        this.socket = new ConnectionClass({
             ...(props?.socket || settings?.socket),
             name: this.adapterName,
             doNotLoadAllObjects: settings?.doNotLoadAllObjects,
@@ -577,32 +579,34 @@ class GenericApp extends Router {
      * @returns {JSX.Element | null} The JSX element.
      */
     renderToast() {
-        if (!this.state.toast) return null;
-        return (
-            <Snackbar
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                }}
-                open={true}
-                autoHideDuration={6000}
-                onClose={() => this.setState({toast: ''})}
-                ContentProps={{
-                    'aria-describedby': 'message-id',
-                }}
-                message={<span id="message-id">{this.state.toast}</span>}
-                action={[
-                    <IconButton
-                        key="close"
-                        aria-label="Close"
-                        color="inherit"
-                        className={this.props.classes.close}
-                        onClick={() => this.setState({toast: ''})}
-                    >
-                        <IconClose />
-                    </IconButton>,
-                ]}
-            />);
+        if (!this.state.toast) {
+            return null;
+        }
+
+        return <Snackbar
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            open={true}
+            autoHideDuration={6000}
+            onClose={() => this.setState({toast: ''})}
+            ContentProps={{
+                'aria-describedby': 'message-id',
+            }}
+            message={<span id="message-id">{this.state.toast}</span>}
+            action={[
+                <IconButton
+                    key="close"
+                    aria-label="Close"
+                    color="inherit"
+                    className={this.props.classes.close}
+                    onClick={() => this.setState({toast: ''})}
+                >
+                    <IconClose />
+                </IconButton>,
+            ]}
+        />;
     }
 
     /**
@@ -778,6 +782,7 @@ GenericApp.propTypes = {
     socket: PropTypes.object, // (optional) socket information (host, port)
     encryptedFields: PropTypes.array, // (optional) list of native attributes, that must be encrypted
     bottomButtons: PropTypes.bool, // If the bottom buttons (Save/Close) must be shown
+    Connection: PropTypes.object, // If the bottom buttons (Save/Close) must be shown
 };
 
 export default GenericApp;

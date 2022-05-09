@@ -1575,8 +1575,7 @@ class Schedule extends React.Component {
 
 Schedule.propTypes = {
     schedule: PropTypes.string,
-    onChange: PropTypes.func,
-    language: PropTypes.string
+    onChange: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Schedule);

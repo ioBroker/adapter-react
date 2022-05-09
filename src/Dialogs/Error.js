@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2021 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2022 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -69,7 +69,7 @@ class DialogError extends React.Component {
 }
 
 DialogError.propTypes = {
-    onClose: PropTypes.func,
+    onClose: PropTypes.func.isRequired,
     title: PropTypes.string,
     text: PropTypes.oneOfType([
         PropTypes.string,

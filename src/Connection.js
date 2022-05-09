@@ -1,5 +1,5 @@
 /**
- * Copyright 2020-2021, bluefox <dogafox@gmail.com>
+ * Copyright 2020-2022, bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -115,6 +115,13 @@ class Connection {
 
         /** @type {Record<string, Promise<any>>} */
         this._promises = {};
+
+        this.log.error = text => this.log(text, 'error');
+        this.log.warn = text => this.log(text, 'warn');
+        this.log.info = text => this.log(text, 'info');
+        this.log.debug = text => this.log(text, 'debug');
+        this.log.silly = text => this.log(text, 'silly');
+
         this.startSocket();
     }
 
@@ -1365,7 +1372,7 @@ class Connection {
             if (!base64) {
                 this._socket.emit('readFile', adapter, fileName, (err, data, type) => {
                     //@ts-ignore
-                    err ? reject(err) : resolve(data, type);
+                    err ? reject(err) : resolve({data, type});
                 });
             } else {
                 this._socket.emit('readFile64', adapter, fileName, base64, (err, data) =>
@@ -2164,7 +2171,11 @@ class Connection {
      * Gets the version.
      * @returns {Promise<{version: string; serverName: string}>}
      */
-    getVersion() {
+    getVersion(update) {
+        if (update && this._promises.version) {
+            this._promises.version = null;
+        }
+
         this._promises.version = this._promises.version || new Promise((resolve, reject) =>
             this._socket.emit('getVersion', (err, version, serverName) => {
                 // support of old socket.io
@@ -2596,6 +2607,16 @@ class Connection {
             .then(obj => obj?.native?.uuid);
 
         return this._promises.uuid;
+    }
+
+    /**
+     * Send log to ioBroker log
+     * @param {string} [text] Log text
+     * @param {string} [level] `info`, `debug`, `warn`, `error` or `silly`
+     * @returns {void}
+     */
+    log(text, level) {
+        text && this._socket.emit('log', text, level || 'debug');
     }
 
     /**

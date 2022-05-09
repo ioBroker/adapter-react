@@ -619,7 +619,7 @@ class SimpleCron extends React.Component {
                     value={this.state.mode}
                     onChange={e => this.onModeChange(e.target.value)}
                     inputProps={{name: 'mode', id: 'mode',}}>
-                    {Object.keys(PERIODIC).map(mode => (<MenuItem key={PERIODIC[mode]} value={PERIODIC[mode]}>{I18n.t('sc_' + PERIODIC[mode])}</MenuItem>))}
+                    {Object.keys(PERIODIC).map(mode => <MenuItem key={PERIODIC[mode]} value={PERIODIC[mode]}>{I18n.t('sc_' + PERIODIC[mode])}</MenuItem>)}
                 </Select>
             </FormControl></div>
             {this.state.mode === PERIODIC.once && this.getOnceElements()}

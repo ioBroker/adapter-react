@@ -226,8 +226,8 @@ class TreeTable extends React.Component {
             orderBy: this.props.columns[0].field,
             useTable: false,
             showSelectColor: false,
-            glowOnChange: props.glowOnChange
-        }
+            glowOnChange: props.glowOnChange,
+        };
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -317,6 +317,13 @@ class TreeTable extends React.Component {
 
     renderCellEditCustom(item, col, val) {
         const EditComponent = col.editComponent;
+
+        // use new value if exists
+        if (this.state.editData && this.state.editData[col.field] !== undefined) {
+            val = this.state.editData[col.field];
+            item = JSON.parse(JSON.stringify(item));
+            item[col.field] = val;
+        }
 
         return <EditComponent
             value={val}
@@ -505,7 +512,7 @@ class TreeTable extends React.Component {
 
     renderCellWithSubField(item, col) {
         const main = getAttr(item, col.field, col.lookup);
-        const sub = getAttr(item, col.subField, col.subLookup)
+        const sub  = getAttr(item, col.subField, col.subLookup);
         return <div>
             <div className={this.props.classes.mainText}>{main}</div>
             <div className={this.props.classes.subText} style={col.subStyle || {}}>{sub}</div>
@@ -513,6 +520,8 @@ class TreeTable extends React.Component {
     }
 
     renderLine(item, level) {
+        const levelShift = this.props.levelShift === undefined ? 24 : this.props.levelShift;
+
         level = level || 0;
         const i = this.props.data.indexOf(item);
         if (!item) {
@@ -521,11 +530,11 @@ class TreeTable extends React.Component {
         if (!level && item.parentId) {
             return null;
         } else if (level && !item.parentId) {
-            return null; // should never happens
+            return null; // should never happen
         } else {
             // try to find children
-            const children = this.props.data.filter(it => it.parentId === item.id);
             const opened = this.state.opened.includes(item.id);
+            const children = this.props.data.filter(it => it.parentId === item.id);
 
             return [
                 <TableRow
@@ -542,26 +551,30 @@ class TreeTable extends React.Component {
                     )}
                 >
                     <TableCell className={Utils.clsx(this.props.classes.cell, this.props.classes.cellExpand, level && this.props.classes.cellSecondary)}>
-                        {children.length ? <IconButton onClick={() => {
-                            const opened = [...this.state.opened];
-                            const pos = opened.indexOf(item.id);
-                            if (pos === -1) {
-                                opened.push(item.id);
-                                opened.sort();
-                            } else {
-                                opened.splice(pos, 1);
-                            }
+                        {children.length ? <IconButton
+                            onClick={() => {
+                                const opened = [...this.state.opened];
+                                const pos = opened.indexOf(item.id);
+                                if (pos === -1) {
+                                    opened.push(item.id);
+                                    opened.sort();
+                                } else {
+                                    opened.splice(pos, 1);
+                                }
 
-                            window.localStorage.setItem(this.props.name || 'iob-table', JSON.stringify(opened));
+                                window.localStorage.setItem(this.props.name || 'iob-table', JSON.stringify(opened));
 
-                            this.setState({opened});
-                        }}>
+                                this.setState({opened});
+                            }}
+                        >
                             {opened ? <IconCollapse/> : <IconExpand/>}
                         </IconButton>  : null}
                     </TableCell>
-                    <TableCell scope="row"
-                               className={Utils.clsx(this.props.classes.cell, level && this.props.classes.cellSecondary)}
-                               style={this.props.columns[0].cellStyle}>
+                    <TableCell
+                        scope="row"
+                        className={Utils.clsx(this.props.classes.cell, level && this.props.classes.cellSecondary)}
+                        style={Object.assign({}, this.props.columns[0].cellStyle, {paddingLeft: levelShift * level})}
+                    >
                         {this.props.columns[0].subField ?
                             this.renderCellWithSubField(item, this.props.columns[0])
                             :
@@ -596,19 +609,22 @@ class TreeTable extends React.Component {
                     </TableCell> : null}
                     {this.props.onUpdate || this.props.onDelete ? <TableCell className={Utils.clsx(this.props.classes.cell, this.props.classes.cellButton)}>
                         {this.state.editMode === i || this.state.deleteMode === i ?
-                            <IconButton onClick={() => this.setState({editMode: false, deleteMode: false})}>
+                            <IconButton
+                                onClick={() => this.setState({editMode: false, deleteMode: false})}
+                            >
                                 <IconClose/>
                             </IconButton>
                             :
                             (this.props.onDelete ? <IconButton
                                 disabled={this.state.deleteMode !== false}
-                                onClick={() => this.setState({deleteMode: i})}>
+                                onClick={() => this.setState({deleteMode: i})}
+                            >
                                 <IconDelete/>
                             </IconButton> : null)
                         }
                     </TableCell> : null}
                 </TableRow>,
-                !level && this.state.opened.includes(item.id) ? children.map(item => this.renderLine(item, level + 1)) : null,
+                !level && opened ? children.map(item => this.renderLine(item, level + 1)) : null,
             ];
         }
     }
@@ -629,9 +645,9 @@ class TreeTable extends React.Component {
                     component="th"
                     className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes['width_' + this.props.columns[0].field.replace(/\./g, '_')])}
                     style={this.props.columns[0].headerStyle || this.props.columns[0].cellStyle}
-                    sortDirection={this.state.orderBy === this.props.columns[0].field ? this.state.order : false}
+                    sortDirection={this.props.noSort ? false : (this.state.orderBy === this.props.columns[0].field ? this.state.order : false)}
                 >
-                    <TableSortLabel
+                    {this.props.noSort ? null : <TableSortLabel
                         active={this.state.orderBy === this.props.columns[0].field}
                         direction={this.state.orderBy === this.props.columns[0].field ? this.state.order : 'asc'}
                         onClick={() => this.handleRequestSort(this.props.columns[0].field)}
@@ -641,7 +657,7 @@ class TreeTable extends React.Component {
                             <span className={this.props.classes.visuallyHidden}>
                                 {this.state.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                             </span> : null}
-                    </TableSortLabel>
+                    </TableSortLabel>}
                 </TableCell>
                 {this.props.columns.map((col, i) =>
                     !i && !col.hidden ? null : <TableCell
@@ -650,7 +666,7 @@ class TreeTable extends React.Component {
                         style={col.headerStyle || col.cellStyle}
                         component="th"
                     >
-                        <TableSortLabel
+                        {this.props.noSort ? null : <TableSortLabel
                             active={this.state.orderBy === col.field}
                             direction={this.state.orderBy === col.field ? this.state.order : 'asc'}
                             onClick={() => this.handleRequestSort(col.field)}
@@ -660,7 +676,7 @@ class TreeTable extends React.Component {
                                 <span className={this.props.classes.visuallyHidden}>
                                     {this.state.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                 </span> : null}
-                        </TableSortLabel>
+                        </TableSortLabel> }
                     </TableCell>)}
                 {this.props.onUpdate ? <TableCell component="th" className={Utils.clsx(this.props.classes.cell, this.props.classes.cellHeader, this.props.classes.cellButton)}>
                     {!this.props.noAdd ? <Fab
@@ -685,7 +701,7 @@ class TreeTable extends React.Component {
             this.updateTimeout = setTimeout(() => {
                 this.updateTimeout = null;
                 this.setState({update: null});
-            }, 500)
+            }, 500);
         }
 
         return <div className={Utils.clsx(this.props.classes.tableContainer, this.props.className)}>
@@ -783,7 +799,7 @@ TreeTable.propTypes = {
     columns: PropTypes.arrayOf(
         PropTypes.shape({
             cellStyle: PropTypes.object,
-            editComponent: PropTypes.element,
+            editComponent: PropTypes.func,
             field: PropTypes.string,
             headerStyle: PropTypes.object,
             hidden: PropTypes.bool,
@@ -800,13 +816,14 @@ TreeTable.propTypes = {
             ]),
         })
     ).isRequired,
-    noSort: PropTypes.bool, // todo
+    noSort: PropTypes.bool,
     onUpdate: PropTypes.func,
     onDelete: PropTypes.func,
     noAdd: PropTypes.bool, // hide add button
     themeType: PropTypes.string,
     glowOnChange: PropTypes.bool,
-    socket: PropTypes.object // only if oid type is used
+    socket: PropTypes.object, // only if oid type is used
+    levelShift: PropTypes.number, // Shift in pixels for every level
 };
 
 export default withStyles(styles)(TreeTable);
