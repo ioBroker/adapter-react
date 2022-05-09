@@ -1725,7 +1725,7 @@ class ObjectBrowser extends Component {
                                 this.objects[id] = objects[id];
                             }
                         } catch (e) {
-                            console.log(`Error by filtering of "${keys[k]}": ${e}`);
+                            console.log(`Error by filtering of "${id}": ${e}`);
                         }
                     });
                 } else
