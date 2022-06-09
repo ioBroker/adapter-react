@@ -617,6 +617,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Allowed to work behind reverse proxy
+
 ### 2.1.0 (2022-05-09)
 * (bluefox) Changes were synchronized with adapter-react-v5
 
