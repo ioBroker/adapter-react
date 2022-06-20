@@ -208,6 +208,7 @@ class Connection {
         this._socket = window.io.connect(
             url,
             {
+                path: path.endsWith('/') ? path + 'socket.io' : path + '/socket.io',
                 query: 'ws=true',
                 name: this.props.name,
                 timeout: this.props.ioTimeout

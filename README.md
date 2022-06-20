@@ -617,7 +617,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 2.2.2 (2022-06-20)
+### **WORK IN PROGRESS**
 * (bluefox) Allowed to work behind reverse proxy
 
 ### 2.1.0 (2022-05-09)
