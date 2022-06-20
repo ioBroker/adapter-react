@@ -197,6 +197,9 @@ class Connection {
                 parts.pop();
                 parts.pop();
                 path = parts.join('/');
+                if (!path.endsWith('/')) {
+                    path += '/';
+                }
             }
         }
 
