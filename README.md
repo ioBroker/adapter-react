@@ -617,6 +617,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Added preparations for iobroker cloud
+
 ### 2.2.3 (2022-06-20)
 * (bluefox) Allowed to work behind reverse proxy
 
